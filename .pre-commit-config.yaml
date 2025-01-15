@@ -1,0 +1,86 @@
+repos:
+  # General Code Quality and Formatting Hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 'v5.0.0'
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: .idea/
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: debug-statements
+
+  # Code Formatting with Black
+  - repo: https://github.com/psf/black
+    rev: '24.10.0'
+    hooks:
+      - id: black
+        language_version: python3.12
+        args: [ "--line-length=79" ]
+
+  # Type Checking with MyPy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.11.2'
+    hooks:
+      - id: mypy
+        args: [ --strict, --ignore-missing-imports ]
+        additional_dependencies: [ ]
+        # Add typed dependencies here for better type inference, e.g., "tokenize-rt==3.2.0"
+
+  # Import Sorting with Isort
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: 'v5.10.1'
+    hooks:
+      - id: isort
+        language_version: python3.12
+
+  # Security Scanning with Bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: '1.7.4'
+    hooks:
+      - id: bandit
+        args: [ "-ll" ]
+
+  # Dependency Management with uv
+  - repo: local
+    hooks:
+      - id: uv-lock
+        name: uv lock
+        entry: uv lock
+        language: system
+        pass_filenames: false
+        description: "Lock dependencies with uv"
+
+      - id: uv-sync
+        name: uv sync
+        entry: uv sync
+        language: system
+        pass_filenames: false
+        description: "Install dependencies with uv"
+
+  # Python Code Linting with Pylint
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [ python ]
+        args: [
+          '-rn',               # Only display messages
+          '-sn',               # Don't display the score
+          '--rcfile=.pylintrc' # Link to your config file
+        ]
+
+  # CI Configuration Validation for CircleCI
+  - repo: local
+    hooks:
+      - id: check-config-circleci
+        name: validate circleci config
+        entry: circleci config validate
+        language: python
+        additional_dependencies:
+          - circleci
+        files: ^.circleci/config.yml$

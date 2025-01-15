@@ -5,3 +5,9 @@ description = "Python package to implement observability domain probes"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0.1",
+    "pylint>=3.3.3",
+]
