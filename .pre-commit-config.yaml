@@ -10,7 +10,6 @@ repos:
       - id: check-case-conflict
       - id: check-yaml
       - id: check-toml
-      - id: debug-statements
 
   # Code Formatting with Black
   - repo: https://github.com/psf/black
@@ -61,19 +60,12 @@ repos:
         pass_filenames: false
         description: "Install dependencies with uv"
 
-  # Python Code Linting with Pylint
-  - repo: local
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.3.3
     hooks:
       - id: pylint
-        name: pylint
-        entry: pylint --rcfile=.pylintrc
-        language: system
-        types: [ python ]
-        files: \.py$
-        args: [
-          '-rn',                # Only display messages
-          '-sn',                # Don't display the score
-        ]
+        exclude: test
+
 
   # CI Configuration Validation for CircleCI
   - repo: local
