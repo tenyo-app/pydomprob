@@ -73,7 +73,6 @@ repos:
         args: [
           '-rn',                # Only display messages
           '-sn',                # Don't display the score
-          '--ignore=test', # Link to your config file
         ]
 
   # CI Configuration Validation for CircleCI
