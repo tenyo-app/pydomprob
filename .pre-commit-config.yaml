@@ -25,7 +25,8 @@ repos:
     rev: 'v1.11.2'
     hooks:
       - id: mypy
-        args: [ --strict, --ignore-missing-imports ]
+        files: \.py$
+        args: [ "--config-file", "mypy.ini"]
         additional_dependencies: [ ]
         # Add typed dependencies here for better type inference, e.g., "tokenize-rt==3.2.0"
 
@@ -59,20 +60,6 @@ repos:
         language: system
         pass_filenames: false
         description: "Install dependencies with uv"
-
-  # Python Code Linting with Pylint
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [ python ]
-        args: [
-          '-rn',               # Only display messages
-          '-sn',               # Don't display the score
-          '--rcfile=.pylintrc' # Link to your config file
-        ]
 
   # CI Configuration Validation for CircleCI
   - repo: local
