@@ -61,6 +61,21 @@ repos:
         pass_filenames: false
         description: "Install dependencies with uv"
 
+  # Python Code Linting with Pylint
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint --rcfile=.pylintrc
+        language: system
+        types: [ python ]
+        files: \.py$
+        args: [
+          '-rn',                # Only display messages
+          '-sn',                # Don't display the score
+          '--ignore=test', # Link to your config file
+        ]
+
   # CI Configuration Validation for CircleCI
   - repo: local
     hooks:
