@@ -115,7 +115,7 @@ class AnnoMethod:
 
     def bind(
         self, *args: _PMeth.args, **kwargs: _PMeth.kwargs
-    ) -> "InstrumentBoundAnnoMethod":
+    ) -> "BoundAnnouncementMethod":
         """Binds passed parameters to the method, returning a
         partially bound version.
 
@@ -144,7 +144,7 @@ class AnnoMethod:
             >>> bound_method
             InstrumentBoundAnnoMethod(method=<function Foo.bar at ...>)
         """
-        return InstrumentBoundAnnoMethod(self.method, *args, **kwargs)
+        return BoundAnnouncementMethod(self.method, *args, **kwargs)
 
     def __repr__(self) -> str:
         """Returns a string representation of the `AnnoMethod`
@@ -254,7 +254,7 @@ _RBoundMeth = TypeVar("_RBoundMeth")
 _WrappedBoundMeth: TypeAlias = Callable[_PBoundMeth, _RBoundMeth]
 
 
-class InstrumentBoundAnnoMethod(Generic[_PBoundMeth, _RBoundMeth], AnnoMethod):
+class BoundAnnouncementMethod(Generic[_PBoundMeth, _RBoundMeth], AnnoMethod):
     """Represents a partially bound method with associated metadata.
 
     This class is used to wrap a method that has been partially bound
