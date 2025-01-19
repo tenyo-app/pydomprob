@@ -1,26 +1,15 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator, Iterable, MutableSequence
 from operator import index as to_index
-from typing import (Any, Generic, ParamSpec, Protocol, SupportsIndex,
-                    TypeAlias, TypeVar, overload, runtime_checkable)
+from typing import (Any, Generic, ParamSpec, SupportsIndex, TypeAlias, TypeVar,
+                    overload)
 
 from domprob.announcements.exceptions import AnnouncementException
-
-
-# Define a Protocol for chain links
-# pylint: disable=too-few-public-methods
-@runtime_checkable
-class _ValidationChainLinkProtocol(Protocol):
-    # Links to the next link in the chain
-    next_: "_ValidationChainLinkProtocol | None"
-
-    def validate(self, obj: Any) -> None: ...
-    def __repr__(self) -> str: ...
-    def __str__(self) -> str: ...
-
+from domprob.announcements.validation.base_validator import \
+    BaseAnnouncementValidator
 
 # Ensures base must be a concrete class implementing the protocol
-_ChainLink = TypeVar("_ChainLink", bound="_ValidationChainLinkProtocol")
+_ChainLink = TypeVar("_ChainLink", bound=BaseAnnouncementValidator)
 
 # Type alias for the chain
 _Chain: TypeAlias = "ValidationChain"
