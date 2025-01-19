@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Generator, MutableSequence
+from collections.abc import Generator, MutableSequence, Iterable
 from typing import (Any, Generic, ParamSpec, Protocol, TypeAlias, TypeVar,
                     runtime_checkable)
 
@@ -187,7 +187,13 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
     def __len__(self) -> int:
         return len(self._links)
 
-    def __setitem__(self, index: int, link: _ChainLink) -> None:
+    def __setitem__(
+            self,
+            index: int | slice,
+            link: _ChainLink | Iterable[_ChainLink],
+            /
+    ) -> None:
+        # TODO: handle slice
         self._link_validator.validate(link)
         self._set_next__links(index, link)
         self._links[index] = link
