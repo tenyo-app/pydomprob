@@ -42,10 +42,11 @@ class InstrumentTypeException(ValidatorException):
 
     @property
     def msg(self) -> str:
+        instruments_str = ', '.join(i.__class__.__name__ for i in
+                                    self.supported_instruments)
         return (
-            f"Function '{self.method.__name__}()' expects 'instrument' to be one"
-            f" of: {', '.join((i.__class__.__name__ for i in self.supported_instruments))}, but got "
-            f"'{self.instrument!r}'"
+            f"Function '{self.method.__name__}()' expects 'instrument' to be "
+            f"one of: {instruments_str}, but got '{self.instrument!r}'"
         )
 
 
