@@ -1,4 +1,3 @@
-# Typing helpers
 import inspect
 from collections.abc import Callable
 from typing import Generic, ParamSpec, TypeAlias, TypeVar
@@ -27,7 +26,7 @@ class AnnoMethod:
     Examples:
         >>> # Define a class with a decorated method
         >>> class Foo:
-        ...     @announcements(BaseInstrument)
+        ...     @announcement(BaseInstrument)
         ...     def bar(self, instrument):
         ...         pass
         ...

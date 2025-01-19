@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator, Iterable, MutableSequence
 from operator import index as to_index
-from typing import (Any, Generic, ParamSpec, SupportsIndex, TypeAlias, TypeVar,
+from typing import (Any, Generic, SupportsIndex, TypeAlias, TypeVar,
                     overload)
 
 from domprob.announcements.exceptions import AnnouncementException
@@ -56,12 +56,7 @@ class LinkExistsException(ValidationChainException):
 
     @property
     def msg(self) -> str:
-        return f"Link '{self.link!r}' already exists in chain '{self.chain!r}'"
-
-
-# Represent `@_validate_link` wrapped method
-_P = ParamSpec("_P")
-_R = TypeVar("_R")
+        return f"Link '{self.link!r}' already exists in chain '{self.chain}'"
 
 
 # pylint: disable=too-few-public-methods
@@ -95,8 +90,8 @@ class ABCLinkValidatorContext(ABC):
         self, chain: _Chain, *validators: type[ABCLinkValidator]
     ) -> None:
         self.chain = chain
-        self.validators: list[type[ABCLinkValidator]] = list(*validators)
-        self.add_validators(*validators)
+        self.validators = list(validators)
+        self.add_validators(*self.validators)
 
     @abstractmethod
     def add_validators(self, *validators: type[ABCLinkValidator]) -> None:
@@ -286,7 +281,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         return self._links[0].validate(*args, **kwargs)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(base_cls={self.base!r})"
+        return f"{self.__class__.__name__}(base={self.base.__name__!r})"
 
     def __str__(self) -> str:
         return " -> ".join(map(str, self._links))
