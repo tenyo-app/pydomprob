@@ -22,7 +22,7 @@ class ValidationChainException(AnnouncementException):
 class InvalidLinkException(ValidationChainException):
     """Exception raised when a link is invalid."""
 
-    def __init__(self, link: _ChainLink, base: type[_ChainLink]) -> None:
+    def __init__(self, link: Any, base: type[_ChainLink]) -> None:
         self.link = link
         self.base = base
         super().__init__(self.msg)

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TypeAlias
+from typing import TypeAlias, Optional
 
 from domprob.announcements.exceptions import AnnouncementException
 from domprob.announcements.method import BoundAnnouncementMethod
@@ -13,9 +13,9 @@ class ValidatorException(AnnouncementException):
 
 class BaseAnnouncementValidator(ABC):
 
-    next_: _Validator | None = None
+    next_: Optional[_Validator] = None
 
-    def __init__(self, next_validator: _Validator | None = None) -> None:
+    def __init__(self, next_validator: Optional[_Validator] = None) -> None:
         self.next_ = next_validator
 
     @abstractmethod
