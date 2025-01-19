@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from collections.abc import Generator, MutableSequence, Iterable
-from typing import (Any, Generic, ParamSpec, Protocol, TypeAlias, TypeVar,
-                    runtime_checkable)
+from collections.abc import Generator, Iterable, MutableSequence
+from operator import index as to_index
+from typing import (Any, Generic, ParamSpec, Protocol, SupportsIndex,
+                    TypeAlias, TypeVar, overload, runtime_checkable)
 
 from domprob.announcements.exceptions import AnnouncementException
 
@@ -105,7 +106,7 @@ class ABCLinkValidatorContext(ABC):
         self, chain: _Chain, *validators: type[ABCLinkValidator]
     ) -> None:
         self.chain = chain
-        self.validators = list(*validators)
+        self.validators: list[type[ABCLinkValidator]] = list(*validators)
         self.add_validators(*validators)
 
     @abstractmethod
@@ -135,9 +136,10 @@ class LinkValidatorContext(ABCLinkValidatorContext):
     def add_validators(self, *validators: type[ABCLinkValidator]) -> None:
         self.validators.extend(validators)
 
-    def validate(self, link: _ChainLink) -> None:
+    def validate(self, *links: _ChainLink) -> None:
         for validator in self.validators:
-            validator(self.chain).validate(link)
+            for link in links:
+                validator(self.chain).validate(link)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.chain!r})"
@@ -153,8 +155,9 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
     ) -> None:
         self.base = base
         self._links: list[_ChainLink] = []
-        self._validator_context = validator_context or LinkValidatorContext
-        self._link_validator = self._validator_context(self, *link_validators)
+        self._link_validator = validator_context or LinkValidatorContext(
+            self, *link_validators
+        )
 
     def __bool__(self) -> bool:
         return bool(self._links)
@@ -164,21 +167,30 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             return False
         return item in self._links
 
-    def __delitem__(self, index: int) -> None:
-        if 0 < index < len(self._links) - 1:
-            self._links[index - 1].next_ = self._links[index + 1]
-        elif index > 0:
-            self._links[index - 1].next_ = None
-        self._links.pop(index)
+    def __delitem__(self, index: SupportsIndex | slice, /) -> None:
+        if isinstance(index, slice):
+            self._delete_slice_items(index)
+        elif isinstance(index, int):
+            self._delete_single_item(to_index(index))
+        else:
+            raise TypeError(f"Invalid index type: {type(index).__name__}")
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ValidationChain):
             return False
         return self._links == other._links
 
+    @overload
+    # need to match the superclasses overloaded signatures exactly
+    def __getitem__(self, index: int, /) -> _ChainLink: ...
+
+    @overload
+    # need to match the superclasses overloaded signatures exactly
+    def __getitem__(self, index: slice, /) -> MutableSequence[_ChainLink]: ...
+
     def __getitem__(
         self, index: int | slice, /
-    ) -> _ChainLink | list[_ChainLink]:
+    ) -> _ChainLink | MutableSequence[_ChainLink]:
         return self._links[index]
 
     def __iter__(self) -> Generator[_ChainLink, None, None]:
@@ -187,16 +199,67 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
     def __len__(self) -> int:
         return len(self._links)
 
+    @overload
+    # need to match the superclasses overloaded signatures exactly
+    def __setitem__(self, index: int, link: _ChainLink, /) -> None: ...
+
+    @overload
+    # need to match the superclasses overloaded signatures exactly
     def __setitem__(
-            self,
-            index: int | slice,
-            link: _ChainLink | Iterable[_ChainLink],
-            /
+        self, index: slice, links: Iterable[_ChainLink], /
+    ) -> None: ...
+
+    def __setitem__(
+        self,
+        index: SupportsIndex | slice,
+        link_or_links: _ChainLink | Iterable[_ChainLink],
+        /,
     ) -> None:
-        # TODO: handle slice
+        if isinstance(index, slice):
+            if not isinstance(link_or_links, Iterable):
+                raise TypeError("Expected an iterable for slice assignment")
+            self._set_slice_items(index, link_or_links)
+        elif isinstance(index, SupportsIndex):
+            if isinstance(link_or_links, Iterable):
+                raise TypeError("Cannot assign an iterable to a single index")
+            self._set_single_item(to_index(index), link_or_links)
+        else:
+            raise TypeError(f"Invalid index type: {type(index).__name__}")
+
+    def _delete_single_item(self, index: int) -> None:
+        """Handles deletion for a single element."""
+        if 0 < index < len(self._links) - 1:
+            self._links[index - 1].next_ = self._links[index + 1]
+        elif index > 0:
+            self._links[index - 1].next_ = None
+        del self._links[index]
+
+    def _delete_slice_items(self, index: slice, /) -> None:
+        start, stop, step = index.indices(len(self._links))
+        if start > 0:
+            if stop < len(self._links):
+                self._links[start - 1].next_ = self._links[stop]
+            else:
+                self._links[start - 1].next_ = None
+        for i in range(start, min(stop, len(self._links) - 1), step):
+            if (i + step) < stop:
+                self._links[i].next_ = self._links[i + 1]
+            else:
+                self._links[i].next_ = None
+        del self._links[index]
+
+    def _set_single_item(self, index, link: _ChainLink, /) -> None:
         self._link_validator.validate(link)
-        self._set_next__links(index, link)
         self._links[index] = link
+        self._set_next__links(index, link)
+
+    def _set_slice_items(
+        self, index: slice, links: Iterable[_ChainLink], /
+    ) -> None:
+        self._link_validator.validate(*links)
+        self._links[index] = list(links)
+        for i in range(index.start or 0, index.stop or len(self._links) - 1):
+            self._set_next__links(i, self._links[i])
 
     def _set_next__links(self, index: int, value: _ChainLink) -> None:
         if index > 0:
@@ -212,6 +275,17 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
     def clear(self) -> None:
         self._links.clear()
 
+    def extend(self, values: Iterable[_ChainLink]) -> None:
+        self._link_validator.validate(*values)
+        new_links = list(values)
+        if not new_links:
+            return
+        if self._links:
+            self._links[-1].next_ = new_links[0]
+        for i in range(len(new_links) - 1):
+            new_links[i].next_ = new_links[i + 1]
+        self._links.extend(new_links)
+
     def insert(self, index: int, value: _ChainLink) -> None:
         self._link_validator.validate(value)
         self._set_next__links(index, value)
@@ -226,4 +300,4 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         return f"{self.__class__.__name__}(base_cls={self.base!r})"
 
     def __str__(self) -> str:
-        return " -> ".join(map(repr, self._links))
+        return " -> ".join(map(str, self._links))

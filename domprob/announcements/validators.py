@@ -58,7 +58,7 @@ class AnnoValidatorException(AnnouncementException):
         """
         return cls(
             f"Function '{method.__name__}()' expects 'instrument' to be one"
-            f" of: {', '.join((i__name__ for i in supported))}, but got "
+            f" of: {', '.join((i.__class__.__name__ for i in supported))}, but got "
             f"'{instrument!r}'"
         )
 
