@@ -1,3 +1,4 @@
+import copy
 from unittest.mock import MagicMock
 
 import pytest
@@ -206,6 +207,17 @@ class TestLinkTypeValidator:
         with pytest.raises(InvalidLinkException):
             validator.validate(link)
 
+    def test_repr(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link = mock_good_link()
+        mock_validator_chain.append(link)
+        validator = LinkTypeValidator(mock_validator_chain)
+        # Act
+        validator_repr = repr(validator)
+        # Assert
+        exp = "LinkTypeValidator(ValidationChain(base='BaseValidator'))"
+        assert validator_repr == exp
+
 
 class TestUniqueLinkValidator:
     def test_validate_unique_link(self, mock_validator_chain, mock_good_link):
@@ -227,6 +239,17 @@ class TestUniqueLinkValidator:
         # Act + Assert
         with pytest.raises(LinkExistsException):
             validator.validate(link)
+
+    def test_repr(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link = mock_good_link()
+        mock_validator_chain.append(link)
+        validator = UniqueLinkValidator(mock_validator_chain)
+        # Act
+        validator_repr = repr(validator)
+        # Assert
+        exp = "UniqueLinkValidator(ValidationChain(base='BaseValidator'))"
+        assert validator_repr == exp
 
 
 class TestABCLinkValidatorContext:
@@ -259,6 +282,18 @@ class TestABCLinkValidatorContext:
         # Assert
         assert context.validated
         assert context.validator_num == 2
+
+    def test_repr(self, mock_validator_chain, mock_good_chain_links):
+        # Arrange
+        class TestContext(ABCLinkValidatorContext):
+            def add_validators(self, *validators): ...
+            def validate(self, link): ...
+
+        context = TestContext(mock_validator_chain)
+        # Act
+        context_repr = repr(context)
+        # Assert
+        assert context_repr == f"TestContext()"
 
 
 class TestLinkValidatorContext:
@@ -293,6 +328,15 @@ class TestLinkValidatorContext:
         # Act
         context.validate(*links)  # Should not raise an exception
         # Assert
+
+    def test_repr(self, mock_validator_chain):
+        # Arrange
+        context = LinkValidatorContext(mock_validator_chain)
+        # Act
+        context_repr = repr(context)
+        # Assert
+        exp = f"LinkValidatorContext(ValidationChain(base='BaseValidator'))"
+        assert context_repr == exp
 
 
 class TestValidationChain:
@@ -350,39 +394,205 @@ class TestValidationChain:
         with pytest.raises(InvalidLinkException):
             mock_validator_chain.extend(invalid_links)
 
-    def test_set_single_item(
-        self, mock_validator_chain, mock_good_chain_links, mock_good_link
-    ):
+    def test_extend_with_no_links(self, mock_validator_chain):
         # Arrange
-        mock_validator_chain.extend(mock_good_chain_links)
-        link = mock_good_link()
+        links = []
+        num_links = len(mock_validator_chain)
         # Act
-        mock_validator_chain[1] = link
+        mock_validator_chain.extend(links)
         # Assert
-        assert mock_validator_chain[1] == link
+        assert len(mock_validator_chain) == num_links
 
-    def test_set_slice_items(
-        self, mock_validator_chain, mock_good_chain_links, mock_good_link
-    ):
+    def test_setitem_single_index(self, mock_validator_chain, mock_good_link):
         # Arrange
-        mock_validator_chain.extend(mock_good_chain_links)
-        new_links = [mock_good_link() for _ in range(3)]  # Ensure uniqueness
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3])
+        new_link = mock_good_link()
         # Act
-        mock_validator_chain[0:3] = new_links
+        mock_validator_chain[1] = new_link  # Replace link2 with new_link
         # Assert
-        assert len(mock_validator_chain) == len(mock_good_chain_links)
-        assert mock_validator_chain[:3] == new_links
+        assert len(mock_validator_chain) == 3
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == new_link
+        assert mock_validator_chain[2] == link3
+        assert link1.next_ == new_link
+        assert new_link.next_ == link3
 
-    def test_remove_single_item(
-        self, mock_validator_chain, mock_good_chain_links
+    def test_setitem_slice(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        link4 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3, link4])
+        new_links = [mock_good_link(), mock_good_link()]
+        # Act
+        mock_validator_chain[1:3] = (
+            new_links  # Replace link2 and link3 with new_links
+        )
+        # Assert
+        assert len(mock_validator_chain) == 4
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == new_links[0]
+        assert mock_validator_chain[2] == new_links[1]
+        assert mock_validator_chain[3] == link4
+        assert link1.next_ == new_links[0]
+        assert new_links[0].next_ == new_links[1]
+        assert new_links[1].next_ == link4
+
+    def test_setitem_negative_index(
+        self, mock_validator_chain, mock_good_link
     ):
         # Arrange
-        mock_validator_chain.extend(mock_good_chain_links)
-        # Act
-        del mock_validator_chain[1]
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3])
+        new_link = mock_good_link()
         # Assert
-        assert len(mock_validator_chain) == len(mock_good_chain_links) - 1
-        assert mock_good_chain_links[1] not in mock_validator_chain
+        mock_validator_chain[-1] = new_link  # Replace link3 with new_link
+        # Assert
+        assert len(mock_validator_chain) == 3
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == link2
+        assert mock_validator_chain[2] == new_link
+        assert link2.next_ == new_link
+        assert new_link.next_ is None
+
+    def test_setitem_invalid_type(
+        self, mock_validator_chain, mock_good_link, mock_bad_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        mock_validator_chain.append(link1)
+        # Act + Assert
+        with pytest.raises(InvalidLinkException):
+            mock_validator_chain[0] = mock_bad_link()  # Invalid type
+
+    def test_setitem_iterable_to_single_index(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        mock_validator_chain.append(link1)
+        # Act
+        with pytest.raises(TypeError) as exc_info:
+            mock_validator_chain[0] = [mock_good_link()]
+        # Assert
+        assert (
+            str(exc_info.value)
+            == "Cannot assign an iterable to a single index"
+        )
+
+    def test_setitem_slice_to_non_iterable(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        mock_validator_chain.extend([link1, link2])
+        # Act
+        with pytest.raises(TypeError) as exc_info:
+            mock_validator_chain[0:2] = mock_good_link()
+        # Assert
+        assert (
+            str(exc_info.value) == "Expected an iterable for slice assignment"
+        )
+
+    def test_setitem_single_invalid_index(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        mock_validator_chain.append(link1)
+        new_link = mock_good_link()
+        # Act
+        with pytest.raises(TypeError) as exc_info:
+            mock_validator_chain["invalid index"] = new_link
+        # Assert
+        assert str(exc_info.value) == "Invalid index type: str"
+
+    def test_delete_single_item(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3])
+        # Act
+        del mock_validator_chain[1]  # Delete the second link (link2)
+        # Assert
+        assert len(mock_validator_chain) == 2
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == link3
+        assert link1.next_ == link3  # next_ of link1 should now point to link3
+        assert link3.next_ is None  # link3 is now the last link
+
+    def test_delete_slice(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        link4 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3, link4])
+        # Act
+        del mock_validator_chain[1:3]  # Delete link2 and link3
+        # Assert
+        assert len(mock_validator_chain) == 2
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == link4
+        assert link1.next_ == link4  # next_ of link1 should now point to link4
+        assert link4.next_ is None  # link4 is now the last link
+
+    def test_delete_first_item(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        mock_validator_chain.extend([link1, link2])
+        # Act
+        del mock_validator_chain[0]  # Delete the first link (link1)
+        # Assert
+        assert len(mock_validator_chain) == 1
+        assert mock_validator_chain[0] == link2
+        assert link2.next_ is None  # link2 is now the first and last link
+
+    def test_delete_last_item(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        mock_validator_chain.extend([link1, link2])
+        # Act
+        del mock_validator_chain[1]  # Delete the last link (link2)
+        # Assert
+        assert len(mock_validator_chain) == 1
+        assert mock_validator_chain[0] == link1
+        assert link1.next_ is None  # link1 is now the last link
+
+    def test_delete_negative_index(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3])
+        # Act
+        del mock_validator_chain[-2]  # Delete the second-to-last link (link2)
+        # Assert
+        assert len(mock_validator_chain) == 2
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == link3
+        assert link1.next_ == link3  # next_ of link1 should now point to link3
+        assert link3.next_ is None  # link3 is now the last link
+
+    def test_delete_invalid_index(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link1 = mock_good_link()
+        mock_validator_chain.append(link1)
+        # Act + Assert
+        with pytest.raises(IndexError):
+            del mock_validator_chain[5]  # Out of range index
+        with pytest.raises(TypeError):
+            del mock_validator_chain["invalid"]  # Invalid index type
 
     def test_remove_slice_items(
         self, mock_validator_chain, mock_good_chain_links
@@ -394,6 +604,16 @@ class TestValidationChain:
         # Assert
         assert len(mock_validator_chain) == 1
         assert mock_validator_chain[0] == mock_good_chain_links[0]
+
+    def test_remove_wrong_index_type(
+        self, mock_validator_chain, mock_good_chain_links
+    ):
+        # Arrange
+        # Act
+        with pytest.raises(TypeError) as exc_info:
+            del mock_validator_chain["incorrect index type"]
+        # Assert
+        assert str(exc_info.value) == "Invalid index type: str"
 
     def test_clear(self, mock_validator_chain, mock_good_chain_links):
         # Arrange
@@ -437,14 +657,169 @@ class TestValidationChain:
         # Assert
         assert mock_good_chain_links[0] in mock_validator_chain
         assert ConcreteValidator() not in mock_validator_chain
+        assert "string" not in mock_validator_chain
+
+    def test_bool_false(self, mock_validator_chain):
+        # Arrange
+        # Act
+        # Assert
+        assert not mock_validator_chain
+
+    def test_bool_true(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        mock_validator_chain._links.append(mock_good_link)
+        # Act
+        # Assert
+        assert mock_validator_chain
+
+    def test_eq(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        chain_1 = copy.deepcopy(mock_validator_chain)
+        chain_2 = copy.deepcopy(mock_validator_chain)
+        chain_3 = copy.deepcopy(mock_validator_chain)
+        chain_3._links.append(mock_good_link)
+        # Act
+        # Assert
+        assert "Incorrect eq type" != chain_1
+        assert chain_1 == chain_2
+        assert chain_1 != chain_3
+
+    def test_insert_into_empty_chain(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link = mock_good_link()
+        # Act
+        mock_validator_chain.insert(0, link)
+        # Assert
+        assert len(mock_validator_chain) == 1
+        assert mock_validator_chain[0] == link
+        assert link.next_ is None
+
+    def test_insert_at_start_of_chain(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        mock_validator_chain.append(link1)
+        # Act
+        mock_validator_chain.insert(0, link2)
+        # Assert
+        assert len(mock_validator_chain) == 2
+        assert mock_validator_chain[0] == link2
+        assert mock_validator_chain[1] == link1
+        assert link2.next_ == link1
+
+    def test_insert_at_end_of_chain(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        mock_validator_chain.append(link1)
+        # Act
+        mock_validator_chain.insert(len(mock_validator_chain), link2)
+        # Assert
+        assert len(mock_validator_chain) == 2
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == link2
+        assert link1.next_ == link2
+        assert link2.next_ is None
+
+    def test_insert_in_middle_of_chain(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        mock_validator_chain.append(link1)
+        mock_validator_chain.append(link3)
+        # Act
+        mock_validator_chain.insert(1, link2)
+        # Assert
+        assert len(mock_validator_chain) == 3
+        assert mock_validator_chain[0] == link1
+        assert mock_validator_chain[1] == link2
+        assert mock_validator_chain[2] == link3
+        assert link1.next_ == link2
+        assert link2.next_ == link3
+
+    def test_insert_invalid_link(self, mock_validator_chain, mock_bad_link):
+        # Arrange
+        link1 = mock_bad_link()
+        # Act + Assert
+        with pytest.raises(InvalidLinkException):
+            mock_validator_chain.insert(0, link1)
+
+    def test_insert_duplicate_link(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link = mock_good_link()
+        mock_validator_chain.append(link)
+        # Act + Assert
+        with pytest.raises(LinkExistsException):
+            mock_validator_chain.insert(1, link)
+
+    def test_insert_with_negative_index(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        mock_validator_chain.append(link1)
+        # Act
+        mock_validator_chain.insert(-1, link2)
+        # Assert
+        assert len(mock_validator_chain) == 2
+        assert mock_validator_chain[0] == link2
+        assert mock_validator_chain[1] == link1
+        assert link2.next_ == link1
+
+    def test_iter_empty_chain(self, mock_validator_chain):
+        # Arrange
+        # Act
+        result = list(mock_validator_chain)
+        # Assert
+        assert result == []
+
+    def test_iter_single_element(self, mock_validator_chain, mock_good_link):
+        # Arrange
+        link = mock_good_link()
+        mock_validator_chain.append(link)
+        # Act
+        result = list(mock_validator_chain)
+        # Assert
+        assert result == [link]
+
+    def test_iter_multiple_elements(
+        self, mock_validator_chain, mock_good_link
+    ):
+        # Arrange
+        link1 = mock_good_link()
+        link2 = mock_good_link()
+        link3 = mock_good_link()
+        mock_validator_chain.extend([link1, link2, link3])
+        # Act
+        result = list(mock_validator_chain)
+        # Assert
+        assert result == [link1, link2, link3]
+
+    def test_iter_returns_generator(self, mock_validator_chain):
+        # Arrange
+        # Act
+        result = mock_validator_chain.__iter__()
+        # Assert
+        assert hasattr(result, "__iter__")  # Confirm it’s iterable
+        assert hasattr(result, "__next__")  # Confirm it’s an iterator
 
     def test_repr(self, mock_validator_chain, mock_good_chain_links):
         # Arrange
         mock_validator_chain.extend(mock_good_chain_links)
-        expected_repr = f"ValidationChain(base='BaseValidator')"
         # Act
         mock_chain_repr = repr(mock_validator_chain)
         # Assert
+        expected_repr = f"ValidationChain(base='BaseValidator')"
         assert mock_chain_repr == expected_repr
 
     def test_str(self, mock_validator_chain, mock_good_chain_links):

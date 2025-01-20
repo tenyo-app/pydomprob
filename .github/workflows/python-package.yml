@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Test with python ${{ matrix.python-version }}
-        run: uv run --frozen pytest -s -vvv --cov=domprob/ test/ --cov-report=html
+        run: uv run --frozen pytest -s -vvv --cov=domprob/ test/ --cov-report=html --cov-report=term
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4

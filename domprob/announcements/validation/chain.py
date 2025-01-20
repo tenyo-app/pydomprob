@@ -208,8 +208,11 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         else:
             raise TypeError(f"Invalid index type: {type(index).__name__}")
 
-    def _delete_single_item(self, index: int) -> None:
+    def _delete_single_item(self, index: int, /) -> None:
         """Handles deletion for a single element."""
+        # Turn negative index into actual index
+        if index < 0:
+            index += len(self._links)
         if 0 < index < len(self._links) - 1:
             self._links[index - 1].next_ = self._links[index + 1]
         elif index > 0:
@@ -232,6 +235,9 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
 
     def _set_single_item(self, index, link: _ChainLink, /) -> None:
         self._link_validator.validate(link)
+        # Turn negative index into actual index
+        if index < 0:
+            index += len(self._links)
         self._links[index] = link
         self._set_next__links(index, link)
 
@@ -243,11 +249,13 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         for i in range(index.start or 0, index.stop or len(self._links) - 1):
             self._set_next__links(i, self._links[i])
 
-    def _set_next__links(self, index: int, value: _ChainLink) -> None:
+    def _set_next__links(self, index: int, value: _ChainLink, /) -> None:
+        # Not the first element
         if index > 0:
             self._links[index - 1].next_ = value
-        if index + 1 < len(self._links):
-            value.next_ = self._links[index]
+        # Not the only or last element
+        if len(self._links) != 0 and index < len(self._links) - 1:
+            value.next_ = self._links[index + 1]
 
     def append(self, value: _ChainLink) -> None:
         self._link_validator.validate(value)
@@ -270,8 +278,11 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
 
     def insert(self, index: int, value: _ChainLink) -> None:
         self._link_validator.validate(value)
-        self._set_next__links(index, value)
+        # Turn negative index into actual index
+        if index < 0:
+            index += len(self._links)
         self._links.insert(index, value)
+        self._set_next__links(index, value)
 
     def validate_chain(self, *args: Any, **kwargs: Any) -> None:
         if not self._links:

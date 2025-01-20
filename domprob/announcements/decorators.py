@@ -77,13 +77,9 @@ class Announcement(Generic[_P, _R]):
         required (`bool`, optional): Indicates whether the instrument
             is required during method execution. Defaults to `True`.
 
-    Attributes:
-        VALIDATORS (tuple[ABCAnnoValidator]): A collection of validator classes
-            used to validate the instrument and method metadata at runtime.
-
     Examples:
         >>> class Foo:
-        ...     @announcements(BaseInstrument)  # Defaults to required=True
+        ...     @announcement(BaseInstrument)  # Defaults to required=True
         ...     def bar(self, instrument: BaseInstrument) -> None:
         ...         print(f\"Executing with {instrument!r}\")
         ...
@@ -92,6 +88,7 @@ class Announcement(Generic[_P, _R]):
         Executing with BaseInstrument()
 
         >>> from abc import ABC, abstractmethod
+        >>> from typing import Any
         >>> import logging
         >>>
         >>> class AbstractStdOutInstrument(ABC, BaseInstrument):
@@ -110,8 +107,8 @@ class Announcement(Generic[_P, _R]):
         ...         logger.info(f"Observing '{cls!r}' with '{self!r}'\")
         ...
         >>> class Foo:
-        ...     @announcements(PrintInstrument)
-        ...     @announcements(LogInstrument)
+        ...     @announcement(PrintInstrument)
+        ...     @announcement(LogInstrument)
         ...     def bar(self, instrument: AbstractStdOutInstrument) -> None:
         ...         instrument.stdout(self.__class__.__name__)
         ...
@@ -120,7 +117,9 @@ class Announcement(Generic[_P, _R]):
         Stdout with 'PrintInstrument()' from class 'Foo'
     """
 
-    def __init__(self, instrument: _InstruCls, required: bool = True) -> None:
+    def __init__(
+        self, instrument: _InstruCls, required: bool = True, /
+    ) -> None:
         self.instrument = instrument
         self.required = required
 
