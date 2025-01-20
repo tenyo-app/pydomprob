@@ -1,31 +1,27 @@
 from abc import ABC, abstractmethod
-from typing import TypeAlias, Optional
+from typing import Any, Optional, TypeAlias
 
 from domprob.announcements.exceptions import AnnouncementException
-from domprob.announcements.method import BoundAnnouncementMethod
 
-_Validator: TypeAlias = "BaseAnnouncementValidator"
+_ChainLink: TypeAlias = "BaseValidator"
 
 
 class ValidatorException(AnnouncementException):
     """Base exception for validator errors."""
 
 
-class BaseAnnouncementValidator(ABC):
-
-    next_: Optional[_Validator] = None
-
-    def __init__(self, next_validator: Optional[_Validator] = None) -> None:
-        self.next_ = next_validator
+class BaseValidator(ABC):
+    def __init__(self, next_: Optional[_ChainLink] = None) -> None:
+        self.next_ = next_
 
     @abstractmethod
-    def validate(self, meth: BoundAnnouncementMethod) -> None:
+    def validate(self, meth: Any) -> None:
         if self.next_:
             return self.next_.validate(meth)
         return None
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(next_validator={self.next_})"
+        return f"{self.__class__.__name__}(next_={self.next_!r})"
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}"

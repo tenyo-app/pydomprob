@@ -1,7 +1,7 @@
 from collections.abc import Callable, Generator
 from typing import Any
 
-from domprob.announcements.metadata import AnnoMetadata
+from domprob.announcements.metadata import AnnouncementMetadata
 from domprob.instrument import BaseInstrument
 
 # Typing helpers
@@ -24,14 +24,14 @@ class Instruments:
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> metadata = AnnoMetadata(Foo.bar)
+        >>> metadata = AnnouncementMetadata(Foo.bar)
         >>> # Abstract metadata instrument access
         >>> instruments = Instruments(metadata)
         >>> instruments
         Instruments(metadata=AnnoMetadata(Foo.bar))
     """
 
-    def __init__(self, metadata: AnnoMetadata) -> None:
+    def __init__(self, metadata: AnnouncementMetadata) -> None:
         self._metadata = metadata
 
     def __iter__(self) -> TInstrumentClsGen:
@@ -82,7 +82,7 @@ class Instruments:
             >>> instruments
             Instruments(metadata=AnnoMetadata(Foo.bar))
         """
-        return cls(AnnoMetadata(method))
+        return cls(AnnouncementMetadata(method))
 
     @property
     def non_req_instruments(self) -> TInstrumentClsGen:

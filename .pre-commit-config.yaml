@@ -11,6 +11,13 @@ repos:
       - id: check-yaml
       - id: check-toml
 
+  # Import Sorting with Isort
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: 'v5.10.1'
+    hooks:
+      - id: isort
+        language_version: python3.12
+
   # Code Formatting with Black
   - repo: https://github.com/psf/black
     rev: '24.10.0'
@@ -25,16 +32,10 @@ repos:
     hooks:
       - id: mypy
         files: \.py$
-        args: [ "--config-file", "mypy.ini"]
+        exclude: test
+        args: [ ]
         additional_dependencies: [ ]
         # Add typed dependencies here for better type inference, e.g., "tokenize-rt==3.2.0"
-
-  # Import Sorting with Isort
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: 'v5.10.1'
-    hooks:
-      - id: isort
-        language_version: python3.12
 
   # Security Scanning with Bandit
   - repo: https://github.com/PyCQA/bandit
@@ -65,15 +66,3 @@ repos:
     hooks:
       - id: pylint
         exclude: test|docs
-
-
-  # CI Configuration Validation for CircleCI
-  - repo: local
-    hooks:
-      - id: check-config-circleci
-        name: validate circleci config
-        entry: circleci config validate
-        language: python
-        additional_dependencies:
-          - circleci
-        files: ^.circleci/config.yml$

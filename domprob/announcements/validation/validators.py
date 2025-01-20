@@ -3,7 +3,9 @@ from typing import Any, Callable
 from domprob.announcements.instruments import Instruments
 from domprob.announcements.method import BoundAnnouncementMethod
 from domprob.announcements.validation.base_validator import (
-    BaseAnnouncementValidator, ValidatorException)
+    BaseValidator,
+    ValidatorException,
+)
 
 
 class MissingInstrumentException(ValidatorException):
@@ -19,7 +21,7 @@ class MissingInstrumentException(ValidatorException):
 
 
 # pylint: disable=too-few-public-methods
-class InstrumentParamExistsValidator(BaseAnnouncementValidator):
+class InstrumentParamExistsValidator(BaseValidator):
     def validate(self, meth: BoundAnnouncementMethod) -> None:
         if meth.instrument is None:
             raise MissingInstrumentException(meth.method)
@@ -32,7 +34,7 @@ class InstrumentTypeException(ValidatorException):
         self,
         method: Callable[..., Any],
         instrument: Any,
-        *supported_instruments: Instruments,
+        supported_instruments: Instruments,
     ) -> None:
         self.method = method
         self.instrument = instrument
@@ -41,17 +43,16 @@ class InstrumentTypeException(ValidatorException):
 
     @property
     def msg(self) -> str:
-        instruments_str = ", ".join(
-            i.__class__.__name__ for i in self.supported_instruments
-        )
+        instrument_names = (i.__name__ for i in self.supported_instruments)
         return (
-            f"Function '{self.method.__name__}()' expects 'instrument' to be "
-            f"one of: {instruments_str}, but got '{self.instrument!r}'"
+            f"Method '{self.method.__name__}()' expects 'instrument' to be "
+            f"one of: {', '.join(instrument_names)}, but got "
+            f"'{self.instrument!r}'"
         )
 
 
 # pylint: disable=too-few-public-methods
-class InstrumentTypeValidator(BaseAnnouncementValidator):
+class InstrumentTypeValidator(BaseValidator):
     def validate(self, meth: BoundAnnouncementMethod) -> None:
         """Validates the method by checking the type of the
         `instrument` parameter.

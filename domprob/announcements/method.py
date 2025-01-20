@@ -1,17 +1,16 @@
 import inspect
 from collections.abc import Callable
-from typing import Generic, ParamSpec, TypeAlias, TypeVar
+from typing import Any, Generic, ParamSpec, TypeAlias, TypeVar
 
 from domprob.announcements.exceptions import AnnouncementException
 from domprob.announcements.instruments import Instruments
-from domprob.instrument import BaseInstrument
 
 _PMeth = ParamSpec("_PMeth")
 _RMeth = TypeVar("_RMeth")
 _WrappedMeth: TypeAlias = Callable[_PMeth, _RMeth]
 
 
-class AnnoMethod:
+class AnnouncementMethod:
     """Represents a decorated method with associated metadata.
 
     This class acts as a wrapper and provides an interface to interact
@@ -31,7 +30,7 @@ class AnnoMethod:
         ...         pass
         ...
         >>> # Create an AnnoMethod instance
-        >>> bar_method = AnnoMethod(Foo.bar)
+        >>> bar_method = AnnouncementMethod(Foo.bar)
         >>>
         >>> bar_method
         AnnoMethod(method=<function Foo.bar at ...>)
@@ -56,7 +55,7 @@ class AnnoMethod:
             ...         pass
             ...
             >>> # Create an AnnoMethod instance
-            >>> bar_method = AnnoMethod(Foo.bar)
+            >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> bar_method.method
             <function Foo.bar at ...>
@@ -81,7 +80,7 @@ class AnnoMethod:
             ...         pass
             ...
             >>> # Create an AnnoMethod instance
-            >>> bar_method = AnnoMethod(Foo.bar)
+            >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> bar_method.instruments
             Instruments(metadata=AnnoMetadata(method=Foo.bar))
@@ -105,7 +104,7 @@ class AnnoMethod:
             ...         pass
             ...
             >>> # Create an AnnoMethod instance
-            >>> bar_method = AnnoMethod(Foo.bar)
+            >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> bar_method.signature
             <Signature (self, instrument)>
@@ -136,7 +135,7 @@ class AnnoMethod:
             ...         pass
             ...
             >>> # Create an AnnoMethod instance
-            >>> bar_method = AnnoMethod(Foo.bar)
+            >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> # Binds method with instrument instance
             >>> bound_method = bar_method.bind(BaseInstrument())
@@ -160,7 +159,7 @@ class AnnoMethod:
             ...         pass
             ...
             >>> # Create an AnnoMethod instance
-            >>> bar_method = AnnoMethod(Foo.bar)
+            >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> repr(bar_method)
             "AnnoMethod(method=<function Foo.bar at ...>)"
@@ -180,7 +179,7 @@ class PartialBindException(AnnouncementException):
     """
 
     @classmethod
-    def general(cls, meth: AnnoMethod, e: Exception) -> _BindExc:
+    def general(cls, meth: AnnouncementMethod, e: Exception) -> _BindExc:
         """Creates a `PartialBindException` for a general binding
         error.
 
@@ -214,7 +213,7 @@ class PartialBindException(AnnouncementException):
         )
 
     @classmethod
-    def missing_param(cls, param: str, meth: AnnoMethod) -> _BindExc:
+    def missing_param(cls, param: str, meth: AnnouncementMethod) -> _BindExc:
         """Creates a `PartialBindException` for a missing parameter.
 
         Args:
@@ -253,7 +252,9 @@ _RBoundMeth = TypeVar("_RBoundMeth")
 _WrappedBoundMeth: TypeAlias = Callable[_PBoundMeth, _RBoundMeth]
 
 
-class BoundAnnouncementMethod(Generic[_PBoundMeth, _RBoundMeth], AnnoMethod):
+class BoundAnnouncementMethod(
+    Generic[_PBoundMeth, _RBoundMeth], AnnouncementMethod
+):
     """Represents a partially bound method with associated metadata.
 
     This class is used to wrap a method that has been partially bound
@@ -294,7 +295,7 @@ class BoundAnnouncementMethod(Generic[_PBoundMeth, _RBoundMeth], AnnoMethod):
         self.params = self.bind_partial(*args, **kwargs)
 
     @property
-    def instrument(self) -> BaseInstrument:
+    def instrument(self) -> Any | None:
         """Returns the runtime `instrument` instance argument bound
         to the method.
 
@@ -315,11 +316,7 @@ class BoundAnnouncementMethod(Generic[_PBoundMeth, _RBoundMeth], AnnoMethod):
             >>> bound_method.instrument
             BaseInstrument()
         """
-        instr = self.params.arguments.get("instrument")
-        if not isinstance(instr, BaseInstrument):
-            msg = f"Instrument argument '{instr}' is not an instrument"
-            raise PartialBindException(msg)
-        return instr
+        return self.params.arguments.get("instrument")
 
     def bind_partial(
         self, *args: _PBoundMeth.args, **kwargs: _PBoundMeth.kwargs
@@ -359,14 +356,9 @@ class BoundAnnouncementMethod(Generic[_PBoundMeth, _RBoundMeth], AnnoMethod):
         """
         try:
             # Binds provided arguments to the method's signature.
-            bound_params = self.signature.bind_partial(*args, **kwargs)
+            return self.signature.bind_partial(*args, **kwargs)
         except TypeError as e:
             raise PartialBindException.general(self, e)
-        # Ensure the required 'instrument' parameter is included in the
-        # arguments.
-        if "instrument" not in bound_params.args:
-            raise PartialBindException.missing_param("instrument", self)
-        return bound_params
 
     def execute(self) -> _RBoundMeth:
         """Executes the bound method.

@@ -1,15 +1,13 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator, Iterable, MutableSequence
 from operator import index as to_index
-from typing import (Any, Generic, SupportsIndex, TypeAlias, TypeVar,
-                    overload)
+from typing import Any, Generic, SupportsIndex, TypeAlias, TypeVar, overload
 
 from domprob.announcements.exceptions import AnnouncementException
-from domprob.announcements.validation.base_validator import \
-    BaseAnnouncementValidator
+from domprob.announcements.validation.base_validator import BaseValidator
 
 # Ensures base must be a concrete class implementing the protocol
-_ChainLink = TypeVar("_ChainLink", bound=BaseAnnouncementValidator)
+_ChainLink = TypeVar("_ChainLink", bound=BaseValidator)
 
 # Type alias for the chain
 _Chain: TypeAlias = "ValidationChain"
@@ -56,7 +54,7 @@ class LinkExistsException(ValidationChainException):
 
     @property
     def msg(self) -> str:
-        return f"Link '{self.link!r}' already exists in chain '{self.chain}'"
+        return f"Link '{self.link!r}' already exists in chain '{self.chain!r}'"
 
 
 # pylint: disable=too-few-public-methods
@@ -90,8 +88,8 @@ class ABCLinkValidatorContext(ABC):
         self, chain: _Chain, *validators: type[ABCLinkValidator]
     ) -> None:
         self.chain = chain
-        self.validators = list(validators)
-        self.add_validators(*self.validators)
+        self.validators: list[type[ABCLinkValidator]] = []
+        self.add_validators(*validators)
 
     @abstractmethod
     def add_validators(self, *validators: type[ABCLinkValidator]) -> None:
@@ -107,10 +105,10 @@ class ABCLinkValidatorContext(ABC):
 
 class LinkValidatorContext(ABCLinkValidatorContext):
 
-    DEFAULT_VALIDATORS: list[type[ABCLinkValidator]] = [
+    DEFAULT_VALIDATORS: tuple[type[ABCLinkValidator], ...] = (
         LinkTypeValidator,
         UniqueLinkValidator,
-    ]
+    )
 
     def __init__(
         self, chain: _Chain, *validators: type[ABCLinkValidator]
@@ -248,7 +246,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
     def _set_next__links(self, index: int, value: _ChainLink) -> None:
         if index > 0:
             self._links[index - 1].next_ = value
-        if index < len(self._links):
+        if index + 1 < len(self._links):
             value.next_ = self._links[index]
 
     def append(self, value: _ChainLink) -> None:
@@ -260,8 +258,8 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         self._links.clear()
 
     def extend(self, values: Iterable[_ChainLink]) -> None:
-        self._link_validator.validate(*values)
         new_links = list(values)
+        self._link_validator.validate(*new_links)
         if not new_links:
             return
         if self._links:

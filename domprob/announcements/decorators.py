@@ -44,7 +44,10 @@ import functools
 from collections.abc import Callable
 from typing import Generic, ParamSpec, TypeAlias, TypeVar
 
-from domprob.announcements.method import AnnoMethod
+from domprob.announcements.method import AnnouncementMethod
+from domprob.announcements.validation.orchestrator import (
+    AnnouncementValidationOrchestrator,
+)
 from domprob.instrument import BaseInstrument
 
 _InstruCls: TypeAlias = type[BaseInstrument]
@@ -147,20 +150,20 @@ class Announcement(Generic[_P, _R]):
             >>> foo.bar(instrument=BaseInstrument())
             Instrument: BaseInstrument()
         """
-        meth = AnnoMethod(method)
+        meth = AnnouncementMethod(method)
         meth.instruments.record(self.instrument, self.required)
 
         @functools.wraps(method)
         def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
             bound_meth = meth.bind(*args, **kwargs)
-            self.validation_manager(bound_meth).validate()
+            self.validation_manager().validate(bound_meth)
             return bound_meth.execute()
 
         return wrapper
 
     @property
     def validation_manager(self):
-        return AnnouncemenValidatorManager
+        return AnnouncementValidationOrchestrator
 
     def __repr__(self) -> str:
         """Returns a string representation of the `Announcement`

@@ -1,27 +1,24 @@
 from domprob.announcements.method import BoundAnnouncementMethod
-from domprob.announcements.validation.base_validator import \
-    BaseAnnouncementValidator
+from domprob.announcements.validation.base_validator import BaseValidator
 from domprob.announcements.validation.chain import ValidationChain
 from domprob.announcements.validation.validators import (
-    InstrumentParamExistsValidator, InstrumentTypeValidator)
+    InstrumentParamExistsValidator,
+    InstrumentTypeValidator,
+)
 
 
 class AnnouncementValidationOrchestrator:
 
-    DEFAULT_VALIDATORS: tuple[type[BaseAnnouncementValidator], ...] = (
+    DEFAULT_VALIDATORS: tuple[type[BaseValidator], ...] = (
         InstrumentParamExistsValidator,
         InstrumentTypeValidator,
     )
 
-    def __init__(
-        self,
-        chain: ValidationChain | None = None,
-        *validators: type[BaseAnnouncementValidator],
-    ):
-        self._chain = chain or ValidationChain(BaseAnnouncementValidator)
-        self.register(*self.DEFAULT_VALIDATORS, *validators)
+    def __init__(self, chain: ValidationChain | None = None):
+        self._chain = chain or ValidationChain(BaseValidator)
+        self.register(*self.DEFAULT_VALIDATORS)
 
-    def register(self, *validators: type[BaseAnnouncementValidator]) -> None:
+    def register(self, *validators: type[BaseValidator]) -> None:
         self._chain.extend((v() for v in validators))
 
     def validate(self, method: BoundAnnouncementMethod) -> None:

@@ -37,7 +37,7 @@ Example
 ...         pass
 ...
 >>> # Create metadata for the method
->>> meta = metadata.AnnoMetadata(Foo.bar)
+>>> meta = metadata.AnnouncementMetadata(Foo.bar)
 >>> meta.add(BaseInstrument, req=True)
 >>> list(meta)
 [AnnoMetadataItem(instrument_cls=BaseInstrument, required=True)]
@@ -53,7 +53,7 @@ _InstruCls: TypeAlias = type[BaseInstrument]
 
 
 @dataclass
-class AnnoMetadataItem:
+class AnnouncementMetadataItem:
     """Represents metadata entry for an announcement's method. Includes
     the instrument class and its requirement status.
 
@@ -65,7 +65,7 @@ class AnnoMetadataItem:
             Defaults to `True` if not provided during instantiation.
 
     Examples:
-        >>> item = AnnoMetadataItem(BaseInstrument, required=False)
+        >>> item = AnnouncementMetadataItem(BaseInstrument, required=False)
         >>> item
         AnnoMetadataItem(instrument_cls=BaseInstrument, required=False)
         >>> item.instrument_cls
@@ -73,7 +73,7 @@ class AnnoMetadataItem:
         >>> item.required
         False
 
-        >>> item = AnnoMetadataItem(BaseInstrument)
+        >>> item = AnnouncementMetadataItem(BaseInstrument)
         >>> item
         AnnoMetadataItem(instrument_cls=BaseInstrument, required=True)
         >>> item.required
@@ -84,7 +84,7 @@ class AnnoMetadataItem:
     required: bool = True
 
 
-class AnnoMetadata:
+class AnnouncementMetadata:
     """Stores and manages metadata for a decorated method.
 
     Args:
@@ -98,7 +98,7 @@ class AnnoMetadata:
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> metadata = AnnoMetadata(Foo.bar)
+        >>> metadata = AnnouncementMetadata(Foo.bar)
         >>> metadata
         AnnoMetadata(method=Foo.bar)
     """
@@ -124,7 +124,7 @@ class AnnoMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnoMetadata(Foo.bar)
+            >>> metadata = AnnouncementMetadata(Foo.bar)
             >>>
             >>> len(metadata)
             0
@@ -132,9 +132,9 @@ class AnnoMetadata:
             >>> len(metadata)
             1
         """
-        return len(self)
+        return len(getattr(self._method, self.METADATA_ATTR, []))
 
-    def __iter__(self) -> Generator[AnnoMetadataItem, None, None]:
+    def __iter__(self) -> Generator[AnnouncementMetadataItem, None, None]:
         """Iterates over all metadata entries recorded for the method.
 
         Yields:
@@ -148,7 +148,7 @@ class AnnoMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnoMetadata(Foo.bar)
+            >>> metadata = AnnouncementMetadata(Foo.bar)
             >>> # Add entries to the metadata
             >>> metadata.add(BaseInstrument, True)
             >>> metadata.add(BaseInstrument, False)
@@ -161,7 +161,9 @@ class AnnoMetadata:
         """
         yield from tuple(getattr(self._method, self.METADATA_ATTR, []))
 
-    def add(self, instrument: _InstruCls, required: bool) -> "AnnoMetadata":
+    def add(
+        self, instrument: _InstruCls, required: bool
+    ) -> "AnnouncementMetadata":
         """Adds an announcements metadata entry to the method.
 
         Args:
@@ -170,7 +172,7 @@ class AnnoMetadata:
             required (`bool`): Whether the instrument is required.
 
         Returns:
-            AnnoMetadata: The updated metadata instance.
+            AnnouncementMetadata: The updated metadata instance.
 
         Examples:
             >>> # Define a class with a method to decorate
@@ -179,7 +181,7 @@ class AnnoMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnoMetadata(Foo.bar)
+            >>> metadata = AnnouncementMetadata(Foo.bar)
             >>> len(metadata)
             0
             >>> # Add an entry to the method's metadata
@@ -187,7 +189,7 @@ class AnnoMetadata:
             >>> len(metadata)
             1
         """
-        item = AnnoMetadataItem(instrument, required=required)
+        item = AnnouncementMetadataItem(instrument, required=required)
         meth_metadata = list(self)
         meth_metadata.append(item)
         setattr(self._method, self.METADATA_ATTR, meth_metadata)
@@ -206,7 +208,7 @@ class AnnoMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnoMetadata(Foo.bar)
+            >>> metadata = AnnouncementMetadata(Foo.bar)
             >>> repr(metadata)
             "AnnoMetadata(metadata=Foo.bar)"
         """
