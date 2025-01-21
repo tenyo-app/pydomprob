@@ -45,15 +45,11 @@ Example
 
 from collections.abc import Callable, Generator
 from dataclasses import dataclass
-from typing import Any, TypeAlias
-
-from domprob.instrument import BaseInstrument
-
-_InstruCls: TypeAlias = type[BaseInstrument]
+from typing import Any
 
 
 @dataclass
-class AnnouncementMetadataItem:
+class AnnouncementMetadataEntry:
     """Represents metadata entry for an announcement's method. Includes
     the instrument class and its requirement status.
 
@@ -65,7 +61,7 @@ class AnnouncementMetadataItem:
             Defaults to `True` if not provided during instantiation.
 
     Examples:
-        >>> item = AnnouncementMetadataItem(BaseInstrument, required=False)
+        >>> item = AnnouncementMetadataEntry(BaseInstrument, required=False)
         >>> item
         AnnoMetadataItem(instrument_cls=BaseInstrument, required=False)
         >>> item.instrument_cls
@@ -73,14 +69,14 @@ class AnnouncementMetadataItem:
         >>> item.required
         False
 
-        >>> item = AnnouncementMetadataItem(BaseInstrument)
+        >>> item = AnnouncementMetadataEntry(BaseInstrument)
         >>> item
         AnnoMetadataItem(instrument_cls=BaseInstrument, required=True)
         >>> item.required
         True
     """
 
-    instrument_cls: _InstruCls
+    instrument_cls: type[Any]
     required: bool = True
 
 
@@ -134,7 +130,7 @@ class AnnouncementMetadata:
         """
         return len(getattr(self._method, self.METADATA_ATTR, []))
 
-    def __iter__(self) -> Generator[AnnouncementMetadataItem, None, None]:
+    def __iter__(self) -> Generator[AnnouncementMetadataEntry, None, None]:
         """Iterates over all metadata entries recorded for the method.
 
         Yields:
@@ -161,9 +157,7 @@ class AnnouncementMetadata:
         """
         yield from tuple(getattr(self._method, self.METADATA_ATTR, []))
 
-    def add(
-        self, instrument: _InstruCls, required: bool
-    ) -> "AnnouncementMetadata":
+    def add(self, instrument: Any, required: bool) -> "AnnouncementMetadata":
         """Adds an announcements metadata entry to the method.
 
         Args:
@@ -189,7 +183,7 @@ class AnnouncementMetadata:
             >>> len(metadata)
             1
         """
-        item = AnnouncementMetadataItem(instrument, required=required)
+        item = AnnouncementMetadataEntry(instrument, required=required)
         meth_metadata = list(self)
         meth_metadata.append(item)
         setattr(self._method, self.METADATA_ATTR, meth_metadata)
@@ -212,4 +206,4 @@ class AnnouncementMetadata:
             >>> repr(metadata)
             "AnnoMetadata(metadata=Foo.bar)"
         """
-        return f"{self.__class__.__name__}(metadata={self._method!r})"
+        return f"{self.__class__.__name__}(method={self._method!r})"
