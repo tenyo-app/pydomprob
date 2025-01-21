@@ -24,26 +24,29 @@ class AnotherInstrument(BaseInstrument):
 def mock_instrument_method():
     """Fixture for creating a mock BoundAnnouncementMethod."""
 
-    def method(instrument: MockInstrument):
-        pass
+    class Cls:
+        def method(self, instrument: MockInstrument):
+            pass
 
-    return BoundAnnouncementMethod(method, MockInstrument())
+    return BoundAnnouncementMethod(Cls().method, MockInstrument())
 
 
 @pytest.fixture
 def mock_no_instrument_method():
-    def method(instrument: MockInstrument):
-        pass
+    class Cls:
+        def method(self, instrument: MockInstrument):
+            pass
 
-    return BoundAnnouncementMethod(method)
+    return BoundAnnouncementMethod(Cls().method)
 
 
 @pytest.fixture
 def mock_none_instrument_method():
-    def method(instrument: MockInstrument):
-        pass
+    class Cls:
+        def method(self, instrument: MockInstrument):
+            pass
 
-    return BoundAnnouncementMethod(method, None)
+    return BoundAnnouncementMethod(Cls().method, None)
 
 
 class TestInstrumentParamExistsValidator:
@@ -62,8 +65,7 @@ class TestInstrumentParamExistsValidator:
         # Assert
         assert exc_info.value.method == mock_no_instrument_method.method
         assert str(exc_info.value) == (
-            f"'instrument' parameter missing in method "
-            f"'{mock_no_instrument_method.method.__name__}()'"
+            f"'instrument' param missing in 'Cls.method(...)'"
         )
 
     def test_passes_validation_when_instrument_is_present(
@@ -82,10 +84,7 @@ class TestInstrumentParamExistsValidator:
         # Act
         exc = MissingInstrumentException(mock_no_instrument_method.method)
         # Assert
-        assert str(exc) == (
-            f"'instrument' parameter missing in method "
-            f"'{mock_no_instrument_method.method.__name__}()'"
-        )
+        assert str(exc) == (f"'instrument' param missing in 'Cls.method(...)'")
 
 
 class TestInstrumentTypeValidator:
@@ -123,9 +122,9 @@ class TestInstrumentTypeValidator:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Method '{mock_instrument_method.method.__name__}()' "
-            f"expects 'instrument' to be one of: AnotherInstrument, but got"
-            f" '{mock_instrument_method.instrument!r}'"
+            == f"Method 'Cls.method(...)' expects 'instrument' param to be "
+            f"one of: [AnotherInstrument], but got "
+            f"'{mock_instrument_method.instrument!r}'"
         )
 
     def test_validate_raises_for_empty_supported_instruments(
@@ -138,9 +137,8 @@ class TestInstrumentTypeValidator:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Method '{mock_instrument_method.method.__name__}()' "
-            f"expects 'instrument' to be one of: , but got "
-            f"'{mock_instrument_method.instrument!r}'"
+            == f"Method 'Cls.method(...)' expects 'instrument' param to be "
+            f"one of: [], but got '{mock_instrument_method.instrument!r}'"
         )
 
     def test_validate_raises_for_none_instrument(
@@ -159,9 +157,8 @@ class TestInstrumentTypeValidator:
         assert exc.instrument is None
         assert (
             str(exc)
-            == f"Method '{mock_none_instrument_method.method.__name__}()' "
-            f"expects 'instrument' to be one of: AnotherInstrument, but"
-            f" got 'None'"
+            == f"Method 'Cls.method(...)' expects 'instrument' param to be "
+            f"one of: [AnotherInstrument], but got 'None'"
         )
 
     def test_validate_with_multiple_valid_instruments(

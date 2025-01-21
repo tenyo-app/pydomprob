@@ -55,6 +55,9 @@ class Instruments:
         """
         yield from (m.instrument_cls for m in self._metadata)
 
+    def __len__(self) -> int:
+        return len(self._metadata)
+
     @classmethod
     def from_method(cls, method: Callable[..., Any]) -> "Instruments":
         """Creates an Instruments instance from a method.

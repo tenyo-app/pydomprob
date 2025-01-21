@@ -16,8 +16,8 @@ class MissingInstrumentException(ValidatorException):
 
     @property
     def msg(self) -> str:
-        m_name = self.method.__name__
-        return f"'instrument' parameter missing in method '{m_name}()'"
+        m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
+        return f"'instrument' param missing in '{m_name}'"
 
 
 # pylint: disable=too-few-public-methods
@@ -44,10 +44,10 @@ class InstrumentTypeException(ValidatorException):
     @property
     def msg(self) -> str:
         instrument_names = (i.__name__ for i in self.supported_instruments)
+        m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
         return (
-            f"Method '{self.method.__name__}()' expects 'instrument' to be "
-            f"one of: {', '.join(instrument_names)}, but got "
-            f"'{self.instrument!r}'"
+            f"Method '{m_name}' expects 'instrument' param to be one of: "
+            f"[{', '.join(instrument_names)}], but got '{self.instrument!r}'"
         )
 
 
@@ -69,4 +69,35 @@ class InstrumentTypeValidator(BaseValidator):
             raise InstrumentTypeException(
                 meth.method, meth.instrument, meth.instruments
             )
+        return super().validate(meth)
+
+
+class NoSupportedInstrumentsException(ValidatorException):
+
+    def __init__(self, method: Callable[..., Any]) -> None:
+        self.method = method
+        super().__init__(self.msg)
+
+    @property
+    def msg(self) -> str:
+        m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
+        return f"'{m_name}' has no supported instrument types defined"
+
+
+# pylint: disable=too-few-public-methods
+class SupportedInstrumentsExistValidator(BaseValidator):
+    def validate(self, meth: BoundAnnouncementMethod) -> None:
+        """Validates the method by checking the type of the
+        `instrument` parameter.
+
+        Args:
+            meth (`InstrumentBoundAnnoMethod`): The method with
+                metadata to validate.
+
+        Raises:
+            AnnoValidationException: If the `instrument` parameter is
+                not an instance of any valid instrument classes.
+        """
+        if not meth.instruments:
+            raise NoSupportedInstrumentsException(meth.method)
         return super().validate(meth)

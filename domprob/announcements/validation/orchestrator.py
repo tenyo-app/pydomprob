@@ -4,12 +4,14 @@ from domprob.announcements.validation.chain import ValidationChain
 from domprob.announcements.validation.validators import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
+    SupportedInstrumentsExistValidator,
 )
 
 
 class AnnouncementValidationOrchestrator:
 
     DEFAULT_VALIDATORS: tuple[type[BaseValidator], ...] = (
+        SupportedInstrumentsExistValidator,
         InstrumentParamExistsValidator,
         InstrumentTypeValidator,
     )

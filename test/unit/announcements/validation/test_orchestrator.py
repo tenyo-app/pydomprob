@@ -10,6 +10,7 @@ from domprob.announcements.validation.orchestrator import (
 from domprob.announcements.validation.validators import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
+    SupportedInstrumentsExistValidator,
 )
 
 
@@ -23,9 +24,10 @@ class TestAnnouncementValidationOrchestrator:
         # Act
         # Assert
         chain = orchestrator._chain
-        assert len(chain._links) == 2
-        assert isinstance(chain._links[0], InstrumentParamExistsValidator)
-        assert isinstance(chain._links[1], InstrumentTypeValidator)
+        assert len(chain._links) == 3
+        assert isinstance(chain._links[0], SupportedInstrumentsExistValidator)
+        assert isinstance(chain._links[1], InstrumentParamExistsValidator)
+        assert isinstance(chain._links[2], InstrumentTypeValidator)
 
     def test_custom_initialisation(self):
         # Arrange
@@ -44,8 +46,8 @@ class TestAnnouncementValidationOrchestrator:
         # Act
         orchestrator.register(MockValidator)
         # Assert
-        assert len(orchestrator._chain._links) == 3
-        assert isinstance(orchestrator._chain._links[2], MockValidator)
+        assert len(orchestrator._chain._links) == 4
+        assert isinstance(orchestrator._chain._links[3], MockValidator)
 
     @patch("domprob.announcements.method.BoundAnnouncementMethod")
     def test_validate_chain(self, mock_method):
