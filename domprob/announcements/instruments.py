@@ -2,10 +2,9 @@ from collections.abc import Callable, Generator
 from typing import Any
 
 from domprob.announcements.metadata import AnnouncementMetadata
-from domprob.instrument import BaseInstrument
 
 # Typing helpers
-TInstruCls = type[BaseInstrument]
+TInstruCls = type[Any]
 TInstrumentClsGen = Generator[TInstruCls, None, None]
 
 
@@ -231,7 +230,8 @@ class Instruments:
             yield from self
         elif not required:
             yield from self.non_req_instruments
-        yield from self.req_instruments
+        else:
+            yield from self.req_instruments
 
     def __repr__(self) -> str:
         """Returns a string representation of the Instruments instance.

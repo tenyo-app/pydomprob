@@ -155,14 +155,14 @@ class Announcement(Generic[_P, _R]):
         @functools.wraps(method)
         def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
             bound_meth = meth.bind(*args, **kwargs)
-            self.validation_manager().validate(bound_meth)
+            self.validater.validate(bound_meth)
             return bound_meth.execute()
 
         return wrapper
 
     @property
-    def validation_manager(self):
-        return AnnouncementValidationOrchestrator
+    def validater(self):
+        return AnnouncementValidationOrchestrator()
 
     def __repr__(self) -> str:
         """Returns a string representation of the `Announcement`
