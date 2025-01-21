@@ -57,6 +57,11 @@ class Instruments:
     def __len__(self) -> int:
         return len(self._metadata)
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Instruments):
+            return False
+        return self._metadata == other._metadata
+
     @classmethod
     def from_method(cls, method: Callable[..., Any]) -> "Instruments":
         """Creates an Instruments instance from a method.

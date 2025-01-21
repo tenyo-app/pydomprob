@@ -157,6 +157,11 @@ class AnnouncementMetadata:
         """
         yield from tuple(getattr(self._method, self.METADATA_ATTR, []))
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, AnnouncementMetadata):
+            return False
+        return self._method == other._method
+
     def add(self, instrument: Any, required: bool) -> "AnnouncementMetadata":
         """Adds an announcements metadata entry to the method.
 
