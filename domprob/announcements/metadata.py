@@ -160,7 +160,7 @@ class AnnouncementMetadata:
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, AnnouncementMetadata):
             return False
-        return self._method == other._method
+        return (self._method == other._method) and (list(self) == list(other))
 
     def add(self, instrument: Any, required: bool) -> "AnnouncementMetadata":
         """Adds an announcements metadata entry to the method.

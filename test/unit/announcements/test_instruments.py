@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 
 from domprob.announcements.instruments import Instruments
@@ -31,6 +33,16 @@ def mock_instruments(mock_metadata):
     return Instruments(mock_metadata)
 
 
+@pytest.fixture
+def mock_another_instruments():
+    class AnotherCls:
+        def method(self):
+            pass
+
+    metadata = AnnouncementMetadata(AnotherCls.method)
+    return Instruments(metadata)
+
+
 class TestInstruments:
     def test_instruments_initialisation(self, mock_metadata):
         # Arrange
@@ -50,6 +62,27 @@ class TestInstruments:
         assert len(result) == 2
         assert result[0] == MockInstrument
         assert result[1] == AnotherMockInstrument
+
+    def test_metadata_eq(self, mock_instruments):
+        # Arrange
+        instruments1 = copy.deepcopy(mock_instruments)
+        instruments2 = copy.deepcopy(mock_instruments)
+        # Act
+        # Assert
+        assert instruments1 == instruments2
+
+    def test_metadata_not_eq(self, mock_instruments, mock_another_instruments):
+        # Arrange
+        mock_instruments.record(MockInstrument, required=False)
+        # Act
+        # Assert
+        assert mock_instruments != mock_another_instruments
+
+    def test_metadata_not_eq_wrong_type(self, mock_instruments):
+        # Arrange
+        # Act
+        # Assert
+        assert mock_instruments != "Not equal"
 
     def test_instruments_record(self, mock_instruments):
         # Arrange

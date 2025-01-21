@@ -1,3 +1,4 @@
+import copy
 import random
 
 import pytest
@@ -24,6 +25,15 @@ def mock_method():
 @pytest.fixture
 def mock_metadata(mock_method):
     return AnnouncementMetadata(mock_method)
+
+
+@pytest.fixture
+def another_mock_metadata(mock_method):
+    class AnotherCls:
+        def method(self):
+            pass
+
+    return AnnouncementMetadata(AnotherCls.method)
 
 
 class TestAnnouncementMetadataEntry:
@@ -123,6 +133,27 @@ class TestAnnouncementMetadata:
         metadata_len = len(mock_metadata)
         # Assert
         assert metadata_len == num_entries
+
+    def test_metadata_eq(self, mock_metadata, another_mock_metadata):
+        # Arrange
+        metadata1 = copy.deepcopy(mock_metadata)
+        metadata2 = copy.deepcopy(mock_metadata)
+        # Act
+        # Assert
+        assert metadata1 == metadata2
+
+    def test_metadata_not_eq(self, mock_metadata, another_mock_metadata):
+        # Arrange
+        mock_metadata.add(MockInstrument, required=False)
+        # Act
+        # Assert
+        assert mock_metadata != another_mock_metadata
+
+    def test_metadata_not_eq_wrong_type(self, mock_metadata):
+        # Arrange
+        # Act
+        # Assert
+        assert mock_metadata != "Not equal"
 
     def test_adding_duplicate_metadata(self, mock_metadata):
         # Arrange
