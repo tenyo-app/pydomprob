@@ -7,8 +7,66 @@ on:
   - push
 
 jobs:
+  pylint:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v5.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Pylint (python: ${{ matrix.python-version }})"
+        run: make pylint
+
+  black:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v5.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Black (python: ${{ matrix.python-version }})"
+        run: make black-check
+
+  mypy:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v5.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Mypy (python: ${{ matrix.python-version }})"
+        run: make mypy
+
   unit-tests:
     runs-on: ubuntu-24.04
+    needs:
+      - pylint
+      - black
+      - mypy
     strategy:
       fail-fast: false
       matrix:
@@ -33,6 +91,10 @@ jobs:
 
   functional-tests:
     runs-on: ubuntu-24.04
+    needs:
+      - pylint
+      - black
+      - mypy
     strategy:
       fail-fast: false
       matrix:
@@ -49,7 +111,7 @@ jobs:
       - name: "Functional test (python: ${{ matrix.python-version }})"
         run: make test-functional
 
-  documentation-tests:
+  doc-tests:
     runs-on: ubuntu-24.04
     needs:
       - unit-tests
@@ -73,7 +135,7 @@ jobs:
   build-docs:
     runs-on: ubuntu-24.04
     needs:
-      - documentation-tests
+      - doc-tests
 
     steps:
       - uses: actions/checkout@v4
@@ -86,10 +148,16 @@ jobs:
       - name: "Build documentation"
         run: make docs
 
-  build_package:
+      - name: Upload docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs/_build/html
+
+  build-package:
     runs-on: ubuntu-24.04
     needs:
-      - documentation-tests
+      - doc-tests
 
     steps:
       - uses: actions/checkout@v4

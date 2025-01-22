@@ -15,4 +15,18 @@ docs:
 	uv run sphinx-build -M html docs/ docs/_build/
 
 autodocs:
-	uv run sphinx-autobuild docs/ docs/_build/ &
+	uv run sphinx-autobuild docs/ docs/_build/
+
+mypy:
+	uv run mypy domprob/
+
+pylint:
+	uv run pylint domprob/
+
+black:
+	uv run black domprob/
+
+black-check:
+	uv run black domprob/ --check
+
+lint: mypy pylint black-check
