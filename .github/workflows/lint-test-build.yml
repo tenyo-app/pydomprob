@@ -73,8 +73,6 @@ jobs:
   build_package:
     runs-on: ubuntu-24.04
     needs:
-      - unit-tests
-      - functional-tests
       - documentation-tests
 
     steps:
