@@ -75,6 +75,7 @@ jobs:
     needs:
       - unit-tests
       - functional-tests
+      - documentation-tests
 
     steps:
       - uses: actions/checkout@v4
