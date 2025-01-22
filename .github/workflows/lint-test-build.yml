@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Unit test (python: ${{ matrix.python-version }})"
-        run: uv run --frozen pytest -s --cov=domprob/ test/unit/ --cov-report=html --cov-report=term
+        run: make test-unit
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -47,7 +47,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Functional test (python: ${{ matrix.python-version }})"
-        run: uv run --frozen pytest -s test/functional
+        run: make test-functional
+
+  documentation-tests:
+    runs-on: ubuntu-24.04
+    needs:
+      - unit-tests
+      - functional-tests
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v5.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Documentation test (python: ${{ matrix.python-version }})"
+        run: make doctest
 
   build_package:
     runs-on: ubuntu-24.04
