@@ -46,8 +46,8 @@ class InstrumentTypeException(ValidatorException):
         instrument_names = (i.__name__ for i in self.supported_instruments)
         m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
         return (
-            f"Method '{m_name}' expects 'instrument' param to be one of: "
-            f"[{', '.join(instrument_names)}], but got '{self.instrument!r}'"
+            f"{m_name} expects 'instrument' param to be one of: "
+            f"[{', '.join(instrument_names)}], but got: {self.instrument!r}"
         )
 
 

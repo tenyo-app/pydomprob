@@ -121,9 +121,9 @@ class TestInstrumentTypeValidator:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Method 'Cls.method(...)' expects 'instrument' param to be "
-            f"one of: [AnotherInstrument], but got "
-            f"'{mock_instrument_method.instrument!r}'"
+            == f"Cls.method(...) expects 'instrument' param to be "
+            f"one of: [AnotherInstrument], but got: "
+            f"{mock_instrument_method.instrument!r}"
         )
 
     def test_validate_raises_for_empty_supported_instruments(
@@ -136,8 +136,8 @@ class TestInstrumentTypeValidator:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Method 'Cls.method(...)' expects 'instrument' param to be "
-            f"one of: [], but got '{mock_instrument_method.instrument!r}'"
+            == f"Cls.method(...) expects 'instrument' param to be "
+            f"one of: [], but got: {mock_instrument_method.instrument!r}"
         )
 
     def test_validate_raises_for_none_instrument(
@@ -155,9 +155,8 @@ class TestInstrumentTypeValidator:
         exc = exc_info.value
         assert exc.instrument is None
         assert (
-            str(exc)
-            == f"Method 'Cls.method(...)' expects 'instrument' param to be "
-            f"one of: [AnotherInstrument], but got 'None'"
+            str(exc) == f"Cls.method(...) expects 'instrument' param to be "
+            f"one of: [AnotherInstrument], but got: None"
         )
 
     def test_validate_with_multiple_valid_instruments(

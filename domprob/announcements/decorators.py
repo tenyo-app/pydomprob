@@ -42,7 +42,7 @@ Executing with BaseInstrument()
 
 import functools
 from collections.abc import Callable
-from typing import Generic, ParamSpec, TypeAlias, TypeVar
+from typing import Any, Generic, ParamSpec, TypeAlias, TypeVar
 
 from domprob.announcements.method import AnnouncementMethod
 from domprob.announcements.validation.orchestrator import (
@@ -50,7 +50,7 @@ from domprob.announcements.validation.orchestrator import (
 )
 from domprob.instrument import BaseInstrument
 
-_InstruCls: TypeAlias = type[BaseInstrument]
+_InstruCls: TypeAlias = type[Any]
 
 # Type variables for InstrumentBoundAnnoMethod
 _P = ParamSpec("_P")
@@ -117,9 +117,7 @@ class Announcement(Generic[_P, _R]):
         Stdout with 'PrintInstrument()' from class 'Foo'
     """
 
-    def __init__(
-        self, instrument: _InstruCls, required: bool = True, /
-    ) -> None:
+    def __init__(self, instrument: _InstruCls, required: bool = True) -> None:
         self.instrument = instrument
         self.required = required
 
