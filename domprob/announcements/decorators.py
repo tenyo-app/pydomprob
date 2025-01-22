@@ -48,7 +48,6 @@ from domprob.announcements.method import AnnouncementMethod
 from domprob.announcements.validation.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
-from domprob.instrument import BaseInstrument
 
 _InstruCls: TypeAlias = type[Any]
 
@@ -58,7 +57,7 @@ _R = TypeVar("_R")
 _Wrapped: TypeAlias = Callable[_P, _R]
 
 
-class Announcement(Generic[_P, _R]):
+class _Announcement(Generic[_P, _R]):
     """Decorator class to add metadata and validate methods.
 
     This class is used to decorate methods and associate metadata,
@@ -117,9 +116,9 @@ class Announcement(Generic[_P, _R]):
         Stdout with 'PrintInstrument()' from class 'Foo'
     """
 
-    def __init__(self, instrument: _InstruCls, required: bool = True) -> None:
+    def __init__(self, instrument: _InstruCls) -> None:
         self.instrument = instrument
-        self.required = required
+        self.required = True
 
     def __call__(self, method: _Wrapped) -> _Wrapped:
         """Wraps a method to associate metadata and enforce runtime
@@ -147,6 +146,9 @@ class Announcement(Generic[_P, _R]):
             >>> foo.bar(instrument=BaseInstrument())
             Instrument: BaseInstrument()
         """
+        # Ensure the metadata is applied to the original method
+        while hasattr(method, "__wrapped__"):
+            method = getattr(method, "__wrapped__")
         meth = AnnouncementMethod(method)
         meth.instruments.record(self.instrument, self.required)
 
@@ -154,7 +156,8 @@ class Announcement(Generic[_P, _R]):
         def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
             bound_meth = meth.bind(*args, **kwargs)
             self.validater.validate(bound_meth)
-            return bound_meth.execute()
+            result = bound_meth.execute()
+            return result
 
         return wrapper
 
@@ -174,7 +177,7 @@ class Announcement(Generic[_P, _R]):
             str: A string representation of the `Announcement` instance.
 
         Examples:
-            >>> ann = Announcement(BaseInstrument, required=True)
+            >>> ann = _Announcement(BaseInstrument, required=True)
             >>> repr(ann)
             "Announcement(instrument=BaseInstrument, required=True)"
         """
@@ -185,4 +188,4 @@ class Announcement(Generic[_P, _R]):
 
 
 # pylint: disable=invalid-name
-announcement = Announcement  # Alias to be pythonic
+announcement = _Announcement  # Alias to be pythonic

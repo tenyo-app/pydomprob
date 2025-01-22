@@ -380,7 +380,8 @@ class BoundAnnouncementMethod(
             >>> bound_method.execute()
             Executing with BaseInstrument()
         """
-        return self.method(*self.params.args, **self.params.kwargs)
+        response = self.method(*self.params.args, **self.params.kwargs)
+        return response
 
     def __repr__(self) -> str:
         """Returns a string representation of the

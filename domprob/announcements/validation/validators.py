@@ -17,7 +17,7 @@ class MissingInstrumentException(ValidatorException):
     @property
     def msg(self) -> str:
         m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
-        return f"'instrument' param missing in '{m_name}'"
+        return f"'instrument' param missing in {m_name}"
 
 
 # pylint: disable=too-few-public-methods
@@ -65,7 +65,8 @@ class InstrumentTypeValidator(BaseValidator):
             AnnoValidationException: If the `instrument` parameter is
                 not an instance of any valid instrument classes.
         """
-        if not any(isinstance(meth.instrument, i) for i in meth.instruments):
+        # pylint: disable=unidiomatic-typecheck
+        if not any(type(meth.instrument) is i for i in meth.instruments):
             raise InstrumentTypeException(
                 meth.method, meth.instrument, meth.instruments
             )
@@ -81,7 +82,7 @@ class NoSupportedInstrumentsException(ValidatorException):
     @property
     def msg(self) -> str:
         m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
-        return f"'{m_name}' has no supported instrument types defined"
+        return f"{m_name} has no supported instrument types defined"
 
 
 # pylint: disable=too-few-public-methods

@@ -11,14 +11,13 @@ from domprob.announcements.validation.validators import (
     NoSupportedInstrumentsException,
     SupportedInstrumentsExistValidator,
 )
-from domprob.instrument import BaseInstrument
 
 
-class MockInstrument(BaseInstrument):
+class MockInstrument:
     pass
 
 
-class AnotherInstrument(BaseInstrument):
+class AnotherInstrument:
     pass
 
 
@@ -66,7 +65,7 @@ class TestInstrumentParamExistsValidator:
         # Assert
         assert exc_info.value.method == mock_no_instrument_method.method
         assert str(exc_info.value) == (
-            f"'instrument' param missing in 'Cls.method(...)'"
+            "'instrument' param missing in Cls.method(...)"
         )
 
     def test_passes_validation_when_instrument_is_present(
@@ -85,7 +84,7 @@ class TestInstrumentParamExistsValidator:
         # Act
         exc = MissingInstrumentException(mock_no_instrument_method.method)
         # Assert
-        assert str(exc) == (f"'instrument' param missing in 'Cls.method(...)'")
+        assert str(exc) == "'instrument' param missing in Cls.method(...)"
 
 
 class TestInstrumentTypeValidator:
@@ -215,7 +214,7 @@ class TestSupportedInstrumentsExistValidator:
         assert exc_info.value.method == mock_none_instrument_method.method
         assert (
             str(exc_info.value)
-            == f"'Cls.method(...)' has no supported instrument types defined"
+            == f"Cls.method(...) has no supported instrument types defined"
         )
 
     def test_no_supported_instruments_exception_message(
@@ -227,5 +226,5 @@ class TestSupportedInstrumentsExistValidator:
         # Act & Assert
         assert (
             str(exc)
-            == f"'Cls.method(...)' has no supported instrument types defined"
+            == f"Cls.method(...) has no supported instrument types defined"
         )

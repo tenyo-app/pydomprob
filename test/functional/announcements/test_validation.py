@@ -103,7 +103,8 @@ class TestValidation:
         # Assert
         assert (
             str(exc_info.value)
-            == f"'Observation.method(...)' has no supported instrument types defined"
+            == f"Observation.method(...) has no supported instrument types "
+            f"defined"
         )
 
     def test_unsupported_instrument(self, orchestrator, method):
@@ -120,8 +121,8 @@ class TestValidation:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Method 'Observation.method(...)' expects 'instrument' param "
-            f"to be one of: [AnotherMockInstrument], but got '{instrument!r}'"
+            == f"Observation.method(...) expects 'instrument' param "
+            f"to be one of: [AnotherMockInstrument], but got: {instrument!r}"
         )
 
     def test_no_instrument_instance(self, orchestrator, method):
@@ -135,5 +136,5 @@ class TestValidation:
         # Assert
         assert (
             str(exc_info.value)
-            == "'instrument' param missing in 'Observation.method(...)'"
+            == "'instrument' param missing in Observation.method(...)"
         )

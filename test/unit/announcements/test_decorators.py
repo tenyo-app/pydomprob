@@ -1,14 +1,13 @@
 import pytest
 
-from domprob.announcements.decorators import Announcement, announcement
+from domprob.announcements.decorators import _Announcement, announcement
 from domprob.announcements.validation.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
 from domprob.announcements.validation.validators import InstrumentTypeException
-from domprob.instrument import BaseInstrument
 
 
-class MockInstrument(BaseInstrument):
+class MockInstrument:
     pass
 
 
@@ -26,21 +25,21 @@ def mock_cls():
 @pytest.fixture
 def announcement_instance():
     """Fixture for creating an Announcement instance."""
-    return Announcement(MockInstrument, required=True)
+    return _Announcement(MockInstrument)
 
 
 class TestAnnouncement:
     def test_initialisation(self):
         """Test that Announcement is initialised correctly."""
-        ann = Announcement(MockInstrument, required=False)
+        ann = _Announcement(MockInstrument)
         assert ann.instrument is MockInstrument
-        assert ann.required is False
+        assert ann.required is True
 
     def test_repr(self):
         """Test the string representation of Announcement."""
-        ann = Announcement(MockInstrument, required=True)
+        ann = _Announcement(MockInstrument)
         expected_repr = (
-            f"Announcement(instrument={MockInstrument!r}, required=True)"
+            f"_Announcement(instrument={MockInstrument!r}, required=True)"
         )
         assert repr(ann) == expected_repr
 
@@ -84,4 +83,4 @@ class TestAnnouncement:
 
 
 def test_announcement_lower_is_announcement_cls():
-    assert announcement == Announcement
+    assert announcement == _Announcement
