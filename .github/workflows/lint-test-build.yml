@@ -70,6 +70,22 @@ jobs:
       - name: "Documentation test (python: ${{ matrix.python-version }})"
         run: make doctest
 
+  build-docs:
+    runs-on: ubuntu-24.04
+    needs:
+      - documentation-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v5.1.0
+        with:
+          python-version: "pyproject.toml"
+
+      - name: "Build documentation"
+        run: make docs
+
   build_package:
     runs-on: ubuntu-24.04
     needs:

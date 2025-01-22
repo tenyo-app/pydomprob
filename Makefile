@@ -9,3 +9,10 @@ test-functional:
 
 doctest:
 	uv run --frozen pytest domprob/ docs/ -s --doctest-modules
+
+.PHONY: docs
+docs:
+	uv run sphinx-build -M html docs/ docs/_build/
+
+autodocs:
+	uv run sphinx-autobuild docs/ docs/_build/ &

@@ -28,18 +28,18 @@ repos:
 
   # Type Checking with MyPy
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.11.2'
+    rev: 'v1.14.1'
     hooks:
       - id: mypy
         files: \.py$
-        exclude: test
+        exclude: ^(test|docs)/
         args: [ ]
         additional_dependencies: [ ]
         # Add typed dependencies here for better type inference, e.g., "tokenize-rt==3.2.0"
 
   # Security Scanning with Bandit
   - repo: https://github.com/PyCQA/bandit
-    rev: '1.7.4'
+    rev: '1.8.2'
     hooks:
       - id: bandit
         args: [ "-ll" ]
