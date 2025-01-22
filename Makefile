@@ -8,4 +8,4 @@ test-functional:
 	uv run --frozen pytest -s test/functional
 
 doctest:
-	uv run --frozen pytest -s --doctest-modules
+	uv run --frozen pytest domprob/ docs/ -s --doctest-modules
