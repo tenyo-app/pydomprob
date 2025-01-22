@@ -24,9 +24,9 @@ pylint:
 	uv run pylint domprob/
 
 black:
-	uv run black domprob/
+	uv run black domprob/ --line-length=79
 
 black-check:
-	uv run black domprob/ --check
+	uv run black domprob/ --line-length=79 --check
 
 lint: mypy pylint black-check
