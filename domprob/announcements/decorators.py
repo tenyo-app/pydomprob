@@ -1,43 +1,48 @@
 """
 announcements.py
-===============
+================
 
 This module provides utilities for managing metadata associated with
-decorated methods, specifically for `@announcements` functionality. It
-facilitates the handling of metadata entries, validation of instrument
-requirements, and execution of decorated methods with type safety.
+decorated methods using the `@announcements` decorator. It enables the
+management of metadata entries, validation of instrument requirements,
+and runtime execution of decorated methods with type safety.
+
+Key Features:
+-------------
+- Associate methods with metadata describing the required instruments.
+- Validate method arguments and runtime parameters using metadata.
+- Support stacking of `@announcement` decorators for enhanced
+  flexibility.
 
 Key Classes:
--------------
-- `AnnoMetadataItem`: Represents a single metadata entry for a method,
-  including the associated instrument type and its requirement status.
-- `AnnoMetadata`: Manages metadata entries for decorated methods,
-  supporting operations such as addition, iteration, and validation.
-- `Instruments`: Provides a high-level interface to interact with
-  instruments associated with a method's metadata.
-- `AnnoMethod` and `InstrumentBoundAnnoMethod`: Represent methods with
-  metadata binding and support validation workflows.
-- `AnnoValidatorChainBuilder`: Implements a chain of responsibility
-  pattern for validator execution.
-- `Announcement`: The main decorator class, enabling the addition of
-  metadata and runtime validation to methods.
+------------
+- `_Announcement`: A decorator class for associating metadata with
+  methods and enforcing runtime validation.
 
 Usage:
--------
-Decorate a method with `@announcements` to associate metadata and enforce
-instrument requirements at runtime. Use the `AnnoMetadata` and `Instruments`
-classes to manage and query metadata programmatically.
+------
+Decorate a method with `@announcements` to attach metadata and enforce
+instrument requirements at runtime. This facilitates the validation of
+method calls and their associated parameters.
 
 Example:
 --------
->>> from domprob.instrument import BaseInstrument
+>>> class SomeInstrument:
+...     pass
+...
+>>> # Define a class with a decorated method
+>>> from domprob import announcement
+>>>
 >>> class Foo:
-...     @announcements(BaseInstrument, required=True)
-...     def bar(self, instrument):
-...         print(f\"Executing with {instrument!r}\")
+...     @announcement(SomeInstrument)
+...     def bar(self, instrument: SomeInstrument) -> None:
+...         print(f"Executing with {instrument!r}")
+...
 >>> foo = Foo()
->>> foo.bar(instrument=BaseInstrument())
-Executing with BaseInstrument()
+>>> instru = SomeInstrument()
+>>>
+>>> foo.bar(instru)
+Executing with <...SomeInstrument object at 0x...>
 """
 
 import functools
@@ -57,54 +62,86 @@ _P = ParamSpec("_P")
 _R = TypeVar("_R")
 
 
-class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
-    """Decorator class to add metadata and validate methods.
+class _Announcement(Generic[_Instrument, _P, _R]):
+    """Decorator class for associating metadata and validating methods.
 
-    This class is used to decorate methods and associate metadata,
-    such as the required instrument type, with those methods. It
-    provides runtime validation to ensure that the method is called
-    with the correct parameters and that the `instrument` argument
-    meets the specified requirements.
+    This class enables the decoration of methods with metadata
+    describing their required instruments. It enforces runtime
+    validation to ensure that the method is called with the correct
+    parameters and that the `instrument` argument satisfies the
+    specified requirements.
 
-    @announcements decorators can also be stacked. Note: It's strongly
-    advised instrument classes defined in stacked announcements
-    decorators inherit from the same base class.
+    The `@announcement` decorator can be stacked.
+
+    .. warning::
+       It is strongly recommended that instrument classes defined in
+       stacked decorators inherit from the same base class or
+       implement the same typing protocol.
 
     Args:
-        instrument (TInstruCls): The instrument class that
-            the decorated method expects.
-        required (`bool`, optional): Indicates whether the instrument
-            is required during method execution. Defaults to `True`.
+        instrument (type[_Instrument]): The instrument class required
+            by the decorated method.
 
     Examples:
+
+        Simple implementation:
+
+        >>> class PrintInstrument:
+        ...
+        ...     @staticmethod
+        ...     def stdout(msg: str) -> None:
+        ...         print(msg)
+        ...
+        ...     def __repr__(self) -> str:
+        ...         return f"{self.__class__.__name__}()"
+        ...
+        >>> # Define a class with a decorated method
+        >>> from domprob import announcement
+        >>>
         >>> class Foo:
-        ...     @announcement(BaseInstrument)  # Defaults to required=True
-        ...     def bar(self, instrument: BaseInstrument) -> None:
-        ...         print(f\"Executing with {instrument!r}\")
+        ...     @announcement(PrintInstrument)
+        ...     def bar(self, instrument: PrintInstrument) -> None:
+        ...         instrument.stdout(f"Executing with {instrument!r}")
         ...
         >>> foo = Foo()
-        >>> foo.bar(instrument=BaseInstrument())
-        Executing with BaseInstrument()
-
-        >>> from abc import ABC, abstractmethod
-        >>> from typing import Any
-        >>> import logging
+        >>> instru = PrintInstrument()
         >>>
-        >>> class AbstractStdOutInstrument(ABC, BaseInstrument):
+        >>> foo.bar(instru)
+        Executing with PrintInstrument()
+
+        Supporting the same announcement implementation with multiple
+        instruments:
+
+        >>> import logging
+        >>> from abc import ABC, abstractmethod
+        >>>
+        >>> # Define instruments
+        >>> class AbstractStdOutInstrument(ABC):
         ...     @abstractmethod
-        ...     def stdout(self, cls: Any) -> None:
+        ...     def stdout(self, cls_name: str) -> None:
         ...         raise NotImplementedError
         ...
+        ...     def __repr__(self) -> str:
+        ...         return f"{self.__class__.__name__}()"
+        ...
         >>> class PrintInstrument(AbstractStdOutInstrument):
-        ...     def stdout(self, cls: Any) -> None:
-        ...         print(f"Observing '{cls!r}' with '{self!r}'\")
+        ...     def stdout(self, cls_name: str) -> None:
+        ...         print(f"Observing '{cls_name}' with '{self!r}'\")
         ...
         >>> class LogInstrument(AbstractStdOutInstrument):
-        ...     def stdout(self, cls: Any) -> None:
+        ...
+        ...     def __init__(self):
+        ...         self.logger = logging.getLogger()
+        ...         self.logger.setLevel(logging.INFO)
+        ...
+        ...     def stdout(self, cls_name: str) -> None:
         ...         logger = logging.getLogger()
         ...         logger.setLevel(logging.INFO)
-        ...         logger.info(f"Observing '{cls!r}' with '{self!r}'\")
+        ...         logger.info(f"Observing '{cls_name}' with '{self!r}'\")
         ...
+        >>> # Define a class with a decorated method
+        >>> from domprob import announcement
+        >>>
         >>> class Foo:
         ...     @announcement(PrintInstrument)
         ...     @announcement(LogInstrument)
@@ -112,8 +149,10 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         ...         instrument.stdout(self.__class__.__name__)
         ...
         >>> foo = Foo()
-        >>> foo.bar(PrintInstrument())
-        Stdout with 'PrintInstrument()' from class 'Foo'
+        >>> instru = PrintInstrument()
+        >>>
+        >>> foo.bar(instru)
+        Observing 'Foo' with 'PrintInstrument()'
     """
 
     def __init__(self, instrument: type[_Instrument]) -> None:
@@ -124,27 +163,35 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         """Wraps a method to associate metadata and enforce runtime
         validation.
 
-        This method is invoked when the `@announcements` decorator is used
-        on a method. It attaches metadata, including the instrument class
-        and requirement status, to the method and enforces validation when
-        the method is called at runtime.
+        This method is invoked when the `@announcement` decorator is
+        used on a method. It attaches metadata, including the
+        instrument class and requirement status, to the method and
+        enforces validation when the method is called at runtime.
 
         Args:
-            method (`Callable[P, R]`): The method to decorate.
+            method (Callable[P, R]): The method to decorate.
 
         Returns:
             Callable[P, R]: A wrapped version of the input method with
             metadata and validation applied.
 
         Examples:
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> # Define a class with a decorated method
+            >>> from domprob import announcement
+            >>>
             >>> class Foo:
-            ...     @announcements(BaseInstrument)
-            ...     def bar(self, instrument: BaseInstrument):
-            ...         print(f\"Instrument: {instrument!r}\")
+            ...     @announcement(SomeInstrument)
+            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...         print(f"Executing with {instrument!r}")
             ...
             >>> foo = Foo()
-            >>> foo.bar(instrument=BaseInstrument())
-            Instrument: BaseInstrument()
+            >>> instru = SomeInstrument()
+            >>>
+            >>> foo.bar(instru)
+            Executing with <...SomeInstrument object at 0x...>
         """
         while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
@@ -167,6 +214,7 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         return cast(Callable[_P, _R], wrapper)
 
     def __repr__(self) -> str:
+        # noinspection PyShadowingNames
         """Returns a string representation of the `Announcement`
         instance.
 
@@ -178,14 +226,14 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
             str: A string representation of the `Announcement` instance.
 
         Examples:
-            >>> ann = _Announcement(BaseInstrument, required=True)
-            >>> repr(ann)
-            "Announcement(instrument=BaseInstrument, required=True)"
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> announcement = _Announcement(SomeInstrument)
+            >>> repr(announcement)
+            "_Announcement(instrument=<class '...SomeInstrument'>)"
         """
-        return (
-            f"{self.__class__.__name__}(instrument={self.instrument!r}, "
-            f"required={self.required})"
-        )
+        return f"{self.__class__.__name__}(instrument={self.instrument!r})"
 
 
 # pylint: disable=invalid-name

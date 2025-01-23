@@ -75,6 +75,7 @@ from domprob.announcements.validation.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
 
+# Typing helpers: Describes the wrapped method signature
 _PMeth = ParamSpec("_PMeth")
 _RMeth = TypeVar("_RMeth")
 _WrappedMeth: TypeAlias = Callable[_PMeth, _RMeth]
@@ -405,7 +406,7 @@ class PartialBindException(AnnouncementException):
         )
 
 
-# Type variables for InstrumentBoundAnnoMethod
+# Typing helpers: Describes the wrapped method signature
 _PBoundMeth = ParamSpec("_PBoundMeth")
 _RBoundMeth = TypeVar("_RBoundMeth")
 _WrappedBoundMeth: TypeAlias = Callable[_PBoundMeth, _RBoundMeth]

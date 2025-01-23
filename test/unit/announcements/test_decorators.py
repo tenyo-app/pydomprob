@@ -37,9 +37,7 @@ class TestAnnouncement:
     def test_repr(self):
         """Test the string representation of Announcement."""
         ann = _Announcement(MockInstrument)
-        expected_repr = (
-            f"_Announcement(instrument={MockInstrument!r}, required=True)"
-        )
+        expected_repr = f"_Announcement(instrument={MockInstrument!r})"
         assert repr(ann) == expected_repr
 
     def test_call_method_executes_correctly(
