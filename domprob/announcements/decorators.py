@@ -42,22 +42,22 @@ Executing with BaseInstrument()
 
 import functools
 from collections.abc import Callable
-from typing import Any, Generic, ParamSpec, TypeAlias, TypeVar
+from typing import Any, Generic, ParamSpec, TypeVar, cast
 
 from domprob.announcements.method import AnnouncementMethod
-from domprob.announcements.validation.orchestrator import (
-    AnnouncementValidationOrchestrator,
-)
 
-_InstruCls: TypeAlias = type[Any]
+# Typing helper: Describes the class where the method resides
+_MethodCls = TypeVar("_MethodCls", bound=Any)
 
-# Type variables for InstrumentBoundAnnoMethod
+# Typing helper: Describes the instrument parameters
+_Instrument = TypeVar("_Instrument", bound=Any)
+
+# Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_Wrapped: TypeAlias = Callable[_P, _R]
 
 
-class _Announcement(Generic[_P, _R]):
+class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
     """Decorator class to add metadata and validate methods.
 
     This class is used to decorate methods and associate metadata,
@@ -116,11 +116,11 @@ class _Announcement(Generic[_P, _R]):
         Stdout with 'PrintInstrument()' from class 'Foo'
     """
 
-    def __init__(self, instrument: _InstruCls) -> None:
+    def __init__(self, instrument: type[_Instrument]) -> None:
         self.instrument = instrument
         self.required = True
 
-    def __call__(self, method: _Wrapped) -> _Wrapped:
+    def __call__(self, method: Callable[_P, _R]) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime
         validation.
 
@@ -146,25 +146,25 @@ class _Announcement(Generic[_P, _R]):
             >>> foo.bar(instrument=BaseInstrument())
             Instrument: BaseInstrument()
         """
-        # Ensure the metadata is applied to the original method
-        while hasattr(method, "__wrapped__"):
+        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
 
         meth = AnnouncementMethod(method)
         meth.instruments.record(self.instrument, self.required)
 
         @functools.wraps(method)
-        def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
-            bound_meth = meth.bind(*args, **kwargs)
-            self.validater.validate(bound_meth)
-            result = bound_meth.execute()
-            return result
+        def wrapper(
+            cls_instance: _MethodCls,
+            instrument: _Instrument,
+            /,
+            *args: _P.args,
+            **kwargs: _P.kwargs,
+        ) -> _R:
+            bound_meth = meth.bind(cls_instance, instrument, *args, **kwargs)
+            bound_meth.validate()
+            return bound_meth.execute()
 
-        return wrapper
-
-    @property
-    def validater(self):
-        return AnnouncementValidationOrchestrator()
+        return cast(Callable[_P, _R], wrapper)
 
     def __repr__(self) -> str:
         """Returns a string representation of the `Announcement`

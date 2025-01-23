@@ -1,4 +1,7 @@
-from domprob.announcements.method import BoundAnnouncementMethod
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from domprob.announcements.validation.base_validator import BaseValidator
 from domprob.announcements.validation.chain import ValidationChain
 from domprob.announcements.validation.validators import (
@@ -6,6 +9,11 @@ from domprob.announcements.validation.validators import (
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,
 )
+
+if TYPE_CHECKING:
+    from domprob.announcements.method import (  # pragma: no cover
+        BoundAnnouncementMethod,
+    )
 
 
 class AnnouncementValidationOrchestrator:

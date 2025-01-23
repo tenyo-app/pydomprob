@@ -1,11 +1,17 @@
-from typing import Any, Callable
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
 
 from domprob.announcements.instruments import Instruments
-from domprob.announcements.method import BoundAnnouncementMethod
 from domprob.announcements.validation.base_validator import (
     BaseValidator,
     ValidatorException,
 )
+
+if TYPE_CHECKING:
+    from domprob.announcements.method import (  # pragma: no cover
+        BoundAnnouncementMethod,
+    )
 
 
 class MissingInstrumentException(ValidatorException):

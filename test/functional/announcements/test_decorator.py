@@ -215,10 +215,9 @@ class TestMissingInstrument:
 
         instance = Cls()
         # Act
-        with pytest.raises(exceptions.MissingInstrumentException) as exc_info:
+        with pytest.raises(TypeError) as exc_info:
             instance.method()
         # Assert
-        assert (
-            str(exc_info.value)
-            == f"'instrument' param missing in Cls.method(...)"
+        assert str(exc_info.value).endswith(
+            "missing 1 required positional argument: 'instrument'"
         )

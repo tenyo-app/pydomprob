@@ -1,18 +1,18 @@
 test-unit:
-	uv run --frozen pytest -s --cov=domprob/ test/unit --cov-report=html --cov-report=term
+	uv run --frozen pytest --cov=domprob/ test/unit --cov-report=html --cov-report=term
 
 test-functional:
-	uv run --frozen pytest -s test/functional
+	uv run --frozen pytest test/functional
 
 .PHONY: test
 test:
 	uv run --frozen pytest -s test/
 
 doctest:
-	uv run --frozen pytest -s domprob/ docs/ --doctest-modules
+	uv run --frozen pytest domprob/ docs/ --doctest-modules
 
 test-all:
-	uv run --frozen pytest -s domprob/ docs/ test/ --doctest-modules
+	uv run --frozen pytest domprob/ docs/ test/ --doctest-modules
 
 .PHONY: docs
 docs:

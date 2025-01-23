@@ -3,9 +3,6 @@ import functools
 import pytest
 
 from domprob.announcements.decorators import _Announcement, announcement
-from domprob.announcements.validation.orchestrator import (
-    AnnouncementValidationOrchestrator,
-)
 from domprob.announcements.validation.validators import InstrumentTypeException
 
 
@@ -44,11 +41,6 @@ class TestAnnouncement:
             f"_Announcement(instrument={MockInstrument!r}, required=True)"
         )
         assert repr(ann) == expected_repr
-
-    def test_validater_property(self, announcement_instance):
-        """Test that the `validater` property returns the orchestrator."""
-        validater = announcement_instance.validater
-        assert isinstance(validater, AnnouncementValidationOrchestrator)
 
     def test_call_method_executes_correctly(
         self, mock_cls, announcement_instance
@@ -103,6 +95,7 @@ class TestAnnouncement:
         instance = mock_cls()
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:
+            # noinspection PyTypeChecker
             instance.method("invalid instrument")
         # Assert
         assert (

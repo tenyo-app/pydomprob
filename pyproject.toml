@@ -21,6 +21,12 @@ dev = [
 
 [tool.isort]
 profile = "black"
+line_length = 79
+include_trailing_comma = true
+multi_line_output = 3
+force_grid_wrap = 0
+use_parentheses = true
+
 
 [tool.coverage.report]
 omit = ["domprob/__init__.py", "domprob/exceptions.py"]  # Test contracts in integration tests
