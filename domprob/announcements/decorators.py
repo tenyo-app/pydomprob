@@ -1,9 +1,9 @@
 """
-announcements.py
-================
+decorators.py
+==============
 
 This module provides utilities for managing metadata associated with
-decorated methods using the `@announcements` decorator. It enables the
+decorated methods using the `@announcement` decorator. It enables the
 management of metadata entries, validation of instrument requirements,
 and runtime execution of decorated methods with type safety.
 
@@ -21,7 +21,7 @@ Key Classes:
 
 Usage:
 ------
-Decorate a method with `@announcements` to attach metadata and enforce
+Decorate a method with `@announcement` to attach metadata and enforce
 instrument requirements at runtime. This facilitates the validation of
 method calls and their associated parameters.
 
