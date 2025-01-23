@@ -1,3 +1,70 @@
+"""
+method.py
+=========
+
+This module provides classes and utilities for managing decorated
+methods associated with metadata and runtime validation in the
+`pydomprob` framework. It supports functionalities like binding
+runtime arguments, validating instruments, and executing methods with
+associated metadata.
+
+Key Classes:
+------------
+1. **AnnouncementMethod**:
+   - Represents a decorated method with associated metadata.
+   - Provides interfaces for accessing supported instruments, method
+     signatures, and partially binding runtime arguments.
+
+2. **PartialBindException**:
+   - Raised when binding arguments to a method's signature fails.
+   - Helps handle errors during partial argument binding, including
+     missing required parameters.
+
+3. **BoundAnnouncementMethod**:
+   - Extends `AnnouncementMethod` to represent partially bound methods.
+   - Facilitates logic like validation and execution of methods with
+     pre-bound arguments.
+
+Key Features:
+-------------
+- **Metadata Handling**:
+  - Associates metadata, including supported instruments, with
+    decorated methods.
+- **Partial Argument Binding**:
+  - Supports binding runtime arguments partially to methods before
+    execution.
+- **Validation**:
+  - Ensures runtime parameters meet method requirements, such as
+    required instruments.
+- **Custom Exceptions**:
+  - Includes `PartialBindException` for handling argument binding
+    errors.
+
+Usage:
+------
+>>> class SomeInstrument:
+...     pass
+...
+>>> # Define a class with a decorated method
+>>> from domprob import announcement
+>>>
+>>> class Foo:
+...     @announcement(SomeInstrument)
+...     def bar(self, instrument: SomeInstrument) -> None:
+...         print(f"Instrument: {instrument}")
+...
+>>> foo = Foo()
+>>>
+>>> foo.bar(SomeInstrument())
+Instrument: <...SomeInstrument object at 0x...>
+
+Integration:
+------------
+This module integrates with the `domprob.announcements` package to
+provide comprehensive runtime validation and metadata management for
+decorated methods.
+"""
+
 import inspect
 from collections.abc import Callable
 from typing import Any, Generic, ParamSpec, TypeAlias, TypeVar
@@ -38,7 +105,7 @@ class AnnouncementMethod:
         >>> bar_method = AnnouncementMethod(Foo.bar)
         >>>
         >>> bar_method
-        AnnouncementMethod(method=<function Foo.bar at ...>)
+        AnnouncementMethod(method=<function Foo.bar at 0x...>)
     """
 
     def __init__(self, meth: _WrappedMeth) -> None:
@@ -68,12 +135,13 @@ class AnnouncementMethod:
             >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> bar_method.method
-            <function Foo.bar at ...>
+            <function Foo.bar at 0x...>
         """
         return self._meth
 
     @property
     def instruments(self):
+        # noinspection PyUnresolvedReferences
         """The supported instrument classes associated with the
         decorated method.
 
@@ -98,7 +166,7 @@ class AnnouncementMethod:
             >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> bar_method.instruments
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at...))
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...))
             >>> [i.__name__ for i in bar_method.instruments]
             ['SomeInstrument', 'SomeInstrument']
         """
@@ -132,43 +200,67 @@ class AnnouncementMethod:
         return inspect.signature(self.method)
 
     def bind(
-        self, *args: _PMeth.args, **kwargs: _PMeth.kwargs
+        self,
+        cls_instance: Any,
+        instrument: Any,
+        /,
+        *args: _PMeth.args,
+        **kwargs: _PMeth.kwargs,
     ) -> "BoundAnnouncementMethod":
+        # noinspection PyShadowingNames
+        # pylint: disable=line-too-long
         """Binds passed parameters to the method, returning a
         partially bound version.
 
+        This method partially binds the provided runtime arguments,
+        including the class instance (`cls_instance`) and an
+        instrument (`instrument`), to the method's signature. It
+        returns a `BoundAnnouncementMethod` object that represents the
+        partially bound method, which can later be executed with
+        additional arguments if needed.
+
         Args:
-            *args (`P.args`): Positional arguments to bind to the
+            cls_instance (Any): The class instance associated with the
                 method.
-            **kwargs (`P.kwargs`): Keyword arguments to bind to the
-                method.
+            instrument (Any): The runtime `instrument` to be bound to
+                the method.
+            *args (P.args): Additional positional arguments to bind to
+                the method.
+            **kwargs (P.kwargs): Additional keyword arguments to bind
+                to the method.
 
         Returns:
             BoundAnnouncementMethod: A new wrapper representing a
                 partially bound method.
 
         Examples:
-            >>> from domprob import announcement
-            >>>
             >>> class SomeInstrument:
             ...     pass
             ...
             >>> # Define a class with a decorated method
+            >>> from domprob import announcement
+            >>>
             >>> class Foo:
             ...     @announcement(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> # Create an AnnoMethod instance
+            >>> # Create an AnnouncementMethod instance
             >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
-            >>> # Binds method with instrument instance
+            >>> # Create an instance of the class and instrument
             >>> instrument_instance = SomeInstrument()
-            >>> bound_method = bar_method.bind(instrument_instance)
+            >>> foo = Foo()
+            >>>
+            >>> # Binds method with instrument instance
+            >>> args = (foo, instrument_instance)
+            >>> bound_method = bar_method.bind(*args)
             >>> bound_method
-            BoundAnnouncementMethod(method=<function Foo.bar at ...>, instrument=SomeInstrument)
+            BoundAnnouncementMethod(method=<function Foo.bar at 0x...>, instrument=<...SomeInstrument object at 0x...>)
         """
-        return BoundAnnouncementMethod(self.method, *args, **kwargs)
+        return BoundAnnouncementMethod(
+            self.method, cls_instance, instrument, *args, **kwargs
+        )
 
     def __repr__(self) -> str:
         """Returns a string representation of the `AnnoMethod`
@@ -193,7 +285,7 @@ class AnnouncementMethod:
             >>> bar_method = AnnouncementMethod(Foo.bar)
             >>>
             >>> repr(bar_method)
-            'AnnouncementMethod(method=<function Foo.bar at ...>)'
+            'AnnouncementMethod(method=<function Foo.bar at 0x...>)'
         """
         return f"{self.__class__.__name__}(method={self.method!r})"
 
@@ -204,6 +296,12 @@ class PartialBindException(AnnouncementException):
 
     This exception is used to handle errors that occur during partial
     argument binding, including missing required parameters.
+
+    Attributes:
+        method (AnnouncementMethod): The method whose arguments failed
+            to bind.
+        exc (Exception): The original exception that caused the
+            failure.
     """
 
     def __init__(self, method: AnnouncementMethod, exc: Exception) -> None:
@@ -213,11 +311,27 @@ class PartialBindException(AnnouncementException):
 
     @property
     def msg(self) -> str:
+        """Constructs the error message for the exception.
+
+        The message includes the name of the method and the details of
+        the original exception.
+
+        Returns:
+            str: A descriptive error message for the exception.
+        """
         m_name = ".".join(self.method.method.__qualname__.split(".")[-2:])
         m_name = f"{m_name}(...)"
         return f"Failed to bind parameters to {m_name}: {self.exc}"
 
     def __repr__(self) -> str:
+        """Returns a string representation of the PartialBindException
+        instance.
+
+        The string includes the method and the original exception.
+
+        Returns:
+            str: A string representation of the exception instance.
+        """
         return (
             f"{self.__class__.__name__}(method={self.method!r}, "
             f"exc={self.exc!r})"
@@ -266,7 +380,7 @@ class BoundAnnouncementMethod(
         >>> bound_method = BoundAnnouncementMethod(Foo.bar, *args)
         >>>
         >>> bound_method
-        BoundAnnouncementMethod(method=<function Foo.bar at ...>, instrument=<...SomeInstrument object at...>)
+        BoundAnnouncementMethod(method=<function Foo.bar at 0x...>, instrument=<...SomeInstrument object at 0x...>)
     """
 
     def __init__(
@@ -303,7 +417,7 @@ class BoundAnnouncementMethod(
             >>> bound_method = BoundAnnouncementMethod(Foo.bar, *args)
             >>>
             >>> bound_method.instrument
-            <....SomeInstrument object at...>
+            <....SomeInstrument object at 0x...>
         """
         return self.params.arguments.get("instrument")
 
@@ -346,13 +460,15 @@ class BoundAnnouncementMethod(
             >>> bound_method = BoundAnnouncementMethod(Foo.bar, *args)
             >>>
             >>> bound_method.bind_partial(*args)
-            <BoundArguments (self=<...Foo object at...>, instrument=<...SomeInstrument object at...>)>
+            <BoundArguments (self=<...Foo object at 0x...>, instrument=<...SomeInstrument object at 0x...>)>
         """
         try:
             # Binds provided arguments to the method's signature.
-            return self.signature.bind_partial(*args, **kwargs)
+            bound_params = self.signature.bind_partial(*args, **kwargs)
+            bound_params.apply_defaults()
+            return bound_params
         except TypeError as e:
-            raise PartialBindException(self, e)
+            raise PartialBindException(self, e) from e
 
     def execute(self) -> _RBoundMeth:
         """Executes the bound method.
@@ -407,7 +523,7 @@ class BoundAnnouncementMethod(
             >>> bound_method = BoundAnnouncementMethod(Foo.bar, *args)
             >>>
             >>> repr(bound_method)
-            'BoundAnnouncementMethod(method=<function Foo.bar at...>, instrument=<...SomeInstrument object at...>)'
+            'BoundAnnouncementMethod(method=<function Foo.bar at 0x...>, instrument=<...SomeInstrument object at 0x...>)'
         """
         return (
             f"{self.__class__.__name__}(method={self.method!r}, "

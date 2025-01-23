@@ -16,12 +16,17 @@ class MockInstrument:
 
 
 @pytest.fixture
-def mock_method():
+def mock_cls():
     class Cls:
         def method(self, instrument):
             pass
 
-    return Cls.method
+    return Cls
+
+
+@pytest.fixture
+def mock_method(mock_cls):
+    return mock_cls.method
 
 
 @pytest.fixture
@@ -59,15 +64,16 @@ class TestAnnouncementMethod:
         # Assert
         assert meth_repr == f"AnnouncementMethod(method={mock_method!r})"
 
-    def test_bind(self, mock_method):
+    def test_bind(self, mock_cls, mock_method):
         # Arrange
         announcement_method = AnnouncementMethod(mock_method)
         mock_instrument = MockInstrument()
+        cls_ = mock_cls()
         # Act
-        bound_method = announcement_method.bind(mock_instrument)
+        bound_method = announcement_method.bind(cls_, mock_instrument)
         # Assert
         assert isinstance(bound_method, BoundAnnouncementMethod)
-        assert bound_method.params.args == (mock_instrument,)
+        assert bound_method.params.args == (cls_, mock_instrument)
         assert bound_method.params.kwargs == {}
 
 
