@@ -149,6 +149,7 @@ class _Announcement(Generic[_P, _R]):
         # Ensure the metadata is applied to the original method
         while hasattr(method, "__wrapped__"):
             method = getattr(method, "__wrapped__")
+
         meth = AnnouncementMethod(method)
         meth.instruments.record(self.instrument, self.required)
 

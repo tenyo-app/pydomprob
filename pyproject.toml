@@ -21,3 +21,6 @@ dev = [
 
 [tool.isort]
 profile = "black"
+
+[tool.coverage.report]
+omit = ["domprob/__init__.py", "domprob/exceptions.py"]  # Test contracts in integration tests

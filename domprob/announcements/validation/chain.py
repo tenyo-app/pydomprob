@@ -64,7 +64,7 @@ class ABCLinkValidator(ABC):
 
     @abstractmethod
     def validate(self, link: _ChainLink) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.chain!r})"
@@ -93,11 +93,11 @@ class ABCLinkValidatorContext(ABC):
 
     @abstractmethod
     def add_validators(self, *validators: type[ABCLinkValidator]) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def validate(self, link: _ChainLink) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"

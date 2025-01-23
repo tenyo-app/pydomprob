@@ -72,26 +72,27 @@ class TestAnnouncementMethod:
 
 
 class TestPartialBindException:
-    def test_general_exception(self, mock_method):
+    def test_exception(self, mock_method):
         # Arrange
         announcement_method = AnnouncementMethod(mock_method)
         exception = TypeError("Some binding error")
         # Act
-        result = PartialBindException.general(announcement_method, exception)
+        result = PartialBindException(announcement_method, exception)
         # Assert
         assert isinstance(result, PartialBindException)
         assert "Failed to bind parameters" in str(result)
 
-    def test_missing_param_exception(self, mock_method):
+    def test_exception_repr(self, mock_method):
         # Arrange
         announcement_method = AnnouncementMethod(mock_method)
+        exception = TypeError("Some binding error")
         # Act
-        result = PartialBindException.missing_param(
-            "instrument", announcement_method
-        )
+        result = repr(PartialBindException(announcement_method, exception))
         # Assert
-        assert isinstance(result, PartialBindException)
-        assert "Parameter 'instrument' missing" in str(result)
+        assert (
+            result == f"PartialBindException(method={announcement_method!r}, "
+            f"exc={exception!r})"
+        )
 
 
 class TestBoundAnnouncementMethod:

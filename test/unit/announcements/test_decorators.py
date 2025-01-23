@@ -1,3 +1,5 @@
+import functools
+
 import pytest
 
 from domprob.announcements.decorators import _Announcement, announcement
@@ -61,6 +63,34 @@ class TestAnnouncement:
         result = instance.method(instrument)
         # Assert
         assert result == f"Instrument: {instrument!r}"
+
+    def test_metadata_applied_to_original_method(self):
+        # Arrange
+        def some_decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return wrapper
+
+        class Cls:
+            @announcement(MockInstrument)
+            @some_decorator
+            def method(self, instrument: MockInstrument):
+                return f"Instrument: {instrument}"
+
+        instance = Cls()
+        instru = MockInstrument()
+        original_method = instance.method
+        while hasattr(original_method, "__wrapped__"):
+            original_method = getattr(original_method, "__wrapped__")
+        # Act
+        result = instance.method(instru)
+        metadata = getattr(original_method, "__announcement_metadata__", None)
+        # Assert
+        assert result == f"Instrument: {instru!r}"
+        assert metadata is not None, "Metadata not applied to the orig method"
+        assert metadata[0].instrument_cls == MockInstrument
 
     def test_call_method_raises_exception_on_invalid_instrument(
         self, mock_cls, announcement_instance
