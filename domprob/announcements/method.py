@@ -75,6 +75,12 @@ from domprob.announcements.validation.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
 
+# Typing helper: Describes the class where the method resides
+_MethodCls = TypeVar("_MethodCls", bound=Any)
+
+# Typing helper: Describes the instrument parameters
+_Instrument = TypeVar("_Instrument", bound=Any)
+
 # Typing helpers: Describes the wrapped method signature
 _PMeth = ParamSpec("_PMeth")
 _RMeth = TypeVar("_RMeth")
@@ -205,9 +211,6 @@ class AnnouncementMethod:
 
     def bind(
         self,
-        cls_instance: Any,
-        instrument: Any,
-        /,
         *args: _PMeth.args,
         **kwargs: _PMeth.kwargs,
     ) -> "BoundAnnouncementMethod":
@@ -216,18 +219,12 @@ class AnnouncementMethod:
         """Binds passed parameters to the method, returning a
         partially bound version.
 
-        This method partially binds the provided runtime arguments,
-        including the class instance (`cls_instance`) and an
-        instrument (`instrument`), to the method's signature. It
+        This method partially binds the provided runtime arguments. It
         returns a `BoundAnnouncementMethod` object that represents the
         partially bound method, which can later be executed with
         additional arguments if needed.
 
         Args:
-            cls_instance (Any): The class instance associated with the
-                method.
-            instrument (Any): The runtime `instrument` to be bound to
-                the method.
             *args (P.args): Additional positional arguments to bind to
                 the method.
             **kwargs (P.kwargs): Additional keyword arguments to bind
@@ -262,9 +259,7 @@ class AnnouncementMethod:
             >>> bound_method
             BoundAnnouncementMethod(method=<function Foo.bar at 0x...>, instrument=<...SomeInstrument object at 0x...>)
         """
-        return BoundAnnouncementMethod(
-            self.method, cls_instance, instrument, *args, **kwargs
-        )
+        return BoundAnnouncementMethod(self.method, *args, **kwargs)
 
     def __repr__(self) -> str:
         """Returns a string representation of the `AnnoMethod`

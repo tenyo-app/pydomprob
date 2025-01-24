@@ -7,6 +7,8 @@ It provides a central location to import and expose exceptions related
 to announcements, partial binding, validation, and instrument handling.
 
 Imports:
+    - `DomprobException`: Base class for all custom exceptions raised
+        by this module.
     - `AnnouncementException`: Raised for general issues related to
         announcements.
     - `PartialBindException`: Raised when partial binding of methods
@@ -43,8 +45,10 @@ from domprob.announcements.validation.validators import (
     MissingInstrumentException,
     NoSupportedInstrumentsException,
 )
+from domprob.base_exception import DomprobException
 
 __all__: Sequence[str] = [
+    "DomprobException",
     "AnnouncementException",
     "PartialBindException",
     "ValidatorException",
