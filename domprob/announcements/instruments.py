@@ -1,3 +1,62 @@
+"""
+instruments.py
+==============
+
+This module provides the `Instruments` class and utilities for managing
+instrument classes associated with the metadata of decorated methods.
+
+The primary purpose of this module is to facilitate the organisation,
+retrieval, and validation of instrument classes that are added as
+metadata to methods decorated with the `@announcement` decorator. It
+provides functionality to record, query, and iterate over these
+instruments with support for filtering based on whether instruments are
+required or optional.
+
+Classes:
+--------
+- Instruments: A class to manage instrument metadata, supporting
+  operations like recording, querying, and validating instrument
+  classes.
+
+Typing Helpers:
+---------------
+- `TInstruCls`: A type alias for an instrument class.
+- `TInstrumentClsGen`: A generator type that yields instrument classes.
+
+Examples:
+---------
+The following examples demonstrate how to use the `Instruments` class:
+
+>>> # Define a class with a decorated method
+>>> class Foo:
+...     def bar(self):
+...         pass
+...
+
+>>> # Create an Instruments instance
+>>> from domprob.announcements.instruments import Instruments
+>>> instruments = Instruments.from_method(Foo.bar)
+>>> instruments
+Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+
+>>> # Add an instrument
+>>> class SomeInstrument:
+...     pass
+...
+>>> instruments.record(SomeInstrument, required=True)
+Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+>>> list(instruments.req_instruments)
+[<class '...SomeInstrument'>]
+
+Key Features:
+-------------
+1. Manage metadata for methods in a structured manner.
+2. Support for iterating over and filtering instruments based on
+   requirement status.
+3. Integration with the `AnnouncementMetadata` class for seamless
+   handling of metadata.
+"""
+
 from collections.abc import Callable, Generator
 from typing import Any
 
@@ -13,21 +72,25 @@ class Instruments:
     decorated method's metadata.
 
     Args:
-        metadata (`AnnoMetadata`): The metadata object managing
+        metadata (`AnnouncementMetadata`): The metadata object managing
             the associated method's metadata.
 
     Examples:
-        >>> # Define a class with a method to decorate
+        >>> # Define a class with a method
         >>> class Foo:
         ...     def bar(self):
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> metadata = AnnouncementMetadata(Foo.bar)
-        >>> # Abstract metadata instrument access
-        >>> instruments = Instruments(metadata)
+        >>> from domprob.announcements import metadata
+        >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+        >>>
+        >>> # Access metadata instruments
+        >>> from domprob.announcements.instruments import Instruments
+        >>> instruments = Instruments(meta)
+        >>>
         >>> instruments
-        Instruments(metadata=AnnoMetadata(Foo.bar))
+        Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
     """
 
     def __init__(self, metadata: AnnouncementMetadata) -> None:
@@ -47,17 +110,99 @@ class Instruments:
             ...         pass
             ...
             >>> # Create instruments handler for method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
-            >>> instruments.record(BaseInstrument)
+            >>>
+            >>> # Define an instrument
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> instruments.record(SomeInstrument)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments)
-            [BaseInstrument]
+            [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata)
 
     def __len__(self) -> int:
+        """Returns the number of instrument entries associated with
+        the method's metadata.
+
+        This method provides the total count of all instrument classes
+        recorded in the metadata for the associated method.
+
+        Returns:
+            int: The total number of instrument classes recorded.
+
+        Examples:
+            >>> # Define a class with a method to decorate
+            >>> class Foo:
+            ...     def bar(self):
+            ...         pass
+            ...
+            >>> # Create instruments handler for method
+            >>> from domprob.announcements.instruments import Instruments
+            >>> instruments = Instruments.from_method(Foo.bar)
+            >>> # Initially, no instruments are recorded
+            >>> len(instruments)
+            0
+            >>> # Define an instrument
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> # Record the instrument
+            >>> instruments.record(SomeInstrument, required=True)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>> len(instruments)
+            1
+        """
         return len(self._metadata)
 
     def __eq__(self, other: Any) -> bool:
+        """
+        Checks equality between the current `Instruments` instance and
+        another object.
+
+        This method determines whether the provided object is an
+        instance of `Instruments` and whether their associated
+        metadata are equal. Two `Instruments` instances ar considered
+        equal if they manage the same `AnnouncementMetadata`.
+
+        Args:
+            other (Any): The object to compare with the current
+                `Instruments` instance.
+
+        Returns:
+            bool: `True` if the provided object is an `Instruments`
+                instance and their metadata are equal.
+
+        Examples:
+            >>> # Define a class with a method
+            >>> class Foo:
+            ...     def bar(self):
+            ...         pass
+            ...
+            >>> # Create Instruments instances for the same method
+            >>> from domprob.announcements.instruments import Instruments
+            >>> instruments1 = Instruments.from_method(Foo.bar)
+            >>> instruments2 = Instruments.from_method(Foo.bar)
+            >>>
+            >>> instruments1 == instruments2
+            True
+
+            >>> # Create Instruments instance for a different method
+            >>> class Baz:
+            ...     def qux(self):
+            ...         pass
+            ...
+            >>> instruments3 = Instruments.from_method(Baz.qux)
+            >>> instruments1 == instruments3
+            False
+
+            >>> # Compare with an unrelated object
+            >>> instruments1 == "Not an Instruments instance"
+            False
+        """
         if not isinstance(other, Instruments):
             return False
         return self._metadata == other._metadata
@@ -85,9 +230,10 @@ class Instruments:
             ...         pass
             ...
             >>> # Create an Instruments instance directly from the method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> instruments
-            Instruments(metadata=AnnoMetadata(Foo.bar))
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
         """
         return cls(AnnouncementMetadata(method))
 
@@ -106,12 +252,23 @@ class Instruments:
             ...         pass
             ...
             >>> # Create an Instruments instance directly from the method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
+            >>>
+            >>> # Define an instrument class
+            >>> class SomeInstrument:
+            ...     pass
+            ...
             >>> # Add a required instrument
-            >>> instruments.record(BaseInstrument, True)
+            >>> instruments.record(SomeInstrument, required=True)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>>
             >>> list(instruments.non_req_instruments)
             []
+            >>> instruments.record(SomeInstrument, required=False)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>> list(instruments.non_req_instruments)
+            [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata if not m.required)
 
@@ -130,12 +287,21 @@ class Instruments:
             ...         pass
             ...
             >>> # Create an Instruments instance directly from the method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
-            >>> # Add a non-required entry to the method's metadata
-            >>> instruments.record(BaseInstrument, False)
             >>>
+            >>> # Define an instrument class
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> instruments.record(SomeInstrument, required=False)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments.req_instruments)
             []
+            >>> instruments.record(SomeInstrument, required=True)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>> list(instruments.req_instruments)
+            [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata if m.required)
 
@@ -158,11 +324,20 @@ class Instruments:
             ...         pass
             ...
             >>> # Create instruments handler for method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
-            >>> # Record a required instrument
-            >>> instruments.record(BaseInstrument, True)
-            >>> instruments.record(BaseInstrument, False)
-            >>> instruments.is_required(BaseInstrument)
+            >>>
+            >>> # Define an instrument class
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> instruments.is_required(SomeInstrument)
+            False
+            >>> instruments.record(SomeInstrument, False)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>> instruments.record(SomeInstrument, True)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>> instruments.is_required(SomeInstrument)
             True
         """
         for instru in self._metadata:
@@ -190,11 +365,20 @@ class Instruments:
             ...     def bar(self):
             ...         pass
             ...
-            >>> # Create instruments handler for method
+            >>> # Create instruments handler for the method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
-            >>> instruments.record(BaseInstrument, True)
-            >>> list[instruments]
-            [BaseInstrument]
+            >>>
+            >>> # Define an instrument class
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> # Add a required instrument
+            >>> instruments.record(SomeInstrument, required=True)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>> # Add a non-required instrument
+            >>> instruments.record(SomeInstrument, required=False)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
         """
         self._metadata.add(instrument, required)
         return self
@@ -219,17 +403,26 @@ class Instruments:
             ...         pass
             ...
             >>> # Create instruments handler for method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
-            >>> # Add instruments
-            >>> instruments.record(BaseInstrument, True)
-            >>> instruments.record(BaseInstrument, False)
             >>>
-            >>> list(instruments.supported(required=True))
-            [BaseInstrument]
-            >>> list(instruments.supported(required=False))
-            [BaseInstrument]
+            >>> # Define an instrument class
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> # Add instruments
+            >>> instruments.record(SomeInstrument, required=True)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            >>>
+            >>> # Filter instruments based on their requirement status
+            >>> list(instruments.supported(True))
+            [<class '...SomeInstrument'>]
+            >>> list(instruments.supported(False))
+            []
+            >>> instruments.record(SomeInstrument, required=False)
+            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments.supported())
-            [BaseInstrument, BaseInstrument]
+            [<class '...SomeInstrument'>, <class '...SomeInstrument'>]
         """
         if required is None:
             yield from self
@@ -251,8 +444,9 @@ class Instruments:
             ...         pass
             ...
             >>> # Create instruments handler for method
+            >>> from domprob.announcements.instruments import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> repr(instruments)
-            "Instruments(metadata=AnnoMetadata(Foo.bar))"
+            'Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))'
         """
         return f"{self.__class__.__name__}(metadata={self._metadata!r})"

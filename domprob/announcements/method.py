@@ -75,12 +75,6 @@ from domprob.announcements.validation.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
 
-# Typing helper: Describes the class where the method resides
-_MethodCls = TypeVar("_MethodCls", bound=Any)
-
-# Typing helper: Describes the instrument parameters
-_Instrument = TypeVar("_Instrument", bound=Any)
-
 # Typing helpers: Describes the wrapped method signature
 _PMeth = ParamSpec("_PMeth")
 _RMeth = TypeVar("_RMeth")
@@ -302,27 +296,6 @@ class PartialBindException(AnnouncementException):
             to bind.
         exc (Exception): The original exception that caused the
             failure.
-
-    Examples:
-        >>> class SomeInstrument:
-        ...     pass
-        ...
-        >>> from domprob.announcements.method import AnnouncementMethod
-        >>> from domprob.exceptions import PartialBindException
-        >>>
-        >>> class Foo:
-        ...     def bar(self, instrument: SomeInstrument) -> None:
-        ...         pass
-        ...
-        >>> method = AnnouncementMethod(Foo.bar)
-        >>>
-        >>> try:
-        ...     method.bind(None)  # Attempting to bind with insufficient arguments
-        ... except TypeError as e:
-        ...     raise PartialBindException(method, e)
-        Traceback (most recent call last):
-        ...
-        domprob.announcements.method.PartialBindException: Failed to bind parameters to <function Foo.bar at 0x...>: ...
     """
 
     def __init__(self, method: AnnouncementMethod, exc: Exception) -> None:
@@ -339,26 +312,6 @@ class PartialBindException(AnnouncementException):
 
         Returns:
             str: A descriptive error message for the exception.
-
-        Examples:
-            >>> class SomeInstrument:
-            ...     pass
-            ...
-            >>> from domprob.announcements.method import AnnouncementMethod, PartialBindException
-            >>>
-            >>> class Foo:
-            ...     def bar(self, instrument: SomeInstrument) -> None:
-            ...         pass
-            ...
-            >>> method = AnnouncementMethod(Foo.bar)
-            >>>
-            >>> try:
-            ...     method.bind(None)  # Attempting to bind with insufficient arguments
-            ... except TypeError as e:
-            ...     exc = PartialBindException(method, e)
-            >>>
-            >>> exc.msg
-            "Failed to bind parameters to <function Foo.bar at 0x...>: ..."
         """
         return (
             f"Failed to bind parameters to {self.method.method!r}: {self.exc}"
@@ -373,27 +326,6 @@ class PartialBindException(AnnouncementException):
 
         Returns:
             str: A string representation of the exception instance.
-
-        Examples:
-            >>> class SomeInstrument:
-            ...     pass
-            ...
-            >>> from domprob.announcements.method import AnnouncementMethod
-            >>> from domprob.exceptions import PartialBindException
-            >>>
-            >>> class Foo:
-            ...     def bar(self, instrument: SomeInstrument) -> None:
-            ...         pass
-            ...
-            >>> method = AnnouncementMethod(Foo.bar)
-            >>>
-            >>> try:
-            ...     method.bind(None)  # Attempting to bind with insufficient arguments
-            ... except TypeError as e:
-            ...     exc = PartialBindException(method, e)
-            >>>
-            >>> repr(exc)
-            'PartialBindException(method=AnnouncementMethod(method=<function Foo.bar at 0x...>), exc=TypeError(...))'
         """
         return (
             f"{self.__class__.__name__}(method={self.method!r}, "

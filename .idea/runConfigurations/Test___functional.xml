@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Functional tests" type="tests" factoryName="py.test">
+  <configuration default="false" name="Test - functional" type="tests" factoryName="py.test">
     <module name="pydomprob" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
