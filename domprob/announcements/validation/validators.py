@@ -28,10 +28,10 @@ class MissingInstrumentException(ValidatorException):
 
 # pylint: disable=too-few-public-methods
 class InstrumentParamExistsValidator(BaseValidator):
-    def validate(self, meth: BoundAnnouncementMethod) -> None:
-        if meth.instrument is None:
-            raise MissingInstrumentException(meth.method)
-        return super().validate(meth)
+    def validate(self, method: BoundAnnouncementMethod) -> None:
+        if method.instrument is None:
+            raise MissingInstrumentException(method.method)
+        return super().validate(method)
 
 
 class InstrumentTypeException(ValidatorException):
@@ -59,12 +59,12 @@ class InstrumentTypeException(ValidatorException):
 
 # pylint: disable=too-few-public-methods
 class InstrumentTypeValidator(BaseValidator):
-    def validate(self, meth: BoundAnnouncementMethod) -> None:
+    def validate(self, method: BoundAnnouncementMethod) -> None:
         """Validates the method by checking the type of the
         `instrument` parameter.
 
         Args:
-            meth (`InstrumentBoundAnnoMethod`): The method with
+            method (`InstrumentBoundAnnoMethod`): The method with
                 metadata to validate.
 
         Raises:
@@ -72,11 +72,11 @@ class InstrumentTypeValidator(BaseValidator):
                 not an instance of any valid instrument classes.
         """
         # pylint: disable=unidiomatic-typecheck
-        if not any(type(meth.instrument) is i for i in meth.instruments):
+        if not any(type(method.instrument) is i for i in method.instruments):
             raise InstrumentTypeException(
-                meth.method, meth.instrument, meth.instruments
+                method.method, method.instrument, method.instruments
             )
-        return super().validate(meth)
+        return super().validate(method)
 
 
 class NoSupportedInstrumentsException(ValidatorException):
@@ -93,18 +93,18 @@ class NoSupportedInstrumentsException(ValidatorException):
 
 # pylint: disable=too-few-public-methods
 class SupportedInstrumentsExistValidator(BaseValidator):
-    def validate(self, meth: BoundAnnouncementMethod) -> None:
+    def validate(self, method: BoundAnnouncementMethod) -> None:
         """Validates the method by checking the type of the
         `instrument` parameter.
 
         Args:
-            meth (`InstrumentBoundAnnoMethod`): The method with
+            method (`InstrumentBoundAnnoMethod`): The method with
                 metadata to validate.
 
         Raises:
             AnnoValidationException: If the `instrument` parameter is
                 not an instance of any valid instrument classes.
         """
-        if not meth.instruments:
-            raise NoSupportedInstrumentsException(meth.method)
-        return super().validate(meth)
+        if not method.instruments:
+            raise NoSupportedInstrumentsException(method.method)
+        return super().validate(method)

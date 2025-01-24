@@ -1,27 +1,233 @@
+"""
+base_validator.py
+=================
+
+This module defines the base classes and interfaces for implementing
+validator chains in the `pydomprob` framework. Validators are used to
+validate `BoundAnnouncementMethod` instances in a chain of
+responsibility pattern, where each validator can pass validation to the
+next validator in the chain.
+
+Key Features:
+-------------
+- Implements a base class `BaseValidator` for creating custom
+  validators.
+- Supports a chain of responsibility pattern through the `next_`
+  attribute.
+- Includes a custom exception `ValidatorException` for handling
+  validation errors.
+
+Classes:
+--------
+- `ValidatorException`:
+    Base exception for all errors occurring in validators.
+- `BaseValidator`:
+    Abstract base class for creating validators that can optionally
+    delegate validation to the next validator in the chain.
+
+Usage:
+------
+This module is intended to be extended by custom validators that
+implement the `validate` method to perform specific checks on a
+`BoundAnnouncementMethod`.
+
+Examples:
+---------
+>>> from domprob.announcements.validation.base_validator import BaseValidator, ValidatorException
+>>> from domprob.announcements.method import BoundAnnouncementMethod
+
+>>> class ExampleValidator(BaseValidator):
+...     def validate(self, meth: BoundAnnouncementMethod) -> None:
+...         if not meth.instrument:
+...             raise ValidatorException("Instrument is required")
+...         print("Validation successful")
+...         super().validate(meth)
+...
+
+>>> # Create a mock BoundAnnouncementMethod instance
+>>> class SomeInstrument:
+...     pass
+...
+>>> class Cls:
+...     def method(self, instrument: SomeInstrument) -> None:
+...         pass
+...
+>>> bound_method = BoundAnnouncementMethod(Cls().method, SomeInstrument())
+>>> validator = ExampleValidator()
+>>> validator.validate(bound_method)
+Validation successful
+
+>>> # Validation with chaining
+>>> validator1 = ExampleValidator()
+>>> validator2 = ExampleValidator(next_=validator1)
+>>> validator2.validate(bound_method)
+Validation successful
+Validation successful
+"""
+
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Any, Optional, TypeAlias
+from typing import TYPE_CHECKING
 
 from domprob.announcements.exceptions import AnnouncementException
 
-_ChainLink: TypeAlias = "BaseValidator"
+if TYPE_CHECKING:
+    from domprob.announcements.method import (  # pragma: no cover
+        BoundAnnouncementMethod,
+    )
 
 
 class ValidatorException(AnnouncementException):
-    """Base exception for validator errors."""
+    """Exception raised when a validation error occurs in a validator.
+
+    This exception is used to indicate that validation has failed
+    during the execution of a validation chain. It inherits from
+    `AnnouncementException` to ensure consistency in exception handling
+    across the package.
+    """
 
 
 class BaseValidator(ABC):
-    def __init__(self, next_: Optional[_ChainLink] = None) -> None:
+    """
+    Abstract base class for creating validators in a chain of
+    responsibility pattern.
+
+    This class defines a structure for implementing validation logic
+    where each validator can perform a specific validation task and
+    optionally pass the validation responsibility to the next validator
+    in the chain. Subclasses must override the `validate` method to
+    provide specific validation logic.
+
+    Args:
+        next_ (BaseValidator | None, optional): The next validator in
+            the chain. Defaults to `None`, indicating no further
+            validation.
+
+    Attributes:
+        next_ (BaseValidator | None): Holds the reference to the next
+            validator in the chain or `None` if this is the last
+            validator.
+
+    Examples:
+        >>> from domprob.announcements.validation.base_validator import BaseValidator
+        >>> from domprob.announcements.method import BoundAnnouncementMethod
+        >>> class ExampleValidator(BaseValidator):
+        ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+        ...         if not method.instrument:
+        ...             raise ValueError("Instrument is required")
+        ...         print("Validation successful")
+        ...         super().validate(method)
+        ...
+        >>> # Mock setup for example
+        >>> class SomeInstrument:
+        ...     pass
+        ...
+        >>> class Cls:
+        ...     def method(self, instrument: SomeInstrument) -> None:
+        ...         pass
+        ...
+        >>> instance = Cls()
+        >>> bound_method = BoundAnnouncementMethod(Cls.method, instance, SomeInstrument())
+        >>> validator = ExampleValidator()
+        >>> validator.validate(bound_method)
+        Validation successful
+
+        >>> # Chaining validators
+        >>> validator1 = ExampleValidator()
+        >>> validator2 = ExampleValidator(next_=validator1)
+        >>> validator2.validate(bound_method)
+        Validation successful
+        Validation successful
+    """
+
+    def __init__(self, next_: BaseValidator | None = None) -> None:
         self.next_ = next_
 
     @abstractmethod
-    def validate(self, meth: Any) -> None:
+    def validate(self, method: BoundAnnouncementMethod) -> None:
+        """Validates a `BoundAnnouncementMethod` instance.
+
+        This method performs the validation logic for the current validator
+        and delegates to the next validator in the chain if one is defined.
+        Subclasses must implement the specific validation logic by overriding
+        this method.
+
+        Args:
+            method (BoundAnnouncementMethod): The method instance to validate.
+
+        Raises:
+            ValidatorException: If the validation fails.
+            Exception: If an unexpected error occurs during validation.
+
+        Examples:
+            >>> from domprob.announcements.validation.base_validator import BaseValidator
+            >>> from domprob.announcements.method import BoundAnnouncementMethod
+            >>> class ExampleValidator(BaseValidator):
+            ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
+            ...         if not meth.instrument:
+            ...             raise ValidatorException("Instrument is required")
+            ...         print("Validation successful")
+            ...         super().validate(meth)
+            ...
+            >>> # Mock setup for example
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> class Cls:
+            ...     def method(self, instrument: SomeInstrument) -> None:
+            ...         pass
+            ...
+            >>> instance = Cls()
+            >>> bound_method = BoundAnnouncementMethod(Cls.method, instance, SomeInstrument())
+            >>> validator = ExampleValidator()
+            >>> validator.validate(bound_method)
+            Validation successful
+        """
         if self.next_:
-            return self.next_.validate(meth)
+            return self.next_.validate(method)
         return None
 
     def __repr__(self) -> str:
+        """Returns a string representation of the validator.
+
+        This includes the class name and the `next_` validator in the
+        chain, making it easier to debug and inspect validator chains.
+
+        Returns:
+            str: A string representation of the validator.
+
+        Examples:
+            >>> from domprob.announcements.validation.base_validator import BaseValidator
+            >>> from domprob.announcements.method import BoundAnnouncementMethod
+            >>> class ExampleValidator(BaseValidator):
+            ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
+            ...         pass
+            ...
+            >>> validator = ExampleValidator(next_=None)
+            >>> repr(validator)
+            'ExampleValidator(next_=None)'
+            >>> chained_validator = ExampleValidator(next_=validator)
+            >>> repr(chained_validator)
+            'ExampleValidator(next_=ExampleValidator(next_=None))'
+        """
         return f"{self.__class__.__name__}(next_={self.next_!r})"
 
     def __str__(self) -> str:
+        """Returns a human-readable string representation of the
+        validator.
+
+        Returns:
+            str: The class name of the validator.
+
+        Examples:
+            >>> from domprob.announcements.validation.base_validator import BaseValidator
+            >>> class ExampleValidator(BaseValidator):
+            ...     def validate(self, meth):
+            ...         pass
+            ...
+            >>> validator = ExampleValidator()
+            >>> str(validator)
+            'ExampleValidator'
+        """
         return f"{self.__class__.__name__}"
