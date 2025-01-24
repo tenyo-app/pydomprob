@@ -2,45 +2,52 @@
 metadata.py
 ===========
 
-This module provides classes and utilities for managing metadata associated
-with decorated methods. It is designed to facilitate the handling of
-metadata entries, which include instrument types and their requirement
-status, as part of a method's runtime behaviour.
+This module provides classes and utilities for managing metadata
+associated with decorated methods. It is designed to facilitate the
+handling of metadata entries, which include instrument types and their
+requirement status, as part of a method's runtime behaviour.
 
 Key Features
 ------------
-- `AnnoMetadataItem`: Represents a single metadata entry, encapsulating
-  an instrument class and its requirement status (required or optional).
-- `AnnoMetadata`: Manages metadata for methods, supporting operations such
-  as adding metadata entries, iterating over entries, and retrieving the
-  number of entries.
+- `AnnouncementMetadataItem`: Represents a single metadata entry,
+  encapsulating an instrument class and its requirement status
+  (required or optional).
+- `AnnouncementMetadata`: Manages metadata for methods, supporting
+  operations such as adding metadata entries, iterating over entries,
+  and retrieving the number of entries.
 
 Classes
 -------
-- `AnnoMetadataItem`: A dataclass to store details about individual metadata
-  items.
-- `AnnoMetadata`: A utility class for managing collections of metadata items
-  for specific methods.
+- `AnnouncementMetadataItem`: A dataclass to store details about
+  individual metadata items.
+- `AnnouncementMetadata`: A utility class for managing collections of
+  metadata items for specific methods.
 
 Usage
 -----
-Decorate methods with metadata and manage their metadata programmatically.
-`AnnoMetadata` allows for the addition, retrieval, and iteration of metadata
-entries associated with methods.
+Decorate methods with metadata and manage their metadata
+programmatically. `AnnouncementMetadata` allows for the addition,
+retrieval, and iteration of metadata entries associated with methods.
 
 Example
 -------
->>> from domprob.announcements import metadata
->>>
+>>> class SomeInstrument:
+...     pass
+...
+>>> # Define a class with a method
 >>> class Foo:
 ...     def bar(self):
 ...         pass
 ...
 >>> # Create metadata for the method
+>>> from domprob.announcements import metadata
 >>> meta = metadata.AnnouncementMetadata(Foo.bar)
->>> meta.add(BaseInstrument, req=True)
+>>>
+>>> meta.add(SomeInstrument, required=True)
+AnnouncementMetadata(method=<function Foo.bar at 0x...>)
+>>>
 >>> list(meta)
-[AnnoMetadataItem(instrument_cls=BaseInstrument, required=True)]
+[AnnouncementMetadataEntry(instrument_cls=<class '...SomeInstrument'>, required=True)]
 """
 
 from collections.abc import Callable, Generator
@@ -61,19 +68,23 @@ class AnnouncementMetadataEntry:
             Defaults to `True` if not provided during instantiation.
 
     Examples:
-        >>> item = AnnouncementMetadataEntry(BaseInstrument, required=False)
-        >>> item
-        AnnoMetadataItem(instrument_cls=BaseInstrument, required=False)
-        >>> item.instrument_cls
-        <class 'BaseInstrument'>
-        >>> item.required
+        >>> class SomeInstrument:
+        ...     pass
+        ...
+        >>> # Define a class with a method
+        >>> class Foo:
+        ...     def bar(self):
+        ...         pass
+        ...
+        >>> # Create metadata for the method
+        >>> from domprob.announcements import metadata
+        >>> entry = metadata.AnnouncementMetadataEntry(SomeInstrument, required=False)
+        >>> entry
+        AnnouncementMetadataEntry(instrument_cls=<class '...SomeInstrument'>, required=False)
+        >>> entry.instrument_cls
+        <class '...SomeInstrument'>
+        >>> entry.required
         False
-
-        >>> item = AnnouncementMetadataEntry(BaseInstrument)
-        >>> item
-        AnnoMetadataItem(instrument_cls=BaseInstrument, required=True)
-        >>> item.required
-        True
     """
 
     instrument_cls: type[Any]
@@ -81,22 +92,24 @@ class AnnouncementMetadataEntry:
 
 
 class AnnouncementMetadata:
-    """Stores and manages metadata for a decorated method.
+    """Stores and manages metadata for an instance method.
 
     Args:
         method (`Callable[..., Any]`): The method for which the
             metadata is to be managed.
 
     Examples:
-        >>> # Define a class with a method to decorate
+        >>> # Define a class with a method
         >>> class Foo:
         ...     def bar(self):
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> metadata = AnnouncementMetadata(Foo.bar)
-        >>> metadata
-        AnnoMetadata(method=Foo.bar)
+        >>> from domprob.announcements import metadata
+        >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+        >>>
+        >>> meta
+        AnnouncementMetadata(method=<function Foo.bar at 0x...>)
     """
 
     # The attribute name where the metadata will be saved to on the
@@ -114,18 +127,24 @@ class AnnouncementMetadata:
                 method.
 
         Examples:
-            >>> # Define a class with a method to decorate
+            >>> # Define a class with a method
             >>> class Foo:
             ...     def bar(self):
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnouncementMetadata(Foo.bar)
+            >>> from domprob.announcements import metadata
+            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
             >>>
-            >>> len(metadata)
+            >>> len(meta)
             0
-            >>> metadata.add(BaseInstrument)
-            >>> len(metadata)
+            >>> # Define an instrument
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> meta.add(SomeInstrument, required=True)
+            AnnouncementMetadata(method=<function Foo.bar at 0x...>)
+            >>> len(meta)
             1
         """
         return len(getattr(self._method, self.METADATA_ATTR, []))
@@ -138,29 +157,71 @@ class AnnouncementMetadata:
                 method.
 
         Examples:
-            >>> # Define a class with a method to decorate
+            >>> # Define a class with a method
             >>> class Foo:
             ...     def bar(self):
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnouncementMetadata(Foo.bar)
-            >>> # Add entries to the metadata
-            >>> metadata.add(BaseInstrument, True)
-            >>> metadata.add(BaseInstrument, False)
+            >>> from domprob.announcements import metadata
+            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
             >>>
-            >>> list(metadata)
-            [
-                AnnoMetadataItem(instrument_cls=BaseInstrument, required=True),
-                AnnoMetadataItem(instrument_cls=BaseInstrument, required=False)
-            ]
+            >>> # Define an instrument
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> # Add entries to the metadata
+            >>> meta.add(SomeInstrument, True).add(SomeInstrument, False)
+            AnnouncementMetadata(method=<function Foo.bar at 0x...>)
+            >>>
+            >>> meta_iter = iter(meta)
+            >>> next(meta_iter)
+            AnnouncementMetadataEntry(instrument_cls=<class '...SomeInstrument'>, required=True)
+            >>> next(meta_iter)
+            AnnouncementMetadataEntry(instrument_cls=<class '...SomeInstrument'>, required=False)
         """
         yield from tuple(getattr(self._method, self.METADATA_ATTR, []))
 
     def __eq__(self, other: Any) -> bool:
+        """Equality operator to check if two `AnnouncementMetadata`
+        instances are equivalent.
+
+        Args:
+            other (Any): The object to compare with the current
+                `AnnouncementMetadata` instance. Typically expected
+                to be another `AnnouncementMetadata` object.
+
+        Returns:
+            bool: Returns `True` if both operands reference the
+                metadata of the same instance method
+
+        Examples:
+            >>> # Define a class with a method
+            >>> class Foo:
+            ...     def bar(self):
+            ...         pass
+            ...
+            >>> # Create metadata for the method
+            >>> from domprob.announcements import metadata
+            >>> meta_1 = metadata.AnnouncementMetadata(Foo.bar)
+            >>> meta_1 == "string"
+            False
+            >>> meta_2 = metadata.AnnouncementMetadata(Foo.bar)
+            >>> meta_1 == meta_2
+            True
+            >>>
+            >>> # Define an instrument
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> meta_1.add(SomeInstrument, True)
+            AnnouncementMetadata(method=<function Foo.bar at 0x...>)
+            >>> meta_1 == meta_2  # Both reference the same method
+            True
+        """
         if not isinstance(other, AnnouncementMetadata):
             return False
-        return (self._method == other._method) and (list(self) == list(other))
+        return self._method == other._method
 
     def add(self, instrument: Any, required: bool) -> "AnnouncementMetadata":
         """Adds an announcements metadata entry to the method.
@@ -174,18 +235,24 @@ class AnnouncementMetadata:
             AnnouncementMetadata: The updated metadata instance.
 
         Examples:
-            >>> # Define a class with a method to decorate
+            >>> # Define a class with a method
             >>> class Foo:
             ...     def bar(self):
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnouncementMetadata(Foo.bar)
-            >>> len(metadata)
+            >>> from domprob.announcements import metadata
+            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+            >>>
+            >>> len(meta)
             0
-            >>> # Add an entry to the method's metadata
-            >>> metadata.add(BaseInstrument, req=True)
-            >>> len(metadata)
+            >>> # Define an instrument
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> meta.add(SomeInstrument, required=True)
+            AnnouncementMetadata(method=<function Foo.bar at 0x...>)
+            >>> len(meta)
             1
         """
         item = AnnouncementMetadataEntry(instrument, required=required)
@@ -207,8 +274,9 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> metadata = AnnouncementMetadata(Foo.bar)
-            >>> repr(metadata)
-            "AnnoMetadata(metadata=Foo.bar)"
+            >>> from domprob.announcements import metadata
+            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+            >>> repr(meta)
+            'AnnouncementMetadata(method=<function Foo.bar at 0x...>)'
         """
         return f"{self.__class__.__name__}(method={self._method!r})"
