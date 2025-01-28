@@ -198,7 +198,6 @@ jobs:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
           DOCS_BRANCH: ${{ github.head_ref || github.ref_name }}  # Gets current branch/PR
         run: |
-          make docs-deploy docs_branch=$DOCS_BRANCH
-          build_response=$(curl -s -H "Authorization: Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/domprob/builds/?running=true)
-          echo "Build Response: $build_response"
+          response = $(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${DOCS_BRANCH}/builds/) || exit 1
+          echo "Build Response: $response"
           echo "build_id=$build_id" >> $GITHUB_ENV
