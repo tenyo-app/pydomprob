@@ -23,8 +23,8 @@ autodocs:
 
 .PHONY: docs-deploy
 docs-deploy:
-	curl -X POST -d "branches=$(docs_branch)" -d "token=${READTHEDOCS_TOKEN}" -d "default_branch=develop" \
-	https://readthedocs.org/api/v2/webhook/domprob/289113/
+	curl --fail -X POST -d "branches=$(docs_branch)" -d "token=${READTHEDOCS_TOKEN}" -d "default_branch=develop" \
+	https://readthedocs.org/api/v2/webhook/domprob/289113/ || exit 1
 
 mypy:
 	uv run mypy domprob/
