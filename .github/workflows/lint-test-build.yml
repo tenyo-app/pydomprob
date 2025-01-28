@@ -190,5 +190,7 @@ jobs:
       - build-package
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: "Trigger docs deployment"
         run: make docs-deploy docs_branch=${{ github.head_ref || github.ref_name }}  # use current branch
