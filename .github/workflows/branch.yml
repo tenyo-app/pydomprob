@@ -200,4 +200,6 @@ jobs:
         run: |
           response=$(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${DOCS_BRANCH}/builds/) || exit 1
           echo "Build Response: $response"
+          build_id=$(echo "$response" | jq -r '.build.id')
+          echo "Build ID: $build_id"
           echo "build_id=$build_id" >> $GITHUB_ENV
