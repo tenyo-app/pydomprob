@@ -210,7 +210,7 @@ jobs:
         run: |
           while true; do
             response=$(curl --fail -s -H "Authorization: Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/domprob/builds/${BUILD_ID}/) || exit 1
-            build_state=$(echo $response | jq -r '.state')
+            build_state=$(echo $response | jq -r '.state.code')
             build_success=$(echo $response | jq -r '.success')
 
             echo "Build State: $build_state"
