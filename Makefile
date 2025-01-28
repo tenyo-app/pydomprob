@@ -34,3 +34,8 @@ black-check:
 	uv run black domprob/ --line-length=79 --check
 
 lint: black-check mypy pylint
+
+lock:
+	uv lock
+	uv sync
+	uv export --frozen > requirements.txt
