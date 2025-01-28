@@ -199,7 +199,7 @@ jobs:
           DOCS_BRANCH: ${{ github.head_ref || github.ref_name }}  # Gets current branch/PR
         run: |
           make docs-deploy docs_branch=$DOCS_BRANCH
-          build_id=$(curl -s -H "Authorization: Token $READTHEDOCS_TOKEN" \
-            "https://readthedocs.org/api/v2/webhook/domprob/289113/" | jq -r '.results[0].id')
-          echo "Build ID: $build_id"
+          build_response=$(curl -s -H "Authorization: Token $READTHEDOCS_TOKEN" -d \
+            "https://readthedocs.org/api/v2/webhook/domprob/289113/")
+          echo "Build Response: $build_response"
           echo "build_id=$build_id" >> $GITHUB_ENV
