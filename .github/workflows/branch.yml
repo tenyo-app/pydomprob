@@ -198,6 +198,6 @@ jobs:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
           DOCS_BRANCH: ${{ github.head_ref || github.ref_name }}  # Gets current branch/PR
         run: |
-          response = $(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${DOCS_BRANCH}/builds/) || exit 1
+          response=$(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${DOCS_BRANCH}/builds/) || exit 1
           echo "Build Response: $response"
           echo "build_id=$build_id" >> $GITHUB_ENV
