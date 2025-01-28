@@ -23,7 +23,7 @@ autodocs:
 
 .PHONY: docs-deploy
 docs-deploy:
-	curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${docs_branch}/builds/ || exit 1
+	curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/latest/builds/ || exit 1
 
 mypy:
 	uv run mypy domprob/
