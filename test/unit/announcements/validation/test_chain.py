@@ -10,12 +10,14 @@ from domprob.announcements.validation.chain import (
     ABCLinkValidator,
     ABCLinkValidatorContext,
     EmptyChainException,
-    InvalidLinkException,
-    LinkExistsException,
     LinkTypeValidator,
     LinkValidatorContext,
     UniqueLinkValidator,
     ValidationChain,
+)
+from domprob.announcements.validation.chain_validation import (
+    InvalidLinkException,
+    LinkExistsException,
     ValidationChainException,
 )
 
