@@ -157,16 +157,6 @@ jobs:
           name: docs
           path: docs/_build/html
 
-  deploy-docs:
-    runs-on: ubuntu-24.04
-    if: success() && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
-    needs:
-      - doc-tests
-
-    steps:
-      - name: "Trigger docs deployment"
-        run: make docs-deploy docs_branch=${{ github.head_ref || github.ref_name }}  # use current branch
-
   build-package:
     runs-on: ubuntu-24.04
     needs:
@@ -191,3 +181,14 @@ jobs:
         with:
           name: dist
           path: dist
+
+  deploy-docs:
+    runs-on: ubuntu-24.04
+    if: success() && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    needs:
+      - build-docs
+      - build-package
+
+    steps:
+      - name: "Trigger docs deployment"
+        run: make docs-deploy docs_branch=${{ github.head_ref || github.ref_name }}  # use current branch
