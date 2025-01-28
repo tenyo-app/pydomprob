@@ -213,10 +213,10 @@ jobs:
             build_state=$(echo $response | jq -r '.state.code')
             build_success=$(echo $response | jq -r '.success')
 
-            echo "Polling build state... $build_state"
+            echo "Polling deployment state... $build_state"
 
             if [ "$build_state" == "finished" ]; then
-              echo "Build success: $build_success"
+              echo "Deployment success: $build_success"
               if [ "$build_success" == "true" ]; then
                 echo "Read the Docs build completed successfully."
                 break
