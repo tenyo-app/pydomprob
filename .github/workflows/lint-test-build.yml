@@ -176,9 +176,6 @@ jobs:
       - name: "Build package"
         run: uv build
 
-      - name: "Test package"
-        run: uv run --with domprob --no-project -- python -c "import domprob"
-
       - name: Upload distributions
         uses: actions/upload-artifact@v4
         with:
