@@ -199,7 +199,32 @@ jobs:
           DOCS_BRANCH: ${{ github.head_ref || github.ref_name }}  # Gets current branch/PR
         run: |
           response=$(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${DOCS_BRANCH}/builds/) || exit 1
-          echo "Build Response: $response"
           build_id=$(echo "$response" | jq -r '.build.id')
           echo "Build ID: $build_id"
           echo "build_id=$build_id" >> $GITHUB_ENV
+
+      - name: "Wait for docs deployment to complete"
+        env:
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
+          BUILD_ID: ${{ env.build_id }}
+        run: |
+          while true; do
+            response=$(curl --fail -s -H "Authorization: Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/domprob/builds/${BUILD_ID}/) || exit 1
+            build_state=$(echo $response | jq -r '.state')
+            build_success=$(echo $response | jq -r '.success')
+
+            echo "Build State: $build_state"
+            echo "Build Success: $build_success"
+
+            if [ "$build_state" == "finished" ]; then
+              if [ "$build_success" == "true" ]; then
+                echo "Read the Docs build completed successfully."
+                break
+              else:
+                echo "Read the Docs build failed."
+                exit 1
+              fi
+            fi
+
+            sleep 1
+          done
