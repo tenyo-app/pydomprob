@@ -111,6 +111,32 @@ jobs:
       - name: "Functional test (python: ${{ matrix.python-version }})"
         run: make test-functional
 
+  build-package:
+    runs-on: ubuntu-24.04
+    needs:
+      - unit-tests
+      - functional-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5.1.0
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: "Build package"
+        run: uv build
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
   doc-tests:
     runs-on: ubuntu-24.04
     needs:
@@ -157,31 +183,6 @@ jobs:
           name: docs
           path: docs/_build/html
 
-  build-package:
-    runs-on: ubuntu-24.04
-    needs:
-      - doc-tests
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5.1.0
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: "pyproject.toml"
-
-      - name: "Build package"
-        run: uv build
-
-      - name: Upload distributions
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
-
   deploy-docs:
     runs-on: ubuntu-24.04
     if: success() && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
@@ -194,5 +195,5 @@ jobs:
 
       - name: "Trigger docs deployment"
         env:
-          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS.token }}
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
         run: make docs-deploy docs_branch=${{ github.head_ref || github.ref_name }}  # use current branch
