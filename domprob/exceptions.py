@@ -21,6 +21,13 @@ Imports:
         is missing.
     - `NoSupportedInstrumentsException`: Raised when no supported
         instruments are defined.
+    - `ValidationChainException`: Base class for chain
+        validation-related issues
+    - `EmptyChainException`: Raised when a validation chain is empty.
+    - `InvalidLinkException`: Raised when an invalid link is
+        encountered.
+    - `LinkExistsException`: Raised when a duplicate link already
+        exists.
 
 Attributes:
     __all__ (Sequence[str]): Specifies the public API of this module,
@@ -40,6 +47,12 @@ from collections.abc import Sequence
 from domprob.announcements.exceptions import AnnouncementException
 from domprob.announcements.method import PartialBindException
 from domprob.announcements.validation.base_validator import ValidatorException
+from domprob.announcements.validation.chain import (
+    EmptyChainException,
+    InvalidLinkException,
+    LinkExistsException,
+    ValidationChainException,
+)
 from domprob.announcements.validation.validators import (
     InstrumentTypeException,
     MissingInstrumentException,
@@ -55,4 +68,8 @@ __all__: Sequence[str] = [
     "InstrumentTypeException",
     "MissingInstrumentException",
     "NoSupportedInstrumentsException",
+    "ValidationChainException",
+    "EmptyChainException",
+    "InvalidLinkException",
+    "LinkExistsException",
 ]

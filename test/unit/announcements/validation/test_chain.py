@@ -95,7 +95,7 @@ class TestInvalidLinkException:
             raise InvalidLinkException(bad_chain_link, mock_good_link)
         # Assert
         except InvalidLinkException as exc_info:
-            assert exc_info.base == mock_good_link
+            assert exc_info.expected_type == mock_good_link
             assert exc_info.link == bad_chain_link
 
 
@@ -293,7 +293,10 @@ class TestABCLinkValidatorContext:
         # Act
         context_repr = repr(context)
         # Assert
-        assert context_repr == f"TestContext()"
+        assert (
+            context_repr
+            == f"TestContext(chain=ValidationChain(base='BaseValidator'))"
+        )
 
 
 class TestLinkValidatorContext:
