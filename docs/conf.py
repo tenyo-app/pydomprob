@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../domprob/"))
+sys.path.insert(0, os.path.abspath("../"))
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -34,7 +34,7 @@ autodoc_default_options = {
     "members": True,  # Document class members
     "undoc-members": True,  # Include undocumented members
     "private-members": True,  # Include private members (_ prefixed)
-    "special-members": "__init__",  # Include special methods like __init__
+    "special-members": "__call__, __repr__",  # Include special methods like __init__
     "inherited-members": True,  # Include inherited members
     "show-inheritance": True,  # Show class inheritance
 }

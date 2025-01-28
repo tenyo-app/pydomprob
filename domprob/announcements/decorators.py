@@ -1,32 +1,29 @@
 """
-decorators.py
-==============
-
 This module provides utilities for managing metadata associated with
 decorated methods using the `@announcement` decorator. It enables the
 management of metadata entries, validation of instrument requirements,
 and runtime execution of decorated methods with type safety.
 
-Key Features:
--------------
+**Key Features**
+
 - Associate methods with metadata describing the required instruments.
 - Validate method arguments and runtime parameters using metadata.
 - Support stacking of `@announcement` decorators for enhanced
   flexibility.
 
-Key Classes:
-------------
+**Key Classes**
+
 - `_Announcement`: A decorator class for associating metadata with
   methods and enforcing runtime validation.
 
-Usage:
-------
+**Usage**
+
 Decorate a method with `@announcement` to attach metadata and enforce
 instrument requirements at runtime. This facilitates the validation of
 method calls and their associated parameters.
 
-Example:
---------
+**Examples**
+
 >>> class SomeInstrument:
 ...     pass
 ...
