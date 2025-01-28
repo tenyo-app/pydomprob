@@ -194,5 +194,5 @@ jobs:
 
       - name: "Trigger docs deployment"
         env:
-          READTHEDOCS_TOKEN = ${{ secrets.READTHEDOCS.token }}
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS.token }}
         run: make docs-deploy docs_branch=${{ github.head_ref || github.ref_name }}  # use current branch
