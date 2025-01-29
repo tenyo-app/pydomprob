@@ -232,7 +232,7 @@ jobs:
               if [ "$build_success" == "true" ]; then
                 echo "Read the Docs build completed successfully."
                 break
-              else:
+              else
                 echo "Read the Docs build failed."
                 exit 1
               fi
