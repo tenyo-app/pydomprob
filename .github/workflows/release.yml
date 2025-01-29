@@ -220,7 +220,7 @@ jobs:
       - name: Update pyproject.toml project version
         run: |
           sed -i.bak -E "s/^version\s*=\s*\"[^\"]+\"/version = \"${VERSION}\"/" pyproject.toml
-          echo "Updated pyproject.toml to project version ${VERSION}" - pyproject.toml:
+          echo "Updated pyproject.toml to project version '${VERSION}'" - pyproject.toml:
           cat pyproject.toml
 
       - name: "Set up Python"

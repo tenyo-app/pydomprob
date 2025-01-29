@@ -227,27 +227,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5.1.0
 
-      - name: Determine VERSION environment variable
-        run: |
-          echo "Branch is '${{ github.ref_name }}'"
-          if [[ ${{ github.ref_name }} == "develop" ]]; then
-            VERSION=latest
-          elif [[ ${{ github.ref_name }} == "main" || ${{ github.ref_name }} == "master" ]]; then
-            VERSION=stable
-          else
-            VERSION=${{ github.ref_name }}
-          fi
-          echo "VERSION=${VERSION}"
-          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
-
-      - name: Update pyproject.toml project version
-        env:
-          VERSION: ${{ env.VERSION }}
-        run: |
-          sed -i.bak -E "s/^version\s*=\s*\"[^\"]+\"/version = \"${VERSION}\"/" pyproject.toml
-          echo "Updated pyproject.toml to project version ${VERSION}" - pyproject.toml:
-          cat pyproject.toml
-
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
