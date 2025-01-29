@@ -37,5 +37,5 @@ lint: black-check mypy pylint
 
 lock:
 	uv lock
-	uv sync
+	uv sync --no-editable
 	uv export --frozen > docs/requirements.txt

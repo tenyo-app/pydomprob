@@ -197,13 +197,14 @@ jobs:
         run: |
             echo "Branch is '${{ github.ref_name }}'"
             if [[ ${{ github.ref_name }} == "develop" ]]; then
-              echo "DOCS_VERSION=latest" >> $GITHUB_ENV
+              echo "DOCS_VERSION=latest"
             elif [[ ${{ github.ref_name }} == "main" || ${{ github.ref_name }} == "master" ]]; then
-              echo "DOCS_VERSION=stable" >> $GITHUB_ENV
+              echo "DOCS_VERSION=stable"
             else
-              echo "DOCS_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+              echo "DOCS_VERSION=${{ github.ref_name }}"
             fi
-            echo "DOCS_VERSION=${{ env.DOCS_VERSION }}"
+            echo "DOCS_VERSION=$(DOCS_VERSION)"
+            echo $(DOCS_VERSION) >> $GITHUB_ENV
 
       - name: "Trigger docs deployment"
         env:
