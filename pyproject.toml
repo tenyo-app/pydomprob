@@ -5,8 +5,13 @@ description = "Python package to implement observability domain probes"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
+license = { text = "MIT" }
 
-[dependency-groups]
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
 dev = [
     "black>=24.10.0",
     "mypy>=1.14.1",
@@ -19,6 +24,9 @@ dev = [
     "sphinx-rtd-theme>=3.0.2",
     "myst-parser>=4.0.0",
     "sphinx-autodoc-typehints>=3.0.1",
+    "setuptools>=75.8.0",
+    "wheel>=0.45.1",
+    "twine>=6.1.0"
 ]
 
 
@@ -32,3 +40,6 @@ use_parentheses = true
 
 [tool.coverage.report]
 omit = ["domprob/__init__.py", "domprob/exceptions.py"]  # Test contracts in integration tests
+
+[tool.setuptools]
+license-files = ["LICENSE"]  # Ensure this matches the actual path to your license file
