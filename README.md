@@ -7,7 +7,7 @@ to be a Python package to implement observability domain probes. View the docume
 
 Keep your business logic tidy and abstract the observability code away.
 
-Change this:
+Turn this:
 
 ```python
 class Order:
