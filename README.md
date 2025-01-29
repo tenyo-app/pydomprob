@@ -1,5 +1,7 @@
 # domprob 🛰️
-Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-observability.html), domprob is designed to be a Python package to implement observability domain probes.
+Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-observability.html), domprob is designed
+to be a Python package to implement observability domain probes. View the documentation
+[here](https://domprob.readthedocs.io/en/latest/).
 
 ## Overview
 
