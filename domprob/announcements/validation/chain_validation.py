@@ -1,35 +1,29 @@
 """
-chain_validation
-================
-
 This module provides tools for validating chains of links using a
 series of customisable validators. The `ValidationChain` is the central
 component, enabling dynamic management and execution of validators to
 ensure consistency and enforce rules across linked elements.
 
-Features:
----------
-- **Validation Chains**: Manage and apply a sequence of validators to
+**Features**
+
+- Validation Chains: Manage and apply a sequence of validators to
   links.
-- **Dynamic Management**: Add, remove, and reorganise validators at
+- Dynamic Management: Add, remove, and reorganise validators at
   runtime.
-- **Type Enforcement**: Ensure all links conform to a specified base
-  type.
-- **Error Handling**: Raise meaningful exceptions when validation
-  fails.
+- Type Enforcement: Ensure all links conform to a specified base type.
+- Error Handling: Raise meaningful exceptions when validation fails.
 
-Classes:
---------
-- `ValidationChain`:
-    Represents a chain of validators for sequential validation of
-    links.
-- `ABCLinkValidator`:
-    Abstract base class for creating custom link validators.
-- `ValidationExceptions`:
-    Includes exceptions for invalid links and other validation errors.
+**Classes**
 
-Methods Overview:
------------------
+- `ValidationChain`: Represents a chain of validators for sequential
+  validation of links.
+- `ABCLinkValidator`: Abstract base class for creating custom link
+  validators.
+- `ValidationExceptions`: Includes exceptions for invalid links and
+  other validation errors.
+
+**Methods Overview**
+
 - `append(validator)`: Add a validator to the end of the chain.
 - `insert(index, validator)`: Insert a validator at a specific
   position.
@@ -37,15 +31,15 @@ Methods Overview:
 - `clear()`: Remove all validators from the chain.
 - `extend(validators)`: Add multiple validators in one operation.
 
-Usage:
-------
+**Usage**
+
 The `ValidationChain` is designed for flexible and reusable workflows,
 allowing validators to enforce rules dynamically. This is useful in
 systems that require strict validation of linked data structures or
 sequences.
 
-Examples:
----------
+**Examples**
+
 >>> from domprob.announcements.method import BoundAnnouncementMethod
 >>> from domprob.announcements.validation.chain import ValidationChain
 >>> from domprob.announcements.validation.chain_validation import ABCLinkValidator

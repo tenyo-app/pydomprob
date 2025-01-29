@@ -1,15 +1,12 @@
 """
-base_validator.py
-=================
-
 This module defines the base classes and interfaces for implementing
 validator chains in the `pydomprob` framework. Validators are used to
 validate `BoundAnnouncementMethod` instances in a chain of
 responsibility pattern, where each validator can pass validation to the
 next validator in the chain.
 
-Key Features:
--------------
+**Key Features**
+
 - Implements a base class `BaseValidator` for creating custom
   validators.
 - Supports a chain of responsibility pattern through the `next_`
@@ -17,22 +14,21 @@ Key Features:
 - Includes a custom exception `ValidatorException` for handling
   validation errors.
 
-Classes:
---------
-- `ValidatorException`:
-    Base exception for all errors occurring in validators.
-- `BaseValidator`:
-    Abstract base class for creating validators that can optionally
-    delegate validation to the next validator in the chain.
+**Classes**
 
-Usage:
-------
+- `ValidatorException`: Base exception for all errors occurring in
+  validators.
+- `BaseValidator`: Abstract base class for creating validators that can
+  optionally delegate validation to the next validator in the chain.
+
+**Usage**
+
 This module is intended to be extended by custom validators that
 implement the `validate` method to perform specific checks on a
 `BoundAnnouncementMethod`.
 
-Examples:
----------
+**Examples**
+
 >>> from domprob.announcements.validation.base_validator import BaseValidator, ValidatorException
 >>> from domprob.announcements.method import BoundAnnouncementMethod
 

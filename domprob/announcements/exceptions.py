@@ -1,28 +1,27 @@
 """
-exceptions.py
-=============
+This module defines custom exceptions for the `@announcement`
+functionality in the `domprob` framework. These exceptions provide
+meaningful error messages and are organised hierarchically for better
+error handling and debugging.
 
-This module defines custom exceptions for the `@announcement` functionality
-in the `domprob` framework. These exceptions provide meaningful error messages
-and are organised hierarchically for better error handling and debugging.
+**Key Classes**
 
-Key Classes:
-------------
 - `AnnouncementException`:
-    The base exception for all errors related to the `@announcement` functionality.
-    It serves as a parent class for more specific exceptions in the framework.
+  The base exception for all errors related to the `@announcement`
+  functionality. It serves as a parent class for more specific
+  exceptions in the framework.
 
-Usage:
-------
-These exceptions are designed to be used internally by the `domprob` framework.
-Developers can raise these exceptions when validating inputs, executing
-decorated methods, or handling invalid operations within the announcement
-mechanism.
+**Usage**
 
-Examples:
----------
+These exceptions are designed to be used internally by the `domprob`
+framework. Developers can raise these exceptions when validating
+inputs, executing decorated methods, or handling invalid operations
+within the announcement mechanism.
+
+**Examples**
+
 >>> from domprob.announcements.exceptions import AnnouncementException
-
+>>>
 >>> # Define a specific exception inheriting from AnnouncementException
 >>> class ValidationError(AnnouncementException):
 ...     pass

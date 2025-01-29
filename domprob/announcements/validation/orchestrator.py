@@ -1,31 +1,30 @@
 """
-orchestrator.py
-===============
-
 This module provides the `AnnouncementValidationOrchestrator` class,
 which is responsible for managing and executing a chain of validators
-to enforce rules and constraints on `BoundAnnouncementMethod` instances.
+to enforce rules and constraints on `BoundAnnouncementMethod`
+instances.
 
 Validators are managed in a `ValidationChain`, and the orchestrator
 supports registering additional validators or using default ones.
 
-Key Features:
--------------
+**Key Features**
+
 - Default set of validators (`DEFAULT_VALIDATORS`) to check:
   - Supported instruments exist.
   - Instrument parameters exist.
   - Instrument types are valid.
 - Flexible mechanism to extend or customise validators.
-- Integration with the `ValidationChain` class for sequential validation.
+- Integration with the `ValidationChain` class for sequential
+  validation.
 
-Classes:
---------
-- `AnnouncementValidationOrchestrator`:
-    Orchestrates validation by maintaining a chain of validators and
-    applying them to `BoundAnnouncementMethod` instances.
+**Classes**
 
-Examples:
----------
+- `AnnouncementValidationOrchestrator`: Orchestrates validation by
+  maintaining a chain of validators and applying them to
+  `BoundAnnouncementMethod` instances.
+
+**Examples**
+
 >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
 >>> from domprob.announcements.method import AnnouncementMethod
 >>>

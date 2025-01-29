@@ -1,47 +1,43 @@
 """
-method.py
-=========
-
 This module provides classes and utilities for managing decorated
 methods associated with metadata and runtime validation in the
 `pydomprob` framework. It supports functionalities like binding
 runtime arguments, validating instruments, and executing methods with
 associated metadata.
 
-Key Classes:
-------------
-1. **AnnouncementMethod**:
+**Key Classes**
+
+1. `AnnouncementMethod`:
+
    - Represents a decorated method with associated metadata.
    - Provides interfaces for accessing supported instruments, method
      signatures, and partially binding runtime arguments.
 
-2. **PartialBindException**:
+2. `PartialBindException`:
+
    - Raised when binding arguments to a method's signature fails.
    - Helps handle errors during partial argument binding, including
      missing required parameters.
 
-3. **BoundAnnouncementMethod**:
+3. `BoundAnnouncementMethod`:
+
    - Extends `AnnouncementMethod` to represent partially bound methods.
    - Facilitates logic like validation and execution of methods with
      pre-bound arguments.
 
-Key Features:
--------------
-- **Metadata Handling**:
-  - Associates metadata, including supported instruments, with
-    decorated methods.
-- **Partial Argument Binding**:
-  - Supports binding runtime arguments partially to methods before
-    execution.
-- **Validation**:
-  - Ensures runtime parameters meet method requirements, such as
-    required instruments.
-- **Custom Exceptions**:
-  - Includes `PartialBindException` for handling argument binding
-    errors.
+**Key Features**
 
-Usage:
-------
+- Metadata Handling: Associates metadata, including supported
+  instruments, with decorated methods.
+- Partial Argument Binding: Supports binding runtime arguments
+  partially to methods before execution.
+- Validation: Ensures runtime parameters meet method requirements,
+  such as required instruments.
+- Custom Exceptions: Includes `PartialBindException` for handling
+  argument binding errors.
+
+**Usage**
+
 >>> class SomeInstrument:
 ...     pass
 ...
@@ -58,8 +54,8 @@ Usage:
 >>> foo.bar(SomeInstrument())
 Instrument: <...SomeInstrument object at 0x...>
 
-Integration:
-------------
+**Integration**
+
 This module integrates with the `domprob.announcements` package to
 provide comprehensive runtime validation and metadata management for
 decorated methods.

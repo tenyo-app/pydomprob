@@ -1,14 +1,11 @@
 """
-metadata.py
-===========
-
 This module provides classes and utilities for managing metadata
 associated with decorated methods. It is designed to facilitate the
 handling of metadata entries, which include instrument types and their
 requirement status, as part of a method's runtime behaviour.
 
-Key Features
-------------
+**Key Features**
+
 - `AnnouncementMetadataItem`: Represents a single metadata entry,
   encapsulating an instrument class and its requirement status
   (required or optional).
@@ -16,21 +13,21 @@ Key Features
   operations such as adding metadata entries, iterating over entries,
   and retrieving the number of entries.
 
-Classes
--------
+**Classes**
+
 - `AnnouncementMetadataItem`: A dataclass to store details about
   individual metadata items.
 - `AnnouncementMetadata`: A utility class for managing collections of
   metadata items for specific methods.
 
-Usage
------
+**Usage**
+
 Decorate methods with metadata and manage their metadata
 programmatically. `AnnouncementMetadata` allows for the addition,
 retrieval, and iteration of metadata entries associated with methods.
 
-Example
--------
+**Example**
+
 >>> class SomeInstrument:
 ...     pass
 ...

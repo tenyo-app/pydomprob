@@ -1,37 +1,31 @@
 """
-validators.py
-=============
-
 This module provides validators for the `pydomprob` framework. These
 validators are used to enforce rules and constraints on
 `BoundAnnouncementMethod` instances, such as checking for required
 parameters, validating instrument types, and ensuring supported
 instruments are defined.
 
-Classes:
---------
-- `MissingInstrumentException`:
-    Exception raised when an `instrument` parameter is missing.
-- `InstrumentParamExistsValidator`:
-    Validator to ensure that the `instrument` parameter exists.
-- `InstrumentTypeException`:
-    Exception raised when an `instrument` parameter does not match the
-    expected type.
-- `InstrumentTypeValidator`:
-    Validator to check if the `instrument` is of a valid type.
-- `NoSupportedInstrumentsException`:
-    Exception raised when no supported instruments are defined for a
-    method.
-- `SupportedInstrumentsExistValidator`:
-    Validator to ensure that at least one supported instrument is
-    defined.
+**Classes**
+
+- `MissingInstrumentException`: Exception raised when an `instrument`
+  parameter is missing.
+- `InstrumentParamExistsValidator`: Validator to ensure that the
+  `instrument` parameter exists.
+- `InstrumentTypeException`: Exception raised when an `instrument`
+  parameter does not match the expected type.
+- `InstrumentTypeValidator`: Validator to check if the `instrument` is
+  of a valid type.
+- `NoSupportedInstrumentsException`: Exception raised when no supported
+  instruments are defined for a method.
+- `SupportedInstrumentsExistValidator`: Validator to ensure that at
+  least one supported instrument is defined.
 
 Each validator inherits from `BaseValidator` and is designed to be part
 of a chain of responsibility pattern. They can be used to validate
 various aspects of `BoundAnnouncementMethod` instances.
 
-Examples:
----------
+**Examples**
+
 >>> from domprob.announcements.validation.validators import (
 ...     InstrumentParamExistsValidator,
 ...     InstrumentTypeValidator,

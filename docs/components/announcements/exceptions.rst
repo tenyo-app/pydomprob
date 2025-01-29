@@ -1,7 +1,7 @@
-decorators
+exceptions
 ==========
 
-.. automodule:: domprob.announcements.decorators
+.. automodule:: domprob.announcements.exceptions
     :members:
     :undoc-members:
     :show-inheritance:

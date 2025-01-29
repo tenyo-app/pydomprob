@@ -34,7 +34,7 @@ autodoc_default_options = {
     "members": True,  # Document class members
     "undoc-members": True,  # Include undocumented members
     "private-members": True,  # Include private members (_ prefixed)
-    "special-members": "__call__, __repr__",  # Include special methods like __init__
+    "special-members": "__call__, __repr__, __eq__, __len__, __iter__",  # Include special methods like __init__
     "inherited-members": True,  # Include inherited members
     "show-inheritance": True,  # Show class inheritance
 }

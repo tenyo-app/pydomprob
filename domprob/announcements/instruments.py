@@ -1,7 +1,4 @@
 """
-instruments.py
-==============
-
 This module provides the `Instruments` class and utilities for managing
 instrument classes associated with the metadata of decorated methods.
 
@@ -12,19 +9,19 @@ provides functionality to record, query, and iterate over these
 instruments with support for filtering based on whether instruments are
 required or optional.
 
-Classes:
---------
-- Instruments: A class to manage instrument metadata, supporting
+**Classes**
+
+- `Instruments`: A class to manage instrument metadata, supporting
   operations like recording, querying, and validating instrument
   classes.
 
-Typing Helpers:
----------------
+**Typing Helpers**
+
 - `TInstruCls`: A type alias for an instrument class.
 - `TInstrumentClsGen`: A generator type that yields instrument classes.
 
-Examples:
----------
+**Examples**
+
 The following examples demonstrate how to use the `Instruments` class:
 
 >>> # Define a class with a decorated method
@@ -48,8 +45,8 @@ Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
 >>> list(instruments.req_instruments)
 [<class '...SomeInstrument'>]
 
-Key Features:
--------------
+**Key Features**
+
 1. Manage metadata for methods in a structured manner.
 2. Support for iterating over and filtering instruments based on
    requirement status.

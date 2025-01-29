@@ -1,35 +1,31 @@
 """
-chain.py
-========
-
-
 This module provides the `ValidationChain` class, which facilitates the
 management and execution of a sequence of validators for validating
 links. It supports dynamic management of validators, ensures type
 consistency, and provides flexibility for customised validation
 workflows.
 
-Key Features:
--------------
-- **Dynamic Validator Management**: Add, remove, and modify validators
+**Key Features**
+
+- Dynamic Validator Management: Add, remove, and modify validators
   at runtime.
-- **Type Enforcement**: Ensures all links adhere to a base type defined
+- Type Enforcement: Ensures all links adhere to a base type defined
   for the chain.
-- **Iterability and Indexing**: Supports iteration, indexing, and
+- Iterability and Indexing: Supports iteration, indexing, and
   slicing operations for working with validators.
-- **Validation Execution**: Executes all validators in the chain
+- Validation Execution: Executes all validators in the chain
   sequentially on a link.
-- **Clear Debugging Support**: Provides human-readable and
+- Clear Debugging Support: Provides human-readable and
   debugging-friendly representations through `__str__` and `__repr__`.
 
-Classes:
---------
-- `ValidationChain`:
-    Manages a collection of validators for sequential validation of
-    links. Provides methods for dynamic updates and validation.
+**Classes**
 
-Methods Overview:
------------------
+- `ValidationChain`: Manages a collection of validators for sequential
+  validation of links. Provides methods for dynamic updates and
+  validation.
+
+**Methods Overview**
+
 - `append(validator)`: Add a validator to the end of the chain.
 - `insert(index, validator)`: Insert a validator at a specific
   position.
@@ -39,14 +35,14 @@ Methods Overview:
 - `extend(validators)`: Add multiple validators at once.
 - `validate_chain()`: Validate the consistency of the chain itself.
 
-Usage:
-------
+**Usage**
+
 The `ValidationChain` is designed to enforce consistency and validation
 rules dynamically, with full support for Pythonic idioms like
 iteration, membership tests, and indexing.
 
-Examples:
----------
+**Examples**
+
 >>> from domprob.announcements.method import BoundAnnouncementMethod
 >>> from domprob.announcements.validation.chain import BaseValidator, ValidationChain
 >>>
