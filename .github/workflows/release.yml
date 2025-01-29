@@ -199,6 +199,7 @@ jobs:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
           VERSION: ${{ github.event.release.tag_name }}
         run: |
+          sleep 5
           curl --fail -X PATCH \
             -H "Authorization: Token ${READTHEDOCS_TOKEN}" \
             -H "Content-Type: application/json" \
