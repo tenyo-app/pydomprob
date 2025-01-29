@@ -193,15 +193,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set DOCS_VERSION
+      - name: Determine DOCS_VERSION environment variable
         run: |
             echo "Branch is '${{ github.ref_name }}'"
             if [[ ${{ github.ref_name }} == "develop" ]]; then
-              DOCS_VERSION=latest
+              export DOCS_VERSION=latest
             elif [[ ${{ github.ref_name }} == "main" || ${{ github.ref_name }} == "master" ]]; then
-              DOCS_VERSION=stable
+              export DOCS_VERSION=stable
             else
-              DOCS_VERSION=${{ github.ref_name }}
+              export DOCS_VERSION=${{ github.ref_name }}
             fi
             echo "DOCS_VERSION=$(DOCS_VERSION)"
             echo "$(DOCS_VERSION)" >> $GITHUB_ENV
