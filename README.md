@@ -7,7 +7,7 @@ to be a Python package to implement observability domain probes. View the docume
 
 Keep your business logic tidy and abstract the observability code away.
 
-Turn this:
+**Turn this:**
 
 ```python
 class Order:
@@ -23,7 +23,7 @@ class Order:
         self.metrics.increment('checkout-successful', ('successful_orders': 1))
 ```
 
-Into this:
+**Into ✨this✨:**
 
 ```python
 class Order:
