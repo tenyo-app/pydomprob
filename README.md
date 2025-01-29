@@ -15,10 +15,10 @@ class Order:
         self.logger.log(f"Attempting to checkout order {self.order}")
         try:
             self.checkout_service.checkout_order(self.order)
-            return
         except CheckoutError as e:
             self.logger.error(f"Checkout for order {self.order} failed: {e}")
             self.metrics.increment('checkout-failed', ('failed_orders': 1))
+            return
         self.logger.log(f"Order checkout completed successfully")
         self.metrics.increment('checkout-successful', ('successful_orders': 1))
 ```
@@ -31,9 +31,9 @@ class Order:
         self.probe.announce(AttemptingCheckoutObservation())
         try:
             self.checkout_service.checkout_order(self.order)
-            return
         except CheckoutError as e:
             self.probe.announce(CheckoutFailedObservation())
+            return
         self.probe.announce(CheckoutSuccessfulObservation())
 ```
 
