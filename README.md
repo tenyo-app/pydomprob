@@ -28,13 +28,13 @@ Into this:
 ```python
 class Order:
     def checkout(self):
-        probe.announce(AttemptingCheckoutObservation())
+        self.probe.announce(AttemptingCheckoutObservation())
         try:
             self.checkout_service.checkout_order(self.order)
             return
         except CheckoutError as e:
-            probe.announce(CheckoutFailedObservation())
-        probe.announce(CheckoutSuccessfulObservation())
+            self.probe.announce(CheckoutFailedObservation())
+        self.probe.announce(CheckoutSuccessfulObservation())
 ```
 
 ## Installation
