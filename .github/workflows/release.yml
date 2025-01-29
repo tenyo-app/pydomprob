@@ -260,6 +260,21 @@ jobs:
           echo "Updated pyproject.toml to project version '${VERSION}'" - pyproject.toml:
           cat pyproject.toml
 
+      - name: Update pyproject.toml development status classifier
+        run: |
+          if [[ "$VERSION" == *"a"* ]]; then
+            DEV_STATUS="Development Status :: 3 - Alpha"
+          elif [[ "$VERSION" == *"b"* ]]; then
+            DEV_STATUS="Development Status :: 4 - Beta"
+          elif [[ "$VERSION" == *"rc"* ]]; then
+            DEV_STATUS="Development Status :: 4 - Beta"
+          else
+            DEV_STATUS="Development Status :: 5 - Production/Stable"
+          fi
+          sed -i.bak "/classifiers = \[/a \ \ \ \ \"$DEV_STATUS\"," pyproject.toml
+          echo "Updated pyproject.toml to development status classifier '${DEV_STATUS}'" - pyproject.toml:
+          cat pyproject.toml
+
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:

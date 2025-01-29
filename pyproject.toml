@@ -1,11 +1,27 @@
 [project]
 name = "domprob"
-version = "0.0.0"  # placeholder
+version = "0.0.0"  # placeholder - updates during CI
 description = "Python package to implement observability domain probes"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<=3.13"
 dependencies = []
 license = { text = "MIT" }
+keywords = ["logging", "observability", "domain-probe"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Documentation = "https://domprob.readthedocs.io/en/latest/"
+Repository = "https://github.com/tenyo-app/pydomprob"
+Issues = "https://github.com/tenyo-app/pydomprob/issues"
 
 [build-system]
 requires = ["setuptools>=61.0.0", "wheel"]
