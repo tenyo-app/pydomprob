@@ -5,7 +5,37 @@ to be a Python package to implement observability domain probes. View the docume
 
 ## Overview
 
-< Add a before and after of what it looks like to add logging >
+Keep your business logic tidy and abstract the observability code away.
+
+Change this:
+
+```python
+class Order:
+    def checkout(self):
+        self.logger.log(f"Attempting to checkout order {self.order}")
+        try:
+            self.checkout_service.checkout_order(self.order)
+            return
+        except CheckoutError as e:
+            self.logger.error(f"Checkout for order {self.order} failed: {e}")
+            self.metrics.increment('checkout-failed', ('failed_orders': 1))
+        self.logger.log(f"Order checkout completed successfully")
+        self.metrics.increment('checkout-successful', ('successful_orders': 1))
+```
+
+Into this:
+
+```python
+class Order:
+    def checkout(self):
+        probe.announce(AttemptingCheckoutObservation())
+        try:
+            self.checkout_service.checkout_order(self.order)
+            return
+        except CheckoutError as e:
+            probe.announce(CheckoutFailedObservation())
+        probe.announce(CheckoutSuccessfulObservation())
+```
 
 ## Installation
 
