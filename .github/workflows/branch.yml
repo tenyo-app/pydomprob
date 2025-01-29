@@ -204,7 +204,7 @@ jobs:
               DOCS_VERSION=${{ github.ref_name }}
             fi
             echo "DOCS_VERSION=$DOCS_VERSION"
-            echo "$DOCS_VERSION" >> $GITHUB_ENV
+            echo "DOCS_VERSION=$DOCS_VERSION" >> $GITHUB_ENV
 
       - name: "Trigger docs deployment"
         env:
