@@ -190,7 +190,7 @@ jobs:
                 -H "Authorization: Token $READTHEDOCS_TOKEN" \
                 -H "Content-Type: application/json" \
                 -d '{"active": false}' \
-                "https://readthedocs.org/api/v3/projects/$PROJECT_SLUG/versions/$version/" || exit 1
+                "https://readthedocs.org/api/v3/projects/domprob/versions/$version/" || exit 1
             fi
           done
 
