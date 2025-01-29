@@ -197,21 +197,21 @@ jobs:
         run: |
             echo "Branch is '${{ github.ref_name }}'"
             if [[ ${{ github.ref_name }} == "develop" ]]; then
-              export DOCS_VERSION=latest
+              DOCS_VERSION=latest
             elif [[ ${{ github.ref_name }} == "main" || ${{ github.ref_name }} == "master" ]]; then
-              export DOCS_VERSION=stable
+              DOCS_VERSION=stable
             else
-              export DOCS_VERSION=${{ github.ref_name }}
+              DOCS_VERSION=${{ github.ref_name }}
             fi
-            echo "DOCS_VERSION=$(DOCS_VERSION)"
-            echo "$(DOCS_VERSION)" >> $GITHUB_ENV
+            echo "DOCS_VERSION=$DOCS_VERSION"
+            echo "$DOCS_VERSION" >> $GITHUB_ENV
 
       - name: "Trigger docs deployment"
         env:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
         run: |
           response=$(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${{ env.DOCS_VERSION }}/builds/) || exit 1
-          build_id=$(echo "$response" | jq -r '.build.id')
+          build_id=$(echo "$response" | jq -r '.build.id') || exit 1
           echo "Build ID: $build_id"
           echo "build_id=$build_id" >> $GITHUB_ENV
 
@@ -222,8 +222,8 @@ jobs:
         run: |
           while true; do
             response=$(curl --fail -s -H "Authorization: Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/domprob/builds/${BUILD_ID}/) || exit 1
-            build_state=$(echo $response | jq -r '.state.code')
-            build_success=$(echo $response | jq -r '.success')
+            build_state=$(echo $response | jq -r '.state.code') || exit 1
+            build_success=$(echo $response | jq -r '.success') || exit 1
 
             echo "Polling deployment state... $build_state"
 
