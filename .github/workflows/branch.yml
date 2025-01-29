@@ -167,6 +167,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Sync Readthedocs versions
+        env:
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
+        run: |
+          curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/sync-versions/ || exit 1
+
       - name: Determine VERSION environment variable
         run: |
             echo "Branch is '${{ github.ref_name }}'"

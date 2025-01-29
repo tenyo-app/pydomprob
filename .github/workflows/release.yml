@@ -174,16 +174,49 @@ jobs:
         run: |
           curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/sync-versions/ || exit 1
 
+      - name: Deactivate previous patches
+        env:
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          MINOR_VERSION="${VERSION%.*}"
+          echo "Deactivating patches for '${MINOR_VERSION}'..."
+          VERSIONS=$(curl --fail -s -H "Authorization: Token $READTHEDOCS_TOKEN" "https://readthedocs.org/api/v3/projects/domprob/versions/" | jq -r '.results[].slug') || exit 1
+          echo "Got versions: '${VERSIONS}'"
+          for version in ${VERSIONS}; do
+            if [[ $version == $MINOR_VERSION.* ]]; then
+              echo "Disabling version: '$version'"
+              curl --fail -X PATCH \
+                -H "Authorization: Token $READTHEDOCS_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"active": false}' \
+                "https://readthedocs.org/api/v3/projects/$PROJECT_SLUG/versions/$version/" || exit 1
+            fi
+          done
+
       - name: "Activate new version '${{ github.event.release.tag_name }}'"
         env:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
-          VERSION: "${{ github.event.release.tag_name }}"
+          VERSION: ${{ github.event.release.tag_name }}
         run: |
           curl --fail -X PATCH \
             -H "Authorization: Token ${READTHEDOCS_TOKEN}" \
             -H "Content-Type: application/json" \
             -d '{"active": true}' \
             https://readthedocs.org/api/v3/projects/domprob/versions/${VERSION}/ || exit 1
+
+      - name: "Update alias"
+        env:
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          ALIAS="v${VERSION%.*}"
+          echo "Setting alias '${ALIAS}' to point to '${VERSION}'..."
+          curl --fail -X PATCH \
+            -H "Authorization: Token $READTHEDOCS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"identifier": "'"$VERSION"'", "active": true}' \
+            "https://readthedocs.org/api/v3/projects/domprob/versions/$ALIAS_VERSION/" || exit 1
 
       - name: "Trigger docs deployment '${{ github.event.release.tag_name }}'"
         env:
