@@ -113,32 +113,6 @@ jobs:
       - name: "Functional test (python: ${{ matrix.python-version }})"
         run: make test-functional
 
-  build-package:
-    runs-on: ubuntu-24.04
-    needs:
-      - unit-tests
-      - functional-tests
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5.1.0
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: "pyproject.toml"
-
-      - name: "Build package"
-        run: uv build
-
-      - name: Upload distributions
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
-
   doc-tests:
     runs-on: ubuntu-24.04
     needs:
@@ -197,9 +171,9 @@ jobs:
       - name: "Trigger docs deployment"
         env:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
-          DOCS_VERSION: ${{ github.event.release.tag_name }}
+          VERSION: ${{ github.event.release.tag_name }}
         run: |
-          response=$(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${DOCS_VERSION}/builds/) || exit 1
+          response=$(curl --fail -X POST -H "Authorization: Token ${READTHEDOCS_TOKEN}" https://readthedocs.org/api/v3/projects/domprob/versions/${VERSION}/builds/) || exit 1
           build_id=$(echo "$response" | jq -r '.build.id')
           echo "Build ID: $build_id"
           echo "build_id=$build_id" >> $GITHUB_ENV
@@ -229,3 +203,36 @@ jobs:
 
             sleep 5
           done
+
+  build-package:
+    runs-on: ubuntu-24.04
+    env:
+      VERSION: ${{ github.event.release.tag_name }}
+    needs:
+      - doc-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5.1.0
+
+      - name: Update pyproject.toml project version
+        run: |
+          sed -i.bak -E "s/^version\s*=\s*\"[^\"]+\"/version = \"${VERSION}\"/" pyproject.toml
+          echo "Updated pyproject.toml to project version ${VERSION}" - pyproject.toml:
+          cat pyproject.toml
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: "Build package"
+        run: uv build
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
