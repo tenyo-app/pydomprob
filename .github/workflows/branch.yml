@@ -159,7 +159,7 @@ jobs:
 
   deploy-docs:
     runs-on: ubuntu-24.04
-    if: success() && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    if: success() && (github.ref_name == 'develop' || github.ref_name == 'main' || github.ref_name == 'master')
     needs:
       - build-docs-check
       - build-package
@@ -245,4 +245,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist
+          path: dist/
