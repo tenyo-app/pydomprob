@@ -9,7 +9,7 @@ to be a Python package to implement observability domain probes.
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-[Documentation](https://domprob.readthedocs.io/en/latest/) | [PyPI](https://pypi.org/project/domprob/)
+[📄 Documentation](https://domprob.readthedocs.io/en/latest/) | [🐍 PyPI](https://pypi.org/project/domprob/)
 
 ## Overview
 
