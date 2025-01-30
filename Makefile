@@ -1,5 +1,5 @@
 test-unit:
-	uv run --frozen pytest --cov=domprob/ test/unit --cov-report=html --cov-report=term
+	uv run --frozen pytest --cov=domprob/ test/unit --cov-report=html --cov-report=term --cov-report=xml
 
 test-functional:
 	uv run --frozen pytest test/functional
