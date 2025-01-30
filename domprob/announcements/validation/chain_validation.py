@@ -65,7 +65,9 @@ from domprob.announcements.exceptions import AnnouncementException
 from domprob.announcements.validation.base_validator import BaseValidator
 
 if TYPE_CHECKING:
-    from domprob.announcements.validation.chain import ValidationChain
+    from domprob.announcements.validation.chain import (  # pragma: no cover
+        ValidationChain,
+    )
 
 # Typing helper: defines a validator implementing the abstract class
 _ChainLink = TypeVar("_ChainLink", bound=BaseValidator)
