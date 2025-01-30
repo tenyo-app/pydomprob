@@ -2,10 +2,14 @@
 Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-observability.html), domprob is designed
 to be a Python package to implement observability domain probes.
 
-View the documentation
-[here](https://domprob.readthedocs.io/en/latest/).
+![PyPI - Package Version](https://img.shields.io/pypi/v/domprob.svg)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/domprob)
+![Codecov](https://img.shields.io/codecov/c/github/tenyo-app/pydomprob)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-View the package on PyPI [here](https://pypi.org/project/domprob/).
+[Documentation](https://domprob.readthedocs.io/en/latest/) | [PyPI](https://pypi.org/project/domprob/)
 
 ## Overview
 
