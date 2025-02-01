@@ -1,3 +1,6 @@
+import inspect
+from collections import OrderedDict
+from inspect import BoundArguments
 from unittest.mock import MagicMock
 
 import pytest
@@ -18,7 +21,7 @@ class MockInstrument:
 @pytest.fixture
 def mock_cls():
     class Cls:
-        def method(self, instrument):
+        def method(self, instrument: MockInstrument) -> None:
             pass
 
     return Cls
@@ -30,51 +33,9 @@ def mock_method(mock_cls):
 
 
 @pytest.fixture
-def mock_metadata(mock_method):
-    return AnnouncementMetadata(mock_method)
-
-
-@pytest.fixture
-def mock_instruments(mock_metadata):
+def mock_instruments(mock_method):
+    mock_metadata = AnnouncementMetadata(mock_method)
     return Instruments(mock_metadata)
-
-
-class TestAnnouncementMethod:
-    def test_initialisation(self, mock_method, mock_instruments):
-        # Arrange
-        # Act
-        announcement_method = AnnouncementMethod(mock_method)
-        # Assert
-        assert announcement_method.method == mock_method
-        assert announcement_method.instruments == mock_instruments
-
-    def test_signature_property(self, mock_method):
-        # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        # Act
-        signature = announcement_method.signature
-        # Assert
-        assert str(signature) == "(self, instrument)"
-
-    def test_repr(self, mock_method):
-        # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        # Act
-        meth_repr = repr(announcement_method)
-        # Assert
-        assert meth_repr == f"AnnouncementMethod(method={mock_method!r})"
-
-    def test_bind(self, mock_cls, mock_method):
-        # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        mock_instrument = MockInstrument()
-        cls_ = mock_cls()
-        # Act
-        bound_method = announcement_method.bind(cls_, mock_instrument)
-        # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
-        assert bound_method.params.args == (cls_, mock_instrument)
-        assert bound_method.params.kwargs == {}
 
 
 class TestPartialBindException:
@@ -96,70 +57,99 @@ class TestPartialBindException:
         result = repr(PartialBindException(announcement_method, exception))
         # Assert
         assert (
-            result == f"PartialBindException(method={announcement_method!r}, "
-            f"exc={exception!r})"
+            result == f"PartialBindException(meth={announcement_method!r}, "
+            f"e={exception!r})"
         )
 
 
-class TestBoundAnnouncementMethod:
-    def test_initialisation(self, mock_method):
+class TestAnnouncementMethod:
+    def test_initialisation(self, mock_method, mock_instruments):
         # Arrange
-        mock_instrument = MockInstrument()
         # Act
-        bound_method = BoundAnnouncementMethod(mock_method, mock_instrument)
+        announcement_method = AnnouncementMethod(mock_method)
         # Assert
-        assert bound_method.params.args == (mock_instrument,)
-        assert bound_method.params.kwargs == {}
-
-    def test_instrument_property(self, mock_method):
-        # Arrange
-        bound_method = BoundAnnouncementMethod(
-            mock_method, instrument=MockInstrument()
-        )
-        # Act + Assert
-        assert bound_method.instrument is not None
-        assert isinstance(bound_method.instrument, MockInstrument)
-
-    def test_bind_partial_success(self, mock_method):
-        # Arrange
-        bound_method = BoundAnnouncementMethod(mock_method)
-        mock_instrument = MockInstrument()
-        # Act
-        bound_arguments = bound_method.bind_partial(mock_instrument)
-        # Assert
-        assert bound_arguments.args == (mock_instrument,)
-        assert bound_arguments.kwargs == {}
-
-    def test_bind_partial_failure(self, mock_method):
-        # Arrange
-        bound_method = BoundAnnouncementMethod(mock_method)
-        # Act + Assert
-        with pytest.raises(PartialBindException):
-            bound_method.bind_partial(1, 2, foo="bar", extra="invalid")
-
-    def test_execute(self):
-        # Arrange
-        instance = MagicMock()
-        instance.method.return_value = "Executed"
-        bound_method = BoundAnnouncementMethod(
-            instance.method, MockInstrument()
-        )
-        # Act
-        result = bound_method.execute()
-        # Assert
-        assert result == "Executed"
+        assert announcement_method.meth == mock_method
+        assert announcement_method.supp_instrums == mock_instruments
 
     def test_repr(self, mock_method):
         # Arrange
-        mock_instrument = MockInstrument()
-        bound_method = BoundAnnouncementMethod(
-            mock_method, instrument=mock_instrument
-        )
+        announcement_method = AnnouncementMethod(mock_method)
         # Act
-        meth_repr = repr(bound_method)
+        meth_repr = repr(announcement_method)
+        # Assert
+        assert meth_repr == f"AnnouncementMethod(meth={mock_method!r})"
+
+    def test_bind(self, mock_cls, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        mock_instrument = MockInstrument()
+        cls_ = mock_cls()
+        # Act
+        bound_method = announcement_method.bind(cls_, mock_instrument)
+        # Assert
+        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert bound_method.params.args == (cls_, mock_instrument)
+        assert bound_method.params.kwargs == {}
+
+
+class TestBoundAnnouncementMethod:
+    @staticmethod
+    def _create_b_meth(meth, *args, **kwargs):
+        announce_meth = AnnouncementMethod(meth)
+        sig = inspect.signature(meth)
+        b_params = BoundArguments(sig, OrderedDict())
+        # Bind the arguments correctly
+        bound = sig.bind_partial(*args, **kwargs)
+        # Assign the correct args and kwargs
+        b_params.arguments = bound.arguments
+        return BoundAnnouncementMethod(announce_meth, b_params)
+
+    def test_initialisation_arg(self, mock_cls):
+        # Arrange
+        mock_instrum = MockInstrument()
+        mock_instance = mock_cls()
+        # Act
+        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        # Assert
+        assert b_meth.params.args == (mock_instance, mock_instrum)
+        assert b_meth.params.kwargs == {}
+        assert b_meth.params.arguments == {
+            'self': mock_instance,
+            'instrument': mock_instrum
+        }
+
+    def test_instrument_property(self, mock_cls):
+        # Arrange
+        mock_instance = mock_cls()
+        mock_instrum = MockInstrument()
+        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        # Act
+        instrument = b_meth.instrument
+        # Assert
+        assert instrument is not None
+        assert instrument == mock_instrum
+
+    def test_execute(self):
+        # Arrange
+        mock_cls = MagicMock()
+        mock_cls.method.return_value = "Executed"
+        mock_instrum = MockInstrument()
+        b_meth = self._create_b_meth(mock_cls.method, mock_cls(), mock_instrum)
+        # Act
+        result = b_meth.execute()
+        # Assert
+        assert result == "Executed"
+
+    def test_repr(self, mock_cls):
+        # Arrange
+        mock_instance = mock_cls()
+        mock_instrum = MockInstrument()
+        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        # Act
+        meth_repr = repr(b_meth)
         # Assert
         expected_repr = (
-            f"BoundAnnouncementMethod(method={mock_method!r}, "
-            f"instrument={mock_instrument!r})"
+            f"BoundAnnouncementMethod(announce_meth={b_meth._announce_meth!r},"
+            f" bound_params={b_meth.params!r})"
         )
         assert meth_repr == expected_repr

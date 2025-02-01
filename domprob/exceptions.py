@@ -1,7 +1,4 @@
 """
-exceptions.py
-=============
-
 This module defines the public exceptions used in the `pydomprob` library.
 It provides a central location to import and expose exceptions related
 to announcements, partial binding, validation, and instrument handling.

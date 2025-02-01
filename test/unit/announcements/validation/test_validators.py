@@ -1,8 +1,12 @@
+import inspect
+from collections import OrderedDict
+
 import pytest
 
 from domprob.announcements.instruments import Instruments
 from domprob.announcements.metadata import AnnouncementMetadata
-from domprob.announcements.method import BoundAnnouncementMethod
+from domprob.announcements.method import BoundAnnouncementMethod, \
+    AnnouncementMethod
 from domprob.announcements.validation.validators import (
     InstrumentParamExistsValidator,
     InstrumentTypeException,
@@ -21,32 +25,19 @@ class AnotherInstrument:
     pass
 
 
-@pytest.fixture
-def mock_instrument_method():
-
+def _create_b_meth(*args, **kwargs):
     class Cls:
-        def method(self, instrument: MockInstrument):
+        def method(self, instrument: MockInstrument) -> None:
             pass
 
-    return BoundAnnouncementMethod(Cls().method, MockInstrument())
-
-
-@pytest.fixture
-def mock_no_instrument_method():
-    class Cls:
-        def method(self, instrument: MockInstrument):
-            pass
-
-    return BoundAnnouncementMethod(Cls().method)
-
-
-@pytest.fixture
-def mock_none_instrument_method():
-    class Cls:
-        def method(self, instrument: MockInstrument):
-            pass
-
-    return BoundAnnouncementMethod(Cls().method, None)
+    announce_meth = AnnouncementMethod(Cls.method)
+    sig = inspect.signature(Cls.method)
+    b_params = inspect.BoundArguments(sig, OrderedDict())
+    # Bind the arguments correctly
+    bound = sig.bind_partial(Cls(), *args, **kwargs)
+    # Assign the correct args and kwargs
+    b_params.arguments = bound.arguments
+    return BoundAnnouncementMethod(announce_meth, b_params)
 
 
 class TestInstrumentParamExistsValidator:
@@ -56,35 +47,28 @@ class TestInstrumentParamExistsValidator:
         return InstrumentParamExistsValidator()
 
     def test_raises_exception_when_instrument_is_none(
-        self, param_exists_validator, mock_no_instrument_method
+        self, param_exists_validator
     ):
         # Arrange
+        b_mock_meth = _create_b_meth()
         # Act
         with pytest.raises(MissingInstrumentException) as exc_info:
-            param_exists_validator.validate(mock_no_instrument_method)
+            param_exists_validator.validate(b_mock_meth)
         # Assert
-        assert exc_info.value.method == mock_no_instrument_method.method
+        assert exc_info.value.method == b_mock_meth.meth
         assert str(exc_info.value) == (
             "'instrument' param missing in Cls.method(...)"
         )
 
     def test_passes_validation_when_instrument_is_present(
-        self, param_exists_validator, mock_instrument_method
+        self, param_exists_validator
     ):
         # Arrange
+        b_mock_meth = _create_b_meth(MockInstrument())
         # Act
-        param_exists_validator.validate(mock_instrument_method)
+        param_exists_validator.validate(b_mock_meth)
         # Assert
         assert True
-
-    def test_missing_instrument_exception_message(
-        self, mock_no_instrument_method
-    ):
-        # Arrange
-        # Act
-        exc = MissingInstrumentException(mock_no_instrument_method.method)
-        # Assert
-        assert str(exc) == "'instrument' param missing in Cls.method(...)"
 
 
 class TestInstrumentTypeValidator:
@@ -94,62 +78,60 @@ class TestInstrumentTypeValidator:
         return InstrumentTypeValidator()
 
     def test_validate_passes_for_valid_instrument(
-        self, type_validator, mock_instrument_method
+        self, type_validator
     ):
         # Arrange
-        metadata = AnnouncementMetadata(mock_instrument_method)
-        instruments = Instruments(metadata)
+        b_mock_meth = _create_b_meth(MockInstrument())
+        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
         instruments.record(MockInstrument)
-        mock_instrument_method._instruments = instruments
         # Act
-        type_validator.validate(mock_instrument_method)
+        type_validator.validate(b_mock_meth)
         # Assert
         assert True
 
     def test_validate_raises_for_invalid_instrument(
-        self, type_validator, mock_instrument_method
+        self, type_validator
     ):
         # Arrange
-        metadata = AnnouncementMetadata(mock_instrument_method)
-        instruments = Instruments(metadata)
+        b_mock_meth = _create_b_meth(MockInstrument())
+        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
         instruments.record(AnotherInstrument)
-        mock_instrument_method._instruments = instruments
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:
-            type_validator.validate(mock_instrument_method)
+            type_validator.validate(b_mock_meth)
         # Assert
         assert (
             str(exc_info.value)
             == f"Cls.method(...) expects 'instrument' param to be "
             f"one of: [AnotherInstrument], but got: "
-            f"{mock_instrument_method.instrument!r}"
+            f"{b_mock_meth.instrument!r}"
         )
 
     def test_validate_raises_for_empty_supported_instruments(
-        self, type_validator, mock_instrument_method
+        self, type_validator
     ):
         # Arrange
+        b_mock_meth = _create_b_meth(MockInstrument())
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:
-            type_validator.validate(mock_instrument_method)
+            type_validator.validate(b_mock_meth)
         # Assert
         assert (
             str(exc_info.value)
             == f"Cls.method(...) expects 'instrument' param to be "
-            f"one of: [], but got: {mock_instrument_method.instrument!r}"
+            f"one of: [], but got: {b_mock_meth.instrument!r}"
         )
 
     def test_validate_raises_for_none_instrument(
-        self, type_validator, mock_none_instrument_method
+        self, type_validator
     ):
         # Arrange
-        metadata = AnnouncementMetadata(mock_none_instrument_method)
-        instruments = Instruments(metadata)
+        b_mock_meth = _create_b_meth(None)
+        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
         instruments.record(AnotherInstrument)
-        mock_none_instrument_method._instruments = instruments
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:
-            type_validator.validate(mock_none_instrument_method)
+            type_validator.validate(b_mock_meth)
         # Assert
         exc = exc_info.value
         assert exc.instrument is None
@@ -159,70 +141,59 @@ class TestInstrumentTypeValidator:
         )
 
     def test_validate_with_multiple_valid_instruments(
-        self, type_validator, mock_instrument_method
+        self, type_validator
     ):
         # Arrange
-        metadata = AnnouncementMetadata(mock_instrument_method)
-        instruments = Instruments(metadata)
+        b_mock_meth = _create_b_meth(MockInstrument())
+        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
         instruments.record(MockInstrument)
         instruments.record(AnotherInstrument)
-        mock_instrument_method._instruments = instruments
         # Act
-        type_validator.validate(mock_instrument_method)
+        type_validator.validate(b_mock_meth)
         # Assert
         assert True
 
 
 class TestSupportedInstrumentsExistValidator:
-    """Test suite for the SupportedInstrumentsExistValidator."""
-
     @pytest.fixture
     def supported_instruments_validator(
         self,
     ) -> SupportedInstrumentsExistValidator:
-        """Fixture for creating a SupportedInstrumentsExistValidator."""
         return SupportedInstrumentsExistValidator()
 
     def test_validate_passes_with_supported_instruments(
-        self, supported_instruments_validator, mock_instrument_method
+        self, supported_instruments_validator
     ):
-        """Test that validation passes when supported instruments exist."""
         # Arrange
-        metadata = AnnouncementMetadata(mock_instrument_method)
-        instruments = Instruments(metadata)
+        b_mock_meth = _create_b_meth(MockInstrument())
+        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
         instruments.record(MockInstrument)
-        mock_instrument_method._instruments = instruments
         # Act
-        supported_instruments_validator.validate(mock_instrument_method)
+        supported_instruments_validator.validate(b_mock_meth)
         # Assert
         assert True
 
     def test_validate_raises_no_supported_instruments_exception(
-        self, supported_instruments_validator, mock_none_instrument_method
+        self, supported_instruments_validator
     ):
-        """Test that validation raises an exception when no supported instruments exist."""
         # Arrange
-        metadata = AnnouncementMetadata(mock_none_instrument_method)
-        instruments = Instruments(metadata)
-        mock_none_instrument_method._instruments = instruments
+        b_mock_meth = _create_b_meth(None)
         # Act
         with pytest.raises(NoSupportedInstrumentsException) as exc_info:
             supported_instruments_validator.validate(
-                mock_none_instrument_method
+                b_mock_meth
             )
         # Assert
-        assert exc_info.value.method == mock_none_instrument_method.method
+        assert exc_info.value.method == b_mock_meth.meth
         assert (
             str(exc_info.value)
             == f"Cls.method(...) has no supported instrument types defined"
         )
 
-    def test_no_supported_instruments_exception_message(
-        self, mock_no_instrument_method
-    ):
-        """Test the exception message for NoSupportedInstrumentsException."""
+    def test_no_supported_instruments_exception_message(self):
         # Arrange
-        exc = NoSupportedInstrumentsException(mock_no_instrument_method.method)
+        b_mock_meth = _create_b_meth()
+        exc = NoSupportedInstrumentsException(b_mock_meth.meth)
         # Act & Assert
         assert (
             str(exc)

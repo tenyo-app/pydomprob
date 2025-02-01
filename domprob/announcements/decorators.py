@@ -44,7 +44,7 @@ Executing with <...SomeInstrument object at 0x...>
 
 import functools
 from collections.abc import Callable
-from typing import Any, Generic, ParamSpec, TypeVar, cast
+from typing import Any, Generic, ParamSpec, TypeVar, cast, Concatenate
 
 from domprob.announcements.method import AnnouncementMethod
 
@@ -57,9 +57,10 @@ _Instrument = TypeVar("_Instrument", bound=Any)
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
+_MethSig = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
 
 
-class _Announcement(Generic[_Instrument, _P, _R]):
+class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
     """Decorator class for associating metadata and validating methods.
 
     This class enables the decoration of methods with metadata
@@ -156,7 +157,7 @@ class _Announcement(Generic[_Instrument, _P, _R]):
         self.instrument = instrument
         self.required = True
 
-    def __call__(self, method: Callable[_P, _R]) -> Callable[_P, _R]:
+    def __call__(self, method: _MethSig) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime
         validation.
 
@@ -192,7 +193,7 @@ class _Announcement(Generic[_Instrument, _P, _R]):
         """
 
         meth = AnnouncementMethod(method)
-        meth.instruments.record(self.instrument, self.required)
+        meth.supp_instrums.record(self.instrument, self.required)
 
         @functools.wraps(method)
         def wrapper(

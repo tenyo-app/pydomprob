@@ -1,7 +1,11 @@
+import inspect
+from collections import OrderedDict
+
 import pytest
 
 from domprob.announcements.exceptions import AnnouncementException
-from domprob.announcements.method import BoundAnnouncementMethod
+from domprob.announcements.method import BoundAnnouncementMethod, \
+    AnnouncementMethod
 from domprob.announcements.validation.base_validator import (
     BaseValidator,
     ValidatorException,
@@ -9,14 +13,14 @@ from domprob.announcements.validation.base_validator import (
 
 
 class MockValidationChainLink(BaseValidator):
-    def validate(self, method: BoundAnnouncementMethod) -> None:
+    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
         pass
 
 
 class MockAnnouncementValidator(BaseValidator):
-    def validate(self, method: BoundAnnouncementMethod) -> None:
-        if hasattr(method, "validated"):
-            method.validated = True
+    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
+        if hasattr(b_meth, "validated"):
+            b_meth.validated = True
         super().__init__()
 
 
@@ -26,12 +30,20 @@ class MockInstrument:
 
 @pytest.fixture
 def mock_bound_method():
-    def mock_method(instrument: MockInstrument):
-        pass
+    class Cls:
+        def mock_method(self, instrument: MockInstrument) -> None:
+            pass
 
-    method = BoundAnnouncementMethod(mock_method, MockInstrument())
-    setattr(method, "validated", False)
-    return method
+    announce_meth = AnnouncementMethod(Cls.mock_method)
+    sig = inspect.signature(Cls.mock_method)
+    b_params = inspect.BoundArguments(sig, OrderedDict())
+    # Bind the arguments correctly
+    bound = sig.bind_partial(Cls())
+    # Assign the correct args and kwargs
+    b_params.arguments = bound.arguments
+    b_meth = BoundAnnouncementMethod(announce_meth, b_params)
+    setattr(b_meth, "validated", False)
+    return b_meth
 
 
 class TestValidatorException:

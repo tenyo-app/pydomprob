@@ -43,8 +43,12 @@ iteration, membership tests, and indexing.
 
 **Examples**
 
->>> from domprob.announcements.method import BoundAnnouncementMethod
->>> from domprob.announcements.validation.chain import BaseValidator, ValidationChain
+>>> from domprob.announcements.method import (
+...     AnnouncementMethod, BoundAnnouncementMethod
+... )
+>>> from domprob.announcements.validation.chain import (
+...     BaseValidator, ValidationChain
+... )
 >>>
 >>> class ExampleValidator(BaseValidator):
 ...     def validate(self, link: BoundAnnouncementMethod) -> None:
@@ -61,9 +65,9 @@ iteration, membership tests, and indexing.
 ...     def method(self, instrument: SomeInstrument) -> None:
 ...         pass
 ...
->>> instance = SomeClass()
->>> method = BoundAnnouncementMethod(SomeClass.method, instance, SomeInstrument())
->>> chain.validate_chain(method)
+>>> meth = AnnouncementMethod(SomeClass.method)
+>>> bound_meth = meth.bind(SomeClass(), SomeInstrument())
+>>> chain.validate_chain(bound_meth)
 """
 
 from __future__ import annotations

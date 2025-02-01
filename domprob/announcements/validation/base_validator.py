@@ -48,7 +48,10 @@ implement the `validate` method to perform specific checks on a
 ...     def method(self, instrument: SomeInstrument) -> None:
 ...         pass
 ...
->>> bound_method = BoundAnnouncementMethod(Cls().method, SomeInstrument())
+>>> from domprob.announcements.method import AnnouncementMethod
+>>>
+>>> method = AnnouncementMethod(Cls.method)
+>>> bound_method = method.bind(Cls(), SomeInstrument())
 >>> validator = ExampleValidator()
 >>> validator.validate(bound_method)
 Validation successful
@@ -107,7 +110,8 @@ class BaseValidator(ABC):
 
     Examples:
         >>> from domprob.announcements.validation.base_validator import BaseValidator
-        >>> from domprob.announcements.method import BoundAnnouncementMethod
+        >>> from domprob.announcements.method import AnnouncementMethod
+        >>>
         >>> class ExampleValidator(BaseValidator):
         ...     def validate(self, method: BoundAnnouncementMethod) -> None:
         ...         if not method.instrument:
@@ -123,16 +127,16 @@ class BaseValidator(ABC):
         ...     def method(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> instance = Cls()
-        >>> bound_method = BoundAnnouncementMethod(Cls.method, instance, SomeInstrument())
+        >>> meth = AnnouncementMethod(Cls.method)
+        >>> bound_meth = meth.bind(Cls(), SomeInstrument())
         >>> validator = ExampleValidator()
-        >>> validator.validate(bound_method)
+        >>> validator.validate(bound_meth)
         Validation successful
 
         >>> # Chaining validators
         >>> validator1 = ExampleValidator()
         >>> validator2 = ExampleValidator(next_=validator1)
-        >>> validator2.validate(bound_method)
+        >>> validator2.validate(bound_meth)
         Validation successful
         Validation successful
     """
@@ -141,16 +145,17 @@ class BaseValidator(ABC):
         self.next_ = next_
 
     @abstractmethod
-    def validate(self, method: BoundAnnouncementMethod) -> None:
+    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
         """Validates a `BoundAnnouncementMethod` instance.
 
-        This method performs the validation logic for the current validator
-        and delegates to the next validator in the chain if one is defined.
-        Subclasses must implement the specific validation logic by overriding
-        this method.
+        This method performs the validation logic for the current
+        validator and delegates to the next validator in the chain if
+        one is defined. Subclasses must implement the specific
+        validation logic by overriding this method.
 
         Args:
-            method (BoundAnnouncementMethod): The method instance to validate.
+            b_meth (BoundAnnouncementMethod): Bound method wrapper to
+                validate.
 
         Raises:
             ValidatorException: If the validation fails.
@@ -158,7 +163,8 @@ class BaseValidator(ABC):
 
         Examples:
             >>> from domprob.announcements.validation.base_validator import BaseValidator
-            >>> from domprob.announcements.method import BoundAnnouncementMethod
+            >>> from domprob.announcements.method import AnnouncementMethod
+            >>>
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
             ...         if not meth.instrument:
@@ -174,14 +180,14 @@ class BaseValidator(ABC):
             ...     def method(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> instance = Cls()
-            >>> bound_method = BoundAnnouncementMethod(Cls.method, instance, SomeInstrument())
+            >>> meth = AnnouncementMethod(Cls.method)
+            >>> bound_meth = meth.bind(Cls(), SomeInstrument())
             >>> validator = ExampleValidator()
-            >>> validator.validate(bound_method)
+            >>> validator.validate(bound_meth)
             Validation successful
         """
         if self.next_:
-            return self.next_.validate(method)
+            return self.next_.validate(b_meth)
         return None
 
     def __repr__(self) -> str:

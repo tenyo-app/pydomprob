@@ -36,7 +36,7 @@ supports registering additional validators or using default ones.
 ...         pass
 ...
 >>> method = AnnouncementMethod(Example.method)
->>> method.instruments.record(SomeInstrument, required=True)
+>>> method.supp_instrums.record(SomeInstrument, required=True)
 Instruments(metadata=AnnouncementMetadata(method=<function Example.method at 0x...>))
 >>>
 >>> bound_method = method.bind(Example(), SomeInstrument())
@@ -98,7 +98,7 @@ class AnnouncementValidationOrchestrator:
         ...         pass
         ...
         >>> method = AnnouncementMethod(Example.method)
-        >>> method.instruments.record(SomeInstrument, required=True)
+        >>> method.supp_instrums.record(SomeInstrument, required=True)
         Instruments(metadata=AnnouncementMetadata(method=<function Example.method at 0x...>))
         >>>
         >>> bound_method = method.bind(Example(), SomeInstrument())
@@ -159,7 +159,7 @@ class AnnouncementValidationOrchestrator:
 
         Examples:
             >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
-            >>> from domprob.announcements.method import BoundAnnouncementMethod
+            >>> from domprob.announcements.method import AnnouncementMethod
             >>>
             >>> class SomeInstrument:
             ...     pass
@@ -168,14 +168,13 @@ class AnnouncementValidationOrchestrator:
             ...     def method(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> bound_method = BoundAnnouncementMethod(
-            ...     Example.method, Example(), SomeInstrument()
-            ... )
-            >>> bound_method.instruments.record(SomeInstrument, required=True)
+            >>> meth = AnnouncementMethod(Example.method)
+            >>> bound_meth = meth.bind(Example(), SomeInstrument())
+            >>> bound_meth.supp_instrums.record(SomeInstrument, required=True)
             Instruments(metadata=AnnouncementMetadata(method=<function Example.method at 0x...>))
             >>>
             >>> orchestrator = AnnouncementValidationOrchestrator()
-            >>> orchestrator.validate(bound_method)
+            >>> orchestrator.validate(bound_meth)
         """
         self._chain.validate_chain(method)
 
