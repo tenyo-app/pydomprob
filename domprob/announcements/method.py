@@ -25,6 +25,12 @@ associated metadata.
    - Facilitates logic like validation and execution of methods with
      pre-bound arguments.
 
+4. `AnnouncementMethodBinder`
+
+   - Handles argument binding for `AnnouncementMethod`, both fully and
+     partially.
+   - Ensures that provided arguments match the method signature.
+
 **Key Features**
 
 - Metadata Handling: Associates metadata, including supported
@@ -36,7 +42,7 @@ associated metadata.
 - Custom Exceptions: Includes `PartialBindException` for handling
   argument binding errors.
 
-**Usage**
+**Examples**
 
 >>> class SomeInstrument:
 ...     pass
@@ -49,9 +55,10 @@ associated metadata.
 ...     def bar(self, instrument: SomeInstrument) -> None:
 ...         print(f"Instrument: {instrument}")
 ...
->>> foo = Foo()
->>>
->>> foo.bar(SomeInstrument())
+>>> announce_meth = AnnouncementMethod(Foo.bar)
+>>> bound_meth = announce_meth.bind(Foo(), SomeInstrument())
+>>> bound_meth.validate()
+>>> bound_meth.execute()
 Instrument: <...SomeInstrument object at 0x...>
 
 **Integration**
