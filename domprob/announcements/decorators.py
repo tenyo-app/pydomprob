@@ -190,8 +190,6 @@ class _Announcement(Generic[_Instrument, _P, _R]):
             >>> foo.bar(instru)
             Executing with <...SomeInstrument object at 0x...>
         """
-        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
-            method = getattr(method, "__wrapped__")
 
         meth = AnnouncementMethod(method)
         meth.instruments.record(self.instrument, self.required)

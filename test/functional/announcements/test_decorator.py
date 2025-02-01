@@ -38,10 +38,11 @@ class TestMetadata:
             def no_method(self, instrument: MockInstrument):
                 pass
 
+        method = Cls.no_method
+        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
+            method = getattr(method, "__wrapped__")
         metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(
-            Cls.no_method, AnnouncementMetadata.METADATA_ATTR, None
-        )
+        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
         # Act
         # Assert
         assert metadata is None
@@ -53,12 +54,14 @@ class TestMetadata:
             def simple_method(self, instrument: MockInstrument) -> None:
                 pass
 
+        method = Cls.simple_method
+        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
+            method = getattr(method, "__wrapped__")
         metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(
-            Cls.simple_method, AnnouncementMetadata.METADATA_ATTR
-        )
+        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
         # Act
         # Assert
+        assert metadata is not None
         assert len(metadata) == 1
         assert metadata[0].instrument_cls == MockInstrument
 
@@ -71,12 +74,14 @@ class TestMetadata:
             def stacked_method(self, instrument: MockInstrument) -> None:
                 pass
 
+        method = Cls.stacked_method
+        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
+            method = getattr(method, "__wrapped__")
         metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(
-            Cls.stacked_method, AnnouncementMetadata.METADATA_ATTR
-        )
+        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
         # Act
         # Assert
+        assert metadata is not None
         assert len(metadata) == 3
         assert metadata[0].instrument_cls == MockInstrument
         assert metadata[1].instrument_cls == MockInstrument
@@ -93,12 +98,14 @@ class TestMetadata:
             ) -> None:
                 pass
 
+        method = Cls.stacked_differently_method
+        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
+            method = getattr(method, "__wrapped__")
         metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(
-            Cls.stacked_differently_method, AnnouncementMetadata.METADATA_ATTR
-        )
+        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
         # Act
         # Assert
+        assert metadata is not None
         assert len(metadata) == 3
         assert metadata[0].instrument_cls == YetAnotherMockInstrument
         assert metadata[1].instrument_cls == AnotherMockInstrument

@@ -114,6 +114,8 @@ class AnnouncementMetadata:
     METADATA_ATTR: str = "__announcement_metadata__"
 
     def __init__(self, method: Callable[..., Any]) -> None:
+        while hasattr(method, "__wrapped__"):  # Get original non-wrapped
+            method = getattr(method, "__wrapped__")
         self._method = method
 
     def __len__(self) -> int:
