@@ -31,7 +31,7 @@ implement the `validate` method to perform specific checks on a
 
 >>> from domprob.announcements.validation.base_validator import BaseValidator, ValidatorException
 >>> from domprob.announcements.method import BoundAnnouncementMethod
-
+>>>
 >>> class ExampleValidator(BaseValidator):
 ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
 ...         if not meth.instrument:

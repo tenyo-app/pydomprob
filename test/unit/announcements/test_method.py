@@ -10,7 +10,7 @@ from domprob.announcements.metadata import AnnouncementMetadata
 from domprob.announcements.method import (
     AnnouncementMethod,
     BoundAnnouncementMethod,
-    PartialBindException,
+    PartialBindException, AnnouncementMethodBinder,
 )
 
 
@@ -60,6 +60,118 @@ class TestPartialBindException:
             result == f"PartialBindException(meth={announcement_method!r}, "
             f"e={exception!r})"
         )
+
+
+class TestAnnouncementMethodBinder:
+    def test_initialisation(self, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        # Act
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Assert
+        assert binder._announce_method == announcement_method
+
+    def test_signature(self, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.signature()
+        # Assert
+        assert signature == inspect.signature(mock_method)
+
+    def test_bind_self(self, mock_cls, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        cls_instance = mock_cls()
+        # Act
+        bound_method = binder.bind(cls_instance)
+        # Assert
+        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert bound_method.params.args == (cls_instance,)
+
+    def test_bind_self_and_instrument(self, mock_cls, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        cls_instance = mock_cls()
+        instrument = MockInstrument()
+        # Act
+        bound_method = binder.bind(cls_instance, instrument)
+        # Assert
+        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert bound_method.params.args == (cls_instance, instrument)
+
+    def test_bind_self_and_kw_instrument(self, mock_cls, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        cls_instance = mock_cls()
+        instrument = MockInstrument()
+        # Act
+        bound_method = binder.bind(cls_instance, instrument=instrument)
+        # Assert
+        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert bound_method.params.args == (cls_instance, instrument)
+
+    def test_bind_applies_defaults(self):
+        # Arrange
+        class Cls:
+            def method(self, x: int = 10) -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        cls_instance = Cls()
+        # Act
+        bound_method = binder.bind(cls_instance)
+        # Assert
+        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert bound_method.params.args == (cls_instance, 10)
+
+    def test_bind_does_not_override_explicit_arg_with_default(self):
+        # Arrange
+        class Cls:
+            def method(self, x: int = 10) -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        cls_instance = Cls()
+        # Act
+        bound_method = binder.bind(cls_instance, 5)
+        # Assert
+        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert bound_method.params.args == (cls_instance, 5)
+
+    def test_bind_fails_unexpected_arg(self):
+        # Arrange
+        class Cls:
+            def method(self, x: int = 10) -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        cls_instance = Cls()
+        # Act
+        with pytest.raises(PartialBindException) as exc:
+            _ = binder.bind(cls_instance, y=5)
+        # Assert
+        assert str(exc.value) == (
+            f"Failed to bind parameters to {Cls.method!r}: got an unexpected "
+            f"keyword argument 'y'"
+        )
+
+    def test_repr(self, mock_method):
+        # Arrange
+        announcement_method = AnnouncementMethod(mock_method)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        binder_repr = repr(binder)
+        # Assert
+        expected = f"AnnouncementMethodBinder(method={announcement_method!r})"
+        assert binder_repr == expected
 
 
 class TestAnnouncementMethod:
