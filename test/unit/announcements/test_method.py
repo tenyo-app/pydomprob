@@ -198,6 +198,8 @@ class TestAnnouncementMethod:
         cls_ = mock_cls()
         # Act
         bound_method = announcement_method.bind(cls_, mock_instrument)
+        foo = bound_method.instrument
+        foo
         # Assert
         assert isinstance(bound_method, BoundAnnouncementMethod)
         assert bound_method.params.args == (cls_, mock_instrument)

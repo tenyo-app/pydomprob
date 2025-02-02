@@ -229,7 +229,9 @@ class AnnouncementMethodBinder:
         except TypeError as e:
             raise PartialBindException(self._announce_method, e) from e
 
-    def bind(self, *args: Any, **kwargs: Any) -> BoundAnnouncementMethod:
+    def bind(
+        self, *args: Any, **kwargs: Any
+    ) -> BoundAnnouncementMethod[_PMeth, _RMeth]:
         # pylint: disable=line-too-long
         """Fully binds arguments to the method signature and returns a
         bound method.
