@@ -55,7 +55,7 @@ from domprob.announcements.validation.validators import (
     MissingInstrumentException,
     NoSupportedInstrumentsException,
 )
-from domprob.base_exception import DomprobException
+from domprob.base_exc import DomprobException
 
 __all__: Sequence[str] = [
     "DomprobException",

@@ -37,7 +37,7 @@ within the announcement mechanism.
 Error: Validation failed for input data
 """
 
-from domprob.base_exception import DomprobException
+from domprob.base_exc import DomprobException
 
 
 class AnnouncementException(DomprobException):
