@@ -69,7 +69,7 @@ class TestAnnouncementMethodBinder:
         # Act
         binder = AnnouncementMethodBinder(announcement_method)
         # Assert
-        assert binder._announce_method == announcement_method
+        assert binder.announce_meth == announcement_method
 
     def test_signature(self, mock_method):
         # Arrange
@@ -170,7 +170,7 @@ class TestAnnouncementMethodBinder:
         # Act
         binder_repr = repr(binder)
         # Assert
-        expected = f"AnnouncementMethodBinder(method={announcement_method!r})"
+        expected = f"AnnouncementMethodBinder(announce_meth={announcement_method!r})"
         assert binder_repr == expected
 
 

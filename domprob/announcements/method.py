@@ -134,13 +134,32 @@ class AnnouncementMethodBinder:
     ensures that the provided arguments match the method signature and
     raises an exception if binding fails.
 
-    Args:
-        announce_method (AnnouncementMethod): The method wrapper
+    Attributes:
+        announce_meth (AnnouncementMethod): The method wrapper
             instance for which arguments will be bound.
+
+    Args:
+        announce_meth (AnnouncementMethod): The method wrapper
+            instance for which arguments will be bound.
+
+    Examples:
+        >>> from collections import OrderedDict
+        >>> from domprob.announcements.method import (
+        ...     AnnouncementMethod, AnnouncementMethodBinder
+        ... )
+        >>>
+        >>> class Foo:
+        ...     def bar(self, x: int = 5) -> None:
+        ...         pass
+        >>>
+        >>> meth = AnnouncementMethod(Foo.bar)
+        >>> binder = AnnouncementMethodBinder(meth)
+        >>> binder
+        AnnouncementMethodBinder(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>))
     """
 
-    def __init__(self, announce_method: AnnouncementMethod) -> None:
-        self._announce_method = announce_method
+    def __init__(self, announce_meth: AnnouncementMethod) -> None:
+        self.announce_meth = announce_meth
 
     @staticmethod
     def _apply_defaults(b_params: BoundArguments) -> BoundArguments:
@@ -227,7 +246,7 @@ class AnnouncementMethodBinder:
         try:
             return sig.bind_partial(*args, **kwargs)
         except TypeError as e:
-            raise PartialBindException(self._announce_method, e) from e
+            raise PartialBindException(self.announce_meth, e) from e
 
     def bind(
         self, *args: Any, **kwargs: Any
@@ -279,7 +298,7 @@ class AnnouncementMethodBinder:
         """
         b_params = self._bind_partial(*args, **kwargs)
         b_params = self._apply_defaults(b_params)
-        return BoundAnnouncementMethod(self._announce_method, b_params)
+        return BoundAnnouncementMethod(self.announce_meth, b_params)
 
     def signature(self) -> inspect.Signature:
         """Retrieves the method signature of the wrapped
@@ -297,7 +316,7 @@ class AnnouncementMethodBinder:
             >>> binder.signature()
             <Signature (x: 'int', y: 'str') -> 'None'>
         """
-        return inspect.signature(self._announce_method.meth)
+        return inspect.signature(self.announce_meth.meth)
 
     def __repr__(self) -> str:
         # pylint: disable=line-too-long
@@ -314,9 +333,11 @@ class AnnouncementMethodBinder:
             >>> method = AnnouncementMethod(example_method)
             >>> binder = AnnouncementMethodBinder(method)
             >>> repr(binder)
-            'AnnouncementMethodBinder(method=AnnouncementMethod(meth=<function example_method at 0x...>))'
+            'AnnouncementMethodBinder(announce_meth=AnnouncementMethod(meth=<function example_method at 0x...>))'
         """
-        return f"{self.__class__.__name__}(method={self._announce_method!r})"
+        return (
+            f"{self.__class__.__name__}(announce_meth={self.announce_meth!r})"
+        )
 
 
 # Typing helpers: Describes the wrapped method signature for wrapper
