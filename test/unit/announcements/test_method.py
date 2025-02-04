@@ -10,7 +10,8 @@ from domprob.announcements.metadata import AnnouncementMetadata
 from domprob.announcements.method import (
     AnnouncementMethod,
     BoundAnnouncementMethod,
-    PartialBindException, AnnouncementMethodBinder,
+    PartialBindException,
+    AnnouncementMethodBinder,
 )
 
 
@@ -170,7 +171,9 @@ class TestAnnouncementMethodBinder:
         # Act
         binder_repr = repr(binder)
         # Assert
-        expected = f"AnnouncementMethodBinder(announce_meth={announcement_method!r})"
+        expected = (
+            f"AnnouncementMethodBinder(announce_meth={announcement_method!r})"
+        )
         assert binder_repr == expected
 
 
@@ -223,20 +226,24 @@ class TestBoundAnnouncementMethod:
         mock_instrum = MockInstrument()
         mock_instance = mock_cls()
         # Act
-        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        b_meth = self._create_b_meth(
+            mock_cls.method, mock_instance, mock_instrum
+        )
         # Assert
         assert b_meth.params.args == (mock_instance, mock_instrum)
         assert b_meth.params.kwargs == {}
         assert b_meth.params.arguments == {
-            'self': mock_instance,
-            'instrument': mock_instrum
+            "self": mock_instance,
+            "instrument": mock_instrum,
         }
 
     def test_instrument_property(self, mock_cls):
         # Arrange
         mock_instance = mock_cls()
         mock_instrum = MockInstrument()
-        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        b_meth = self._create_b_meth(
+            mock_cls.method, mock_instance, mock_instrum
+        )
         # Act
         instrument = b_meth.instrument
         # Assert
@@ -258,7 +265,9 @@ class TestBoundAnnouncementMethod:
         # Arrange
         mock_instance = mock_cls()
         mock_instrum = MockInstrument()
-        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        b_meth = self._create_b_meth(
+            mock_cls.method, mock_instance, mock_instrum
+        )
         # Act
         meth_repr = repr(b_meth)
         # Assert
