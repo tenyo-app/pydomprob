@@ -71,6 +71,7 @@ decorated methods.
 from __future__ import annotations
 import inspect
 from collections.abc import Callable
+from functools import cached_property
 from inspect import BoundArguments
 from typing import Any, Generic, ParamSpec, TypeVar, Concatenate
 
@@ -356,9 +357,13 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
         meth (Callable): The method associated with this announcement.
     """
 
-    def __init__(self, meth: Callable[_PMeth, _RMeth]) -> None:
+    def __init__(
+        self,
+        meth: Callable[_PMeth, _RMeth],
+        supp_instrums: Instruments | None = None,
+    ) -> None:
         self._meth = meth
-        self._supp_instrums: Instruments | None = None
+        self._supp_instrums = supp_instrums
 
     @property
     def meth(self) -> Callable[_PMeth, _RMeth]:
@@ -383,7 +388,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
         """
         return self._meth
 
-    @property
+    @cached_property
     def supp_instrums(self) -> Instruments:
         """Returns the supported instruments for this method.
 
@@ -407,9 +412,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
             >>> base.supp_instrums
             Instruments(metadata=AnnouncementMetadata(method=<function example_method at 0x...>))
         """
-        if self._supp_instrums is None:
-            self._supp_instrums = Instruments.from_method(self.meth)
-        return self._supp_instrums
+        return self._supp_instrums or Instruments.from_method(self.meth)
 
     def __repr__(self) -> str:
         """Returns a string representation of the `BaseAnnouncement`
@@ -470,9 +473,61 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         AnnouncementMethod(meth=<function Foo.bar at 0x...>)
     """
 
-    def __init__(self, meth: Callable[_PMeth, _RMeth]) -> None:
-        super().__init__(meth)
+    def __init__(
+        self,
+        meth: Callable[_PMeth, _RMeth],
+        supp_instrums: Instruments | None = None,
+    ) -> None:
+        super().__init__(meth, supp_instrums)
         self._binder = AnnouncementMethodBinder(self)
+
+    @classmethod
+    def from_callable(
+        cls, meth: Callable[_PMeth, _RMeth]
+    ) -> AnnouncementMethod[_PMeth, _RMeth] | None:
+        """Creates an `AnnouncementMethod` instance from a callable if
+        it supports instruments.
+
+        This class method checks if the provided callable (`meth`) has
+        associated metadata for supported instruments. If it does, an
+        `AnnouncementMethod` instance is created and returned.
+        Otherwise, `None` is returned.
+
+        Args:
+            meth (Callable[_PMeth, _RMeth]): The method or function to
+                be wrapped as an `AnnouncementMethod`.
+
+        Returns:
+            AnnouncementMethod[_PMeth, _RMeth] | None:
+                - An instance of `AnnouncementMethod` if the callable
+                  has associated metadata.
+                - `None` if the callable does not support instruments.
+
+        Example:
+            >>> from domprob import announcement
+            >>>
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> class Foo:
+            ...     @announcement(SomeInstrument)
+            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...         print(f"Instrument: {instrument}")
+            ...
+            >>> # Create an AnnouncementMethod instance from a method
+            >>> announce_meth = AnnouncementMethod.from_callable(Foo.bar)
+            >>> assert isinstance(announce_meth, AnnouncementMethod)
+            >>> print(announce_meth)
+            AnnouncementMethod(meth=<function Foo.bar at 0x...>)
+
+            >>> # Attempt to create an AnnouncementMethod from a method without metadata
+            >>> def no_announcement_method():
+            ...     pass
+            ...
+            >>> assert AnnouncementMethod.from_callable(no_announcement_method) is None
+        """
+        supp_instrums = Instruments.from_method(meth)
+        return cls(meth, supp_instrums) if supp_instrums else None
 
     def bind(
         self, cls_instance: Any, *args: _PMeth.args, **kwargs: _PMeth.kwargs

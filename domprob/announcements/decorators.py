@@ -43,8 +43,15 @@ Executing with <...SomeInstrument object at 0x...>
 """
 
 import functools
-from collections.abc import Callable
-from typing import Any, Generic, ParamSpec, TypeVar, cast, Concatenate
+from collections.abc import Callable, Hashable
+from typing import (
+    Any,
+    Generic,
+    ParamSpec,
+    TypeVar,
+    cast,
+    Concatenate,
+)
 
 from domprob.announcements.method import AnnouncementMethod
 
@@ -52,7 +59,7 @@ from domprob.announcements.method import AnnouncementMethod
 _MethodCls = TypeVar("_MethodCls", bound=Any)
 
 # Typing helper: Describes the instrument parameters
-_Instrument = TypeVar("_Instrument", bound=Any)
+_Instrument = TypeVar("_Instrument", bound=Hashable)
 
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
