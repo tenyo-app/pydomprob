@@ -83,7 +83,8 @@ class TestBaseObservation:
 
     def test_announcements_caching(self, observation_cls):
         # Arrange
-        old_announcement =  list(observation_cls.announcements())[0]
+        old_announcement = list(observation_cls.announcements())[0]
+
         # Act
         def new_announcement():
             return "New announcement"

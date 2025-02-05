@@ -12,4 +12,5 @@
    :maxdepth: 1
    :caption: Components
 
-   components/announcements/index
+   components/announcements
+   components/observations/index
