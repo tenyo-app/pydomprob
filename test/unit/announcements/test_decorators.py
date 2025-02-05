@@ -30,7 +30,7 @@ def announcement_instance():
 class TestAnnouncement:
     def test_initialisation(self):
         """Test that Announcement is initialised correctly."""
-        ann = _Announcement(MockInstrument)
+        ann = _Announcement(MockInstrument, True)
         assert ann.instrument is MockInstrument
         assert ann.required is True
 
@@ -44,9 +44,7 @@ class TestAnnouncement:
         self, mock_cls, announcement_instance
     ):
         # Arrange
-        mock_cls.method = announcement_instance(
-            mock_cls.method
-        )  # Decorate method
+        mock_cls.method = announcement_instance(mock_cls.method)  # type: ignore
         instance = mock_cls()
         instrument = MockInstrument()
         # Act
@@ -87,9 +85,7 @@ class TestAnnouncement:
     ):
         """Test that the decorated method raises an exception for invalid instrument."""
         # Arrange
-        mock_cls.method = announcement_instance(
-            mock_cls.method
-        )  # Decorate method
+        mock_cls.method = announcement_instance(mock_cls.method)  # type: ignore
         instance = mock_cls()
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:

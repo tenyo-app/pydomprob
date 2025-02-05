@@ -83,7 +83,7 @@ class TestInstrumentTypeValidator:
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
         instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
-        instruments.record(MockInstrument)
+        instruments.record(MockInstrument, True)
         # Act
         type_validator.validate(b_mock_meth)
         # Assert
@@ -93,7 +93,7 @@ class TestInstrumentTypeValidator:
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
         instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
-        instruments.record(AnotherInstrument)
+        instruments.record(AnotherInstrument, True)
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:
             type_validator.validate(b_mock_meth)
@@ -124,7 +124,7 @@ class TestInstrumentTypeValidator:
         # Arrange
         b_mock_meth = _create_b_meth(None)
         instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
-        instruments.record(AnotherInstrument)
+        instruments.record(AnotherInstrument, True)
         # Act
         with pytest.raises(InstrumentTypeException) as exc_info:
             type_validator.validate(b_mock_meth)
@@ -140,8 +140,8 @@ class TestInstrumentTypeValidator:
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
         instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
-        instruments.record(MockInstrument)
-        instruments.record(AnotherInstrument)
+        instruments.record(MockInstrument, True)
+        instruments.record(AnotherInstrument, True)
         # Act
         type_validator.validate(b_mock_meth)
         # Assert
@@ -161,7 +161,7 @@ class TestSupportedInstrumentsExistValidator:
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
         instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
-        instruments.record(MockInstrument)
+        instruments.record(MockInstrument, True)
         # Act
         supported_instruments_validator.validate(b_mock_meth)
         # Assert

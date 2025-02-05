@@ -7,6 +7,7 @@ from domprob.announcements.metadata import AnnouncementMetadata
 # Typing helpers
 _InstruCls = TypeVar("_InstruCls", bound=type[Any])
 _InstrumentClsGen = Generator[_InstruCls, None, None]
+_InstrumentTupleClsGen = Generator[tuple[_InstruCls, bool], None, None]
 
 
 class Instruments(Generic[_InstruCls]):
@@ -38,11 +39,11 @@ class Instruments(Generic[_InstruCls]):
     def __init__(self, metadata: AnnouncementMetadata) -> None:
         self._metadata = metadata
 
-    def __iter__(self) -> _InstrumentClsGen:
-        """Iterates over all supported instrument classes.
+    def __iter__(self) -> _InstrumentTupleClsGen:
+        """Iterates over all instruments.
 
         Yields:
-            TInstrumentClsGen: Instrument classes associated with
+            _InstrumentTupleClsGen: Instrument classes associated with
                 the method's metadata.
 
         Examples:
@@ -59,12 +60,12 @@ class Instruments(Generic[_InstruCls]):
             >>> class SomeInstrument:
             ...     pass
             ...
-            >>> instruments.record(SomeInstrument)
+            >>> instruments.record(SomeInstrument, True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments)
-            [<class '...SomeInstrument'>]
+            [(<class 'domprob.announcements.instruments.SomeInstrument'>, True)]
         """
-        yield from (m.instrument_cls for m in self._metadata)
+        yield from ((m.instrument_cls, m.required) for m in self._metadata)
 
     def __len__(self) -> int:
         """Returns the number of instrument entries associated with
@@ -180,7 +181,7 @@ class Instruments(Generic[_InstruCls]):
         return cls(AnnouncementMetadata(method))
 
     @property
-    def non_req_instruments(self) -> _InstrumentClsGen:
+    def non_req_instrums(self) -> _InstrumentClsGen:
         """Generator yielding supported instrument classes marked as
         not required in the method's metadata.
 
@@ -205,17 +206,17 @@ class Instruments(Generic[_InstruCls]):
             >>> instruments.record(SomeInstrument, required=True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>>
-            >>> list(instruments.non_req_instruments)
+            >>> list(instruments.non_req_instrums)
             []
             >>> instruments.record(SomeInstrument, required=False)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-            >>> list(instruments.non_req_instruments)
+            >>> list(instruments.non_req_instrums)
             [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata if not m.required)
 
     @property
-    def req_instruments(self) -> _InstrumentClsGen:
+    def req_instrums(self) -> _InstrumentClsGen:
         """Generator yielding supported instrument classes marked as
         required in the method's metadata.
 
@@ -238,11 +239,11 @@ class Instruments(Generic[_InstruCls]):
             ...
             >>> instruments.record(SomeInstrument, required=False)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-            >>> list(instruments.req_instruments)
+            >>> list(instruments.req_instrums)
             []
             >>> instruments.record(SomeInstrument, required=True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-            >>> list(instruments.req_instruments)
+            >>> list(instruments.req_instrums)
             [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata if m.required)
@@ -287,16 +288,13 @@ class Instruments(Generic[_InstruCls]):
                 return True  # return early if required instrument found
         return False
 
-    def record(
-        self, instrument: _InstruCls, required: bool = True
-    ) -> "Instruments":
+    def record(self, instrument: _InstruCls, required: bool) -> "Instruments":
         """Adds an instrument entry to the method's metadata.
 
         Args:
             instrument (type[`BaseInstrument`]): The instrument class
                 to add to the method's metadata.
-            required (`bool`, optional): Whether the instrument is
-                required. Defaults to `True`.
+            required (`bool`): Whether the instrument is required.
 
         Returns:
             Instruments: The updated `Instruments` instance.
@@ -367,11 +365,11 @@ class Instruments(Generic[_InstruCls]):
             [<class '...SomeInstrument'>, <class '...SomeInstrument'>]
         """
         if required is None:
-            yield from self
+            yield from (m.instrument_cls for m in self._metadata)
         elif not required:
-            yield from self.non_req_instruments
+            yield from self.non_req_instrums
         else:
-            yield from self.req_instruments
+            yield from self.req_instrums
 
     def __repr__(self) -> str:
         """Returns a string representation of the Instruments instance.

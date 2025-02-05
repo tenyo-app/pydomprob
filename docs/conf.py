@@ -23,6 +23,7 @@ extensions = [
     "sphinx.ext.napoleon",  # Supports NumPy and Google-style docstrings
     "sphinx.ext.autosummary",  # Generates summary tables for modules and classes
     "sphinx_autodoc_typehints",  # Adds type hints from Python annotations
+    "sphinx.ext.viewcode",
 ]
 
 templates_path = ["_templates"]
@@ -34,7 +35,7 @@ autodoc_default_options = {
     "members": True,  # Document class members
     "undoc-members": True,  # Include undocumented members
     "private-members": True,  # Include private members (_ prefixed)
-    "special-members": "__call__, __repr__, __eq__, __len__, __iter__",  # Include special methods like __init__
+    "special-members": "__call__, __repr__, __eq__, __len__, __iter__, __contains__",  # Include special methods like __init__
     "inherited-members": True,  # Include inherited members
     "show-inheritance": True,  # Show class inheritance
 }

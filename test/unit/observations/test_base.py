@@ -3,6 +3,7 @@ import pytest
 from domprob.announcements.method import AnnouncementMethod
 from domprob import announcement
 from domprob.observations.base import _is_function, BaseObservation
+from domprob.observations.observation import ObservationProtocol
 
 
 def test_is_function_valid_function():
@@ -72,6 +73,14 @@ class TestBaseObservation:
     def observation_cls(self):
         return TestBaseObservation.MockObservation
 
+    def test_follows_observation_protocol(self, observation_cls):
+        # Arrange
+        observation = observation_cls()
+        # Act
+        # Assert
+        assert isinstance(observation, BaseObservation)
+        assert isinstance(observation, ObservationProtocol)
+
     def test_announcements_generator(self, observation_cls):
         # Arrange
         # Act
@@ -94,24 +103,6 @@ class TestBaseObservation:
         # Assert
         assert len(cached_announcements) == 1
         assert cached_announcements[0] == old_announcement
-
-    def test_instruments(self, observation_cls):
-        # Arrange
-        # Act
-        instr_map = observation_cls.instruments()
-        # Assert
-        assert isinstance(instr_map, dict)
-        assert "mock_instrument" in instr_map
-        assert isinstance(instr_map["mock_instrument"], set)
-        assert len(instr_map["mock_instrument"]) == 1
-
-    def test_instruments_caching(self, observation_cls):
-        # Arrange
-        # Act
-        first_call = observation_cls.instruments()
-        second_call = observation_cls.instruments()
-        # Assert
-        assert first_call is second_call
 
     def test_len_method(self, observation_cls):
         # Arrange

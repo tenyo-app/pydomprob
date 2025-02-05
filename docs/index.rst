@@ -13,4 +13,5 @@
    :caption: Components
 
    components/announcements
-   components/observations/index
+   components/dispatchers
+   components/observations

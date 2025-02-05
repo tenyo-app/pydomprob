@@ -1,18 +1,18 @@
 from __future__ import annotations
 import inspect
 from abc import ABC
-from collections.abc import Generator, Hashable
+from collections.abc import Generator
 from functools import cached_property
-from typing import ParamSpec, TypeVar, Generic
+from typing import ParamSpec, TypeVar, Generic, Any
 
 from domprob.announcements.method import AnnouncementMethod
-
+from domprob.observations.observation import ObservationProtocol
 
 # Typing helpers: defines an @announcement method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 _AnnounceSig = AnnouncementMethod[_P, _R]
-_Instrument = TypeVar("_Instrument", bound=Hashable)
+_Instrument = TypeVar("_Instrument", bound=Any)
 
 _PROPERTY_TYPES = (property, cached_property)
 
@@ -47,7 +47,9 @@ def _is_function(obj: object) -> bool:
     )
 
 
-class BaseObservation(ABC, Generic[_P, _R, _Instrument]):
+class BaseObservation(
+    ABC, Generic[_P, _R, _Instrument], ObservationProtocol[[Any, Any], Any]
+):
     """Base class for observations.
 
     Attributes:
@@ -72,7 +74,6 @@ class BaseObservation(ABC, Generic[_P, _R, _Instrument]):
 
     # cached per observation sub cls - avoids recompute for each instance
     _announcements: list[_AnnounceSig] | None = None
-    _instrums: dict[_Instrument, set[_AnnounceSig]] | None = None
 
     @classmethod
     def announcements(cls) -> Generator[_AnnounceSig, None, None]:
@@ -110,37 +111,6 @@ class BaseObservation(ABC, Generic[_P, _R, _Instrument]):
                 yield announce_meth
         cls._announcements = announce_meths
 
-    @classmethod
-    def instruments(cls) -> dict[_Instrument, set[_AnnounceSig]]:
-        # pylint: disable=line-too-long
-        """Retrieve a mapping of instruments to announcement methods.
-
-        Returns:
-            dict[_Instrument, set[_AnnounceSig]]: A dictionary mapping
-                instruments to announcement methods.
-
-        Example:
-            >>> from domprob import announcement, BaseObservation
-            >>>
-            >>> class SomeInstrument:
-            ...     pass
-            ...
-            >>> class MyObservation(BaseObservation):
-            ...     @announcement(SomeInstrument)
-            ...     def event_occurred(self, instrument: SomeInstrument) -> None:
-            ...         pass
-            ...
-            >>> MyObservation.instruments()
-            {<class 'domprob.observations.base.SomeInstrument'>: {AnnouncementMethod(meth=<function MyObservation.event_occurred at 0x...>)}}
-        """
-        if cls._instrums is None:
-            instrums: dict[_Instrument, set[_AnnounceSig]] = {}
-            for announce in cls.announcements():
-                for instrum in announce.supp_instrums:
-                    instrums.setdefault(instrum, set()).add(announce)
-            cls._instrums = instrums
-        return cls._instrums
-
     def __len__(self) -> int:
         """Return the number of announcements.
 
@@ -162,7 +132,7 @@ class BaseObservation(ABC, Generic[_P, _R, _Instrument]):
             >>> len(observation)
             1
         """
-        return len(list(self.__class__.announcements()))
+        return len(list(self.announcements()))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(announcements={len(self)})"

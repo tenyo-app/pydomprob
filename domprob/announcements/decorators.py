@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Callable, Hashable
+from collections.abc import Callable
 from typing import (
     Any,
     Generic,
@@ -15,7 +15,7 @@ from domprob.announcements.method import AnnouncementMethod
 _MethodCls = TypeVar("_MethodCls", bound=Any)
 
 # Typing helper: Describes the instrument parameters
-_Instrument = TypeVar("_Instrument", bound=Hashable)
+_Instrument = TypeVar("_Instrument", bound=Any)
 
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
@@ -42,6 +42,8 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
     Args:
         instrument (type[_Instrument]): The instrument class required
             by the decorated method.
+        required (bool): Whether the instrument is required. Defaults
+            to `False`.
 
     Examples:
 
@@ -116,9 +118,11 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         Observing 'Foo' with 'PrintInstrument()'
     """
 
-    def __init__(self, instrument: type[_Instrument]) -> None:
+    def __init__(
+        self, instrument: type[_Instrument], required: bool = False
+    ) -> None:
         self.instrument = instrument
-        self.required = True
+        self.required = required
 
     def __call__(self, method: _MethSig) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime

@@ -22,7 +22,7 @@ autodocs:
 	uv run sphinx-autobuild docs/ docs/_build/
 
 mypy:
-	uv run mypy domprob/
+	uv run mypy domprob/ --check-untyped-defs
 
 pylint:
 	uv run pylint domprob/

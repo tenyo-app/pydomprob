@@ -674,8 +674,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> bound_method.execute()
             'Executed'
         """
-        response = self.meth(*self.params.args, **self.params.kwargs)
-        return response
+        return self.meth(*self.params.args, **self.params.kwargs)
 
     def validate(self) -> None:
         """Validates the bound method using the validation

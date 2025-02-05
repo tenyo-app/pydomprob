@@ -162,7 +162,7 @@ class InstrumentTypeException(ValidatorException):
         Returns:
             str: Error message describing the invalid `instrument`.
         """
-        instrum_names = (i.__name__ for i in self.supp_instrums)
+        instrum_names = (i.__name__ for i, _ in self.supp_instrums)
         m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
         return (
             f"{m_name} expects 'instrument' param to be one of: "
@@ -213,7 +213,7 @@ class InstrumentTypeValidator(BaseValidator):
             AnnoValidationException: If the `instrument` parameter is
                 not an instance of any valid instrument classes.
         """
-        for supp_instrum in b_meth.supp_instrums:
+        for supp_instrum, _ in b_meth.supp_instrums:
             # pylint: disable=unidiomatic-typecheck
             if type(b_meth.instrument) is supp_instrum:
                 return super().validate(b_meth)

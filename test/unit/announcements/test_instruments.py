@@ -60,8 +60,8 @@ class TestInstruments:
         result = list(mock_instruments)
         # Assert
         assert len(result) == 2
-        assert result[0] == MockInstrument
-        assert result[1] == AnotherMockInstrument
+        assert result[0] == (MockInstrument, True)
+        assert result[1] == (AnotherMockInstrument, False)
 
     def test_metadata_eq(self, mock_instruments):
         # Arrange
@@ -92,15 +92,15 @@ class TestInstruments:
         # Assert
         assert len(mock_instruments) == 2
         all_instruments = list(mock_instruments)
-        assert MockInstrument in all_instruments
-        assert AnotherMockInstrument in all_instruments
+        assert (MockInstrument, True) in all_instruments
+        assert (AnotherMockInstrument, False) in all_instruments
 
     def test_instruments_req_instruments(self, mock_instruments):
         # Arrange
         mock_instruments.record(MockInstrument, required=True)
         mock_instruments.record(AnotherMockInstrument, required=False)
         # Act
-        required = list(mock_instruments.req_instruments)
+        required = list(mock_instruments.req_instrums)
         # Assert
         assert len(required) == 1
         assert required[0] == MockInstrument
@@ -110,7 +110,7 @@ class TestInstruments:
         mock_instruments.record(MockInstrument, required=True)
         mock_instruments.record(AnotherMockInstrument, required=False)
         # Act
-        non_required = list(mock_instruments.non_req_instruments)
+        non_required = list(mock_instruments.non_req_instrums)
         # Assert
         assert len(non_required) == 1
         assert non_required[0] == AnotherMockInstrument
@@ -168,16 +168,18 @@ class TestInstruments:
         # Assert
         assert len(mock_instruments) == 0
         assert list(mock_instruments) == []
-        assert list(mock_instruments.req_instruments) == []
-        assert list(mock_instruments.non_req_instruments) == []
+        assert list(mock_instruments.req_instrums) == []
+        assert list(mock_instruments.non_req_instrums) == []
         assert mock_instruments.is_required(MockInstrument) is False
 
-    def test_instruments_duplicate_entries(self, mock_instruments):
+    def test_instruments_duplicate_entries(
+        self, mock_instruments: Instruments
+    ):
         # Arrange
         # Act
         mock_instruments.record(MockInstrument, required=True)
         mock_instruments.record(MockInstrument, required=False)
         # Assert
         assert len(mock_instruments) == 2
-        all_instruments = list(mock_instruments)
+        all_instruments = list(i for i, _ in mock_instruments)
         assert all_instruments.count(MockInstrument) == 2
