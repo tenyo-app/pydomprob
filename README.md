@@ -44,13 +44,13 @@ class Order:
 ```python
 class Order:
     def checkout(self):
-        self.probe.announce(AttemptingCheckoutObservation())
+        probe.announce(AttemptingCheckoutObservation())
         try:
             self.checkout_service.checkout_order(self.order)
         except CheckoutError as e:
-            self.probe.announce(CheckoutFailedObservation())
+            probe.announce(CheckoutFailedObservation())
             return
-        self.probe.announce(CheckoutSuccessfulObservation())
+        probe.announce(CheckoutSuccessfulObservation())
 ```
 
 ## Installation
