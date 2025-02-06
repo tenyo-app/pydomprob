@@ -13,7 +13,7 @@ to be a Python package to implement observability domain probes.
 
 ## Overview
 
-Keep your business logic tidy and abstract the observability code away.
+Keep your business logic comprehensible by abstracting the observability code away.
 
 **Turn this:**
 
