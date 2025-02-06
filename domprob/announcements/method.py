@@ -105,10 +105,6 @@ class AnnouncementMethodBinder:
     def __init__(self, announce_meth: _AnnounceMeth) -> None:
         self.announce_meth = announce_meth
 
-    @property
-    def instrums(self) -> Generator[Any, None, None]:
-        yield from (i for i, _ in self.announce_meth.supp_instrums)
-
     @staticmethod
     def _apply_defaults(b_params: BoundArguments) -> BoundArguments:
         """Applies default values to bound parameters.
@@ -254,25 +250,36 @@ class AnnouncementMethodBinder:
     def _infer_ann_params(
         self, params: ValuesView[inspect.Parameter]
     ) -> Generator[Parameter, Any, None] | None:
+        instrums = (i for i, _ in self.announce_meth.supp_instrums)
         for param in params:
             ann = param.annotation
             if ann is inspect.Parameter.empty:  # No annotation defined
                 continue
-            if all(i for i in self.instrums if i == ann or issubclass(i, ann)):
+            if all(i for i in instrums if i == ann or issubclass(i, ann)):
                 return (self._rn(p) if p is param else p for p in params)
         return None
 
     def _infer_pos_params(
         self, params: ValuesView[inspect.Parameter]
     ) -> Generator[inspect.Parameter, None, None]:
-        params = iter(params)
-        first_param = next(params)
+        params_iter = iter(params)
+        try:
+            first_param = next(params_iter)
+        except StopIteration:
+            return
         # Hacky 'self' check - could fail if first arg in instance method
         # doesn't follow convention
-        if first_param.name == "self":
-            yield first_param
-        yield self._rn(next(params))
-        yield from params
+        if first_param.name != "self":
+            first_param = self._rn(first_param)
+        yield first_param
+        try:
+            second_param = next(params_iter)
+        except StopIteration:
+            return
+        if first_param.name != "instrument":
+            second_param = self._rn(second_param)
+        yield second_param
+        yield from params_iter
 
     def get_signature(self) -> inspect.Signature:
         """Retrieves the method signature of the wrapped
