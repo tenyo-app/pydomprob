@@ -319,3 +319,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: uv run twine upload dist/*
+
+      - name: Test Package Is Installable & Importable
+        run: uv run --with domprob --no-project -- python -c "import domprob"
