@@ -330,3 +330,31 @@ jobs:
 
       - name: Test Package Is Installable & Importable
         run: uv run --with domprob --no-project -- python -c "import domprob"
+
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs:  # Will run if any of these fail
+    - pylint
+    - black
+    - mypy
+    - unit-tests
+    - functional-tests
+    - doc-tests
+    - build-docs-check
+    - build-package
+    - deploy-docs
+    - deploy-package
+    if: failure() || cancelled()
+    permissions:
+      contents: write
+    steps:
+      - name: Install GitHub CLI
+        run: sudo apt update && sudo apt install gh -y
+
+      - name: Delete Release and Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete ${{ github.event.release.tag_name }} --yes
+          gh api --method DELETE "/repos/${{ github.repository }}/git/refs/tags/${{ github.event.release.tag_name }}"
