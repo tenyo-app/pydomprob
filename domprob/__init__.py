@@ -27,5 +27,6 @@ Usage:
 from collections.abc import Sequence
 
 from domprob.announcements.decorators import announcement
+from domprob.observations.base import BaseObservation
 
-__all__: Sequence[str] = ["announcement"]
+__all__: Sequence[str] = ["announcement", "BaseObservation"]

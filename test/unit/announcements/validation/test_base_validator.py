@@ -4,8 +4,10 @@ from collections import OrderedDict
 import pytest
 
 from domprob.announcements.exceptions import AnnouncementException
-from domprob.announcements.method import BoundAnnouncementMethod, \
-    AnnouncementMethod
+from domprob.announcements.method import (
+    BoundAnnouncementMethod,
+    AnnouncementMethod,
+)
 from domprob.announcements.validation.base_validator import (
     BaseValidator,
     ValidatorException,

@@ -5,16 +5,26 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from domprob import announcement
 from domprob.announcements.instruments import Instruments
 from domprob.announcements.metadata import AnnouncementMetadata
 from domprob.announcements.method import (
     AnnouncementMethod,
     BoundAnnouncementMethod,
-    PartialBindException, AnnouncementMethodBinder,
+    PartialBindException,
+    AnnouncementMethodBinder,
 )
 
 
 class MockInstrument:
+    pass
+
+
+class AnotherMockInstrument(MockInstrument):
+    pass
+
+
+class YetAnotherMockInstrument(AnotherMockInstrument):
     pass
 
 
@@ -71,14 +81,134 @@ class TestAnnouncementMethodBinder:
         # Assert
         assert binder.announce_meth == announcement_method
 
-    def test_signature(self, mock_method):
+    def test_get_signature_instrument_defined(self, mock_method):
         # Arrange
         announcement_method = AnnouncementMethod(mock_method)
         binder = AnnouncementMethodBinder(announcement_method)
         # Act
-        signature = binder.signature()
+        signature = binder.get_signature()
         # Assert
         assert signature == inspect.signature(mock_method)
+
+    def test_get_signature_instrument_defined_in_diff_position(self):
+        # Arrange
+        class Cls:
+            def meth(self, foo: str, instrument: MockInstrument) -> None:
+                pass
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert signature == inspect.signature(Cls.meth)
+
+    def test_get_signature_infers_instrument_through_annotations(self):
+        # Arrange
+        class Cls:
+            @announcement(MockInstrument)
+            @announcement(MockInstrument)
+            def meth(self, mock_var_name: MockInstrument) -> None:
+                pass
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert 'instrument' in signature.parameters.keys()
+        assert signature.parameters.get('instrument').annotation == MockInstrument
+        assert len(signature.parameters) == 2
+
+    def test_get_signature_infers_instrument_through_parent_annotations(self):
+        # Arrange
+        class Cls:
+            @announcement(YetAnotherMockInstrument)
+            @announcement(AnotherMockInstrument)
+            def meth(self, mock_var_name: MockInstrument) -> None:
+                pass
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert 'instrument' in signature.parameters.keys()
+        assert signature.parameters.get('instrument').annotation == MockInstrument
+        assert len(signature.parameters) == 2
+
+    def test_get_signature_infers_instrument_through_position_instance_method(self):
+        # Arrange
+        class Cls:
+            def meth(self, mock_var_name) -> None:
+                pass
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert 'instrument' in signature.parameters.keys()
+        assert signature.parameters.get('instrument').annotation == inspect.Signature.empty
+        assert len(signature.parameters) == 2
+
+    def test_get_signature_infers_instrument_through_position_function(self):
+        # Arrange
+        class Cls:
+            @staticmethod
+            def meth(mock_var_name) -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert 'instrument' in signature.parameters.keys()
+        assert signature.parameters.get('instrument').annotation == inspect.Signature.empty
+        assert len(signature.parameters) == 1
+
+    @pytest.mark.xfail(reason="Checks func type by 'self' variable name convention")
+    def test_get_signature_infers_instrument_through_position_when_instance_method_with_incorrect_convention(self):
+        # Arrange
+        class Cls:
+            def meth(uhoh, mock_var_name) -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert 'uhoh' in signature.parameters.keys()
+        assert 'instrument' in signature.parameters.keys()
+        assert signature.parameters.get('instrument').annotation == inspect.Signature.empty
+        assert len(signature.parameters) == 2
+
+    def test_get_signature_infers_instrument_through_position_stop_iteration_function(self):
+        # Arrange
+        class Cls:
+            @staticmethod
+            def meth() -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert signature == inspect.signature(Cls.meth)
+        assert len(signature.parameters) == 0
+
+    def test_get_signature_infers_instrument_through_position_stop_iteration_instance_method(self):
+        # Arrange
+        class Cls:
+            def meth(self) -> None:
+                pass
+
+        announcement_method = AnnouncementMethod(Cls.meth)
+        binder = AnnouncementMethodBinder(announcement_method)
+        # Act
+        signature = binder.get_signature()
+        # Assert
+        assert signature == inspect.signature(Cls.meth)
+        assert len(signature.parameters) == 1
 
     def test_bind_self(self, mock_cls, mock_method):
         # Arrange
@@ -170,7 +300,9 @@ class TestAnnouncementMethodBinder:
         # Act
         binder_repr = repr(binder)
         # Assert
-        expected = f"AnnouncementMethodBinder(announce_meth={announcement_method!r})"
+        expected = (
+            f"AnnouncementMethodBinder(announce_meth={announcement_method!r})"
+        )
         assert binder_repr == expected
 
 
@@ -198,8 +330,7 @@ class TestAnnouncementMethod:
         cls_ = mock_cls()
         # Act
         bound_method = announcement_method.bind(cls_, mock_instrument)
-        foo = bound_method.instrument
-        foo
+        _ = bound_method.instrument
         # Assert
         assert isinstance(bound_method, BoundAnnouncementMethod)
         assert bound_method.params.args == (cls_, mock_instrument)
@@ -223,20 +354,24 @@ class TestBoundAnnouncementMethod:
         mock_instrum = MockInstrument()
         mock_instance = mock_cls()
         # Act
-        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        b_meth = self._create_b_meth(
+            mock_cls.method, mock_instance, mock_instrum
+        )
         # Assert
         assert b_meth.params.args == (mock_instance, mock_instrum)
         assert b_meth.params.kwargs == {}
         assert b_meth.params.arguments == {
-            'self': mock_instance,
-            'instrument': mock_instrum
+            "self": mock_instance,
+            "instrument": mock_instrum,
         }
 
     def test_instrument_property(self, mock_cls):
         # Arrange
         mock_instance = mock_cls()
         mock_instrum = MockInstrument()
-        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        b_meth = self._create_b_meth(
+            mock_cls.method, mock_instance, mock_instrum
+        )
         # Act
         instrument = b_meth.instrument
         # Assert
@@ -258,7 +393,9 @@ class TestBoundAnnouncementMethod:
         # Arrange
         mock_instance = mock_cls()
         mock_instrum = MockInstrument()
-        b_meth = self._create_b_meth(mock_cls.method, mock_instance, mock_instrum)
+        b_meth = self._create_b_meth(
+            mock_cls.method, mock_instance, mock_instrum
+        )
         # Act
         meth_repr = repr(b_meth)
         # Assert

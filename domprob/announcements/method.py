@@ -1,78 +1,17 @@
-"""
-This module provides classes and utilities for managing decorated
-methods associated with metadata and runtime validation in the
-`pydomprob` framework. It supports functionalities like binding
-runtime arguments, validating instruments, and executing methods with
-associated metadata.
-
-**Key Classes**
-
-1. `AnnouncementMethod`:
-
-   - Represents a decorated method with associated metadata.
-   - Provides interfaces for accessing supported instruments, method
-     signatures, and partially binding runtime arguments.
-
-2. `PartialBindException`:
-
-   - Raised when binding arguments to a method's signature fails.
-   - Helps handle errors during partial argument binding, including
-     missing required parameters.
-
-3. `BoundAnnouncementMethod`:
-
-   - Extends `AnnouncementMethod` to represent partially bound methods.
-   - Facilitates logic like validation and execution of methods with
-     pre-bound arguments.
-
-4. `AnnouncementMethodBinder`
-
-   - Handles argument binding for `AnnouncementMethod`, both fully and
-     partially.
-   - Ensures that provided arguments match the method signature.
-
-**Key Features**
-
-- Metadata Handling: Associates metadata, including supported
-  instruments, with decorated methods.
-- Partial Argument Binding: Supports binding runtime arguments
-  partially to methods before execution.
-- Validation: Ensures runtime parameters meet method requirements,
-  such as required instruments.
-- Custom Exceptions: Includes `PartialBindException` for handling
-  argument binding errors.
-
-**Examples**
-
->>> class SomeInstrument:
-...     pass
-...
->>> # Define a class with a decorated method
->>> from domprob import announcement
->>>
->>> class Foo:
-...     @announcement(SomeInstrument)
-...     def bar(self, instrument: SomeInstrument) -> None:
-...         print(f"Instrument: {instrument}")
-...
->>> announce_meth = AnnouncementMethod(Foo.bar)
->>> bound_meth = announce_meth.bind(Foo(), SomeInstrument())
->>> bound_meth.validate()
->>> bound_meth.execute()
-Instrument: <...SomeInstrument object at 0x...>
-
-**Integration**
-
-This module integrates with the `domprob.announcements` package to
-provide comprehensive runtime validation and metadata management for
-decorated methods.
-"""
-
 from __future__ import annotations
 import inspect
-from collections.abc import Callable
-from inspect import BoundArguments
-from typing import Any, Generic, ParamSpec, TypeVar, Concatenate
+from collections.abc import Callable, ValuesView
+from functools import cached_property
+from inspect import BoundArguments, Parameter
+from typing import (
+    Any,
+    Generic,
+    ParamSpec,
+    TypeVar,
+    Concatenate,
+    TypeAlias,
+    Generator,
+)
 
 from domprob.announcements.exceptions import AnnouncementException
 from domprob.announcements.instruments import Instruments
@@ -126,6 +65,9 @@ class PartialBindException(AnnouncementException):
         return f"{self.__class__.__name__}(meth={self.meth!r}, e={self.e!r})"
 
 
+_AnnounceMeth: TypeAlias = "AnnouncementMethod[_PMeth, _RMeth]"
+
+
 class AnnouncementMethodBinder:
     """Handles argument binding for an `AnnouncementMethod`.
 
@@ -158,7 +100,9 @@ class AnnouncementMethodBinder:
         AnnouncementMethodBinder(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>))
     """
 
-    def __init__(self, announce_meth: AnnouncementMethod) -> None:
+    _instr: str = "instrument"
+
+    def __init__(self, announce_meth: _AnnounceMeth) -> None:
         self.announce_meth = announce_meth
 
     @staticmethod
@@ -242,7 +186,7 @@ class AnnouncementMethodBinder:
             ...
             Failed partial binding
         """
-        sig = self.signature()
+        sig = self.get_signature()
         try:
             return sig.bind_partial(*args, **kwargs)
         except TypeError as e:
@@ -300,9 +244,68 @@ class AnnouncementMethodBinder:
         b_params = self._apply_defaults(b_params)
         return BoundAnnouncementMethod(self.announce_meth, b_params)
 
-    def signature(self) -> inspect.Signature:
+    def _rn(self, param: inspect.Parameter) -> inspect.Parameter:
+        return param.replace(name=self._instr)
+
+    def _infer_ann_params(
+        self, params: ValuesView[inspect.Parameter]
+    ) -> Generator[Parameter, Any, None] | None:
+        instrums = (i for i, _ in self.announce_meth.supp_instrums)
+        for param in params:
+            ann = param.annotation
+            if ann is inspect.Parameter.empty:  # No annotation defined
+                continue
+            if all(i for i in instrums if i == ann or issubclass(i, ann)):
+                return (self._rn(p) if p is param else p for p in params)
+        return None
+
+    def _infer_pos_params(
+        self, params: ValuesView[inspect.Parameter]
+    ) -> Generator[inspect.Parameter, None, None]:
+        params_iter = iter(params)
+        try:
+            first_param = next(params_iter)
+        except StopIteration:
+            return
+        # Hacky 'self' check - could fail if first arg in instance method
+        # doesn't follow convention
+        if first_param.name != "self":
+            first_param = self._rn(first_param)
+        yield first_param
+        try:
+            second_param = next(params_iter)
+        except StopIteration:
+            return
+        if first_param.name != "instrument":
+            second_param = self._rn(second_param)
+        yield second_param
+        yield from params_iter
+
+    def get_signature(self) -> inspect.Signature:
         """Retrieves the method signature of the wrapped
         `AnnouncementMethod`.
+
+        If an 'instrument' argument is not defined, manipulation
+        occurs before binding to enable instrument access on the
+        `BoundAnnouncementMethod` wrapper class. The parameters in the
+        method signature will change so that a parameter is renamed to
+        'instrument'. In priority order, an attempt is made to
+        manipulate the parameters in the following ways:
+
+        1. The parameters type hint annotations will be inspected. It
+           will check if the type hint of an argument defined in the
+           method signature is the same typemor a parent type of that
+           defined in all announcement decorators that wrap the
+           associated method.
+
+           .. Warning:: If multiple parameters exist that match the
+              type hinting criteria above, the leftmost parameter will
+              take precedence.
+
+        2. Fallback. If neither an 'instrument' parameter is defined or
+           a parameter with the correct type hint annotations are
+           defined, we will assign the first parameter (exc. 'self') as
+           the 'instrument' parameter.
 
         Returns:
             inspect.Signature: The signature of the decorated method.
@@ -313,10 +316,16 @@ class AnnouncementMethodBinder:
             ...
             >>> method = AnnouncementMethod(example_method)
             >>> binder = AnnouncementMethodBinder(method)
-            >>> binder.signature()
-            <Signature (x: 'int', y: 'str') -> 'None'>
+            >>> binder.get_signature()
+            <Signature (instrument: 'int', y: 'str') -> 'None'>
         """
-        return inspect.signature(self.announce_meth.meth)
+        sig = inspect.signature(self.announce_meth.meth)
+        if self._instr in sig.parameters.keys():
+            return sig
+        inf_params = self._infer_ann_params(sig.parameters.values())
+        if inf_params is None:  # Fallback - infer instrument to be first arg
+            inf_params = self._infer_pos_params(sig.parameters.values())
+        return sig.replace(parameters=tuple(inf_params))
 
     def __repr__(self) -> str:
         # pylint: disable=line-too-long
@@ -356,9 +365,13 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
         meth (Callable): The method associated with this announcement.
     """
 
-    def __init__(self, meth: Callable[_PMeth, _RMeth]) -> None:
+    def __init__(
+        self,
+        meth: Callable[_PMeth, _RMeth],
+        supp_instrums: Instruments | None = None,
+    ) -> None:
         self._meth = meth
-        self._supp_instrums: Instruments | None = None
+        self._supp_instrums = supp_instrums
 
     @property
     def meth(self) -> Callable[_PMeth, _RMeth]:
@@ -383,7 +396,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
         """
         return self._meth
 
-    @property
+    @cached_property
     def supp_instrums(self) -> Instruments:
         """Returns the supported instruments for this method.
 
@@ -407,9 +420,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
             >>> base.supp_instrums
             Instruments(metadata=AnnouncementMetadata(method=<function example_method at 0x...>))
         """
-        if self._supp_instrums is None:
-            self._supp_instrums = Instruments.from_method(self.meth)
-        return self._supp_instrums
+        return self._supp_instrums or Instruments.from_method(self.meth)
 
     def __repr__(self) -> str:
         """Returns a string representation of the `BaseAnnouncement`
@@ -470,9 +481,61 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         AnnouncementMethod(meth=<function Foo.bar at 0x...>)
     """
 
-    def __init__(self, meth: Callable[_PMeth, _RMeth]) -> None:
-        super().__init__(meth)
+    def __init__(
+        self,
+        meth: Callable[_PMeth, _RMeth],
+        supp_instrums: Instruments[Any] | None = None,
+    ) -> None:
+        super().__init__(meth, supp_instrums)
         self._binder = AnnouncementMethodBinder(self)
+
+    @classmethod
+    def from_callable(
+        cls, meth: Callable[_PMeth, _RMeth]
+    ) -> _AnnounceMeth | None:
+        """Creates an `AnnouncementMethod` instance from a callable if
+        it supports instruments.
+
+        This class method checks if the provided callable (`meth`) has
+        associated metadata for supported instruments. If it does, an
+        `AnnouncementMethod` instance is created and returned.
+        Otherwise, `None` is returned.
+
+        Args:
+            meth (Callable[_PMeth, _RMeth]): The method or function to
+                be wrapped as an `AnnouncementMethod`.
+
+        Returns:
+            AnnouncementMethod[_PMeth, _RMeth] | None:
+                - An instance of `AnnouncementMethod` if the callable
+                  has associated metadata.
+                - `None` if the callable does not support instruments.
+
+        Example:
+            >>> from domprob import announcement
+            >>>
+            >>> class SomeInstrument:
+            ...     pass
+            ...
+            >>> class Foo:
+            ...     @announcement(SomeInstrument)
+            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...         print(f"Instrument: {instrument}")
+            ...
+            >>> # Create an AnnouncementMethod instance from a method
+            >>> announce_meth = AnnouncementMethod.from_callable(Foo.bar)
+            >>> assert isinstance(announce_meth, AnnouncementMethod)
+            >>> print(announce_meth)
+            AnnouncementMethod(meth=<function Foo.bar at 0x...>)
+
+            >>> # Attempt to create an AnnouncementMethod from a method without metadata
+            >>> def no_announcement_method():
+            ...     pass
+            ...
+            >>> assert AnnouncementMethod.from_callable(no_announcement_method) is None
+        """
+        supp_instrums = Instruments.from_method(meth)
+        return cls(meth, supp_instrums) if supp_instrums else None
 
     def bind(
         self, cls_instance: Any, *args: _PMeth.args, **kwargs: _PMeth.kwargs
@@ -689,8 +752,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> bound_method.execute()
             'Executed'
         """
-        response = self.meth(*self.params.args, **self.params.kwargs)
-        return response
+        return self.meth(*self.params.args, **self.params.kwargs)
 
     def validate(self) -> None:
         """Validates the bound method using the validation

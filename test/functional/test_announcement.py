@@ -134,7 +134,7 @@ class TestInstrumentTypes:
 
         instance = Cls()
         # Act
-        with pytest.raises(exceptions.InstrumentTypeException):
+        with pytest.raises(exceptions.InstrumTypeException):
             instance.method(AnotherMockInstrument(print))
         # Assert
 
@@ -162,7 +162,7 @@ class TestInstrumentTypes:
         instance = Cls()
         instru = MockInstrument(print)
         # Act
-        with pytest.raises(exceptions.InstrumentTypeException) as exc_info:
+        with pytest.raises(exceptions.InstrumTypeException) as exc_info:
             instance.method(instru)
         # Assert
         assert (
@@ -182,7 +182,7 @@ class TestInstrumentTypes:
         instance = Cls()
         instru = AnotherMockInstrument(print)
         # Act
-        with pytest.raises(exceptions.InstrumentTypeException) as exc_info:
+        with pytest.raises(exceptions.InstrumTypeException) as exc_info:
             instance.method(instru)
         # Assert
         assert (
@@ -201,7 +201,7 @@ class TestInstrumentTypes:
         instance = Cls()
         instru = UnrelatedMockInstrument()
         # Act
-        with pytest.raises(exceptions.InstrumentTypeException) as exc_info:
+        with pytest.raises(exceptions.InstrumTypeException) as exc_info:
             instance.method(instru)
         # Assert
         assert (

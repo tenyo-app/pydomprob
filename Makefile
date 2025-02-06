@@ -22,13 +22,13 @@ autodocs:
 	uv run sphinx-autobuild docs/ docs/_build/
 
 mypy:
-	uv run mypy domprob/
+	uv run mypy domprob/ --check-untyped-defs
 
 pylint:
 	uv run pylint domprob/
 
 black:
-	uv run black domprob/ --line-length=79
+	uv run black domprob/ test/  --line-length=79
 
 black-check:
 	uv run black domprob/ --line-length=79 --check

@@ -1,70 +1,16 @@
-"""
-This module provides the `Instruments` class and utilities for managing
-instrument classes associated with the metadata of decorated methods.
-
-The primary purpose of this module is to facilitate the organisation,
-retrieval, and validation of instrument classes that are added as
-metadata to methods decorated with the `@announcement` decorator. It
-provides functionality to record, query, and iterate over these
-instruments with support for filtering based on whether instruments are
-required or optional.
-
-**Classes**
-
-- `Instruments`: A class to manage instrument metadata, supporting
-  operations like recording, querying, and validating instrument
-  classes.
-
-**Typing Helpers**
-
-- `TInstruCls`: A type alias for an instrument class.
-- `TInstrumentClsGen`: A generator type that yields instrument classes.
-
-**Examples**
-
-The following examples demonstrate how to use the `Instruments` class:
-
->>> # Define a class with a decorated method
->>> class Foo:
-...     def bar(self):
-...         pass
-...
-
->>> # Create an Instruments instance
->>> from domprob.announcements.instruments import Instruments
->>> instruments = Instruments.from_method(Foo.bar)
->>> instruments
-Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-
->>> # Add an instrument
->>> class SomeInstrument:
-...     pass
-...
->>> instruments.record(SomeInstrument, required=True)
-Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
->>> list(instruments.req_instruments)
-[<class '...SomeInstrument'>]
-
-**Key Features**
-
-1. Manage metadata for methods in a structured manner.
-2. Support for iterating over and filtering instruments based on
-   requirement status.
-3. Integration with the `AnnouncementMetadata` class for seamless
-   handling of metadata.
-"""
-
+from __future__ import annotations
 from collections.abc import Callable, Generator
-from typing import Any
+from typing import Any, TypeVar, Generic
 
 from domprob.announcements.metadata import AnnouncementMetadata
 
 # Typing helpers
-TInstruCls = type[Any]
-TInstrumentClsGen = Generator[TInstruCls, None, None]
+_InstruCls = TypeVar("_InstruCls", bound=type[Any])
+_InstrumentClsGen = Generator[_InstruCls, None, None]
+_InstrumentTupleClsGen = Generator[tuple[_InstruCls, bool], None, None]
 
 
-class Instruments:
+class Instruments(Generic[_InstruCls]):
     """Manages and provides access to instrument classes for a
     decorated method's metadata.
 
@@ -93,11 +39,11 @@ class Instruments:
     def __init__(self, metadata: AnnouncementMetadata) -> None:
         self._metadata = metadata
 
-    def __iter__(self) -> TInstrumentClsGen:
-        """Iterates over all supported instrument classes.
+    def __iter__(self) -> _InstrumentTupleClsGen:
+        """Iterates over all instruments.
 
         Yields:
-            TInstrumentClsGen: Instrument classes associated with
+            _InstrumentTupleClsGen: Instrument classes associated with
                 the method's metadata.
 
         Examples:
@@ -114,12 +60,12 @@ class Instruments:
             >>> class SomeInstrument:
             ...     pass
             ...
-            >>> instruments.record(SomeInstrument)
+            >>> instruments.record(SomeInstrument, True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments)
-            [<class '...SomeInstrument'>]
+            [(<class 'domprob.announcements.instruments.SomeInstrument'>, True)]
         """
-        yield from (m.instrument_cls for m in self._metadata)
+        yield from ((m.instrument_cls, m.required) for m in self._metadata)
 
     def __len__(self) -> int:
         """Returns the number of instrument entries associated with
@@ -205,7 +151,7 @@ class Instruments:
         return self._metadata == other._metadata
 
     @classmethod
-    def from_method(cls, method: Callable[..., Any]) -> "Instruments":
+    def from_method(cls, method: Callable[..., Any]) -> Instruments:
         """Creates an Instruments instance from a method.
 
         Provides a convenient way to initialise an `Instruments`
@@ -235,7 +181,7 @@ class Instruments:
         return cls(AnnouncementMetadata(method))
 
     @property
-    def non_req_instruments(self) -> TInstrumentClsGen:
+    def non_req_instrums(self) -> _InstrumentClsGen:
         """Generator yielding supported instrument classes marked as
         not required in the method's metadata.
 
@@ -260,17 +206,17 @@ class Instruments:
             >>> instruments.record(SomeInstrument, required=True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>>
-            >>> list(instruments.non_req_instruments)
+            >>> list(instruments.non_req_instrums)
             []
             >>> instruments.record(SomeInstrument, required=False)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-            >>> list(instruments.non_req_instruments)
+            >>> list(instruments.non_req_instrums)
             [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata if not m.required)
 
     @property
-    def req_instruments(self) -> TInstrumentClsGen:
+    def req_instrums(self) -> _InstrumentClsGen:
         """Generator yielding supported instrument classes marked as
         required in the method's metadata.
 
@@ -293,16 +239,16 @@ class Instruments:
             ...
             >>> instruments.record(SomeInstrument, required=False)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-            >>> list(instruments.req_instruments)
+            >>> list(instruments.req_instrums)
             []
             >>> instruments.record(SomeInstrument, required=True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
-            >>> list(instruments.req_instruments)
+            >>> list(instruments.req_instrums)
             [<class '...SomeInstrument'>]
         """
         yield from (m.instrument_cls for m in self._metadata if m.required)
 
-    def is_required(self, instrument_cls: TInstruCls) -> bool:
+    def is_required(self, instrument_cls: _InstruCls) -> bool:
         """Checks if any recorded instrument of the same instrument
         type given is required.
 
@@ -342,16 +288,13 @@ class Instruments:
                 return True  # return early if required instrument found
         return False
 
-    def record(
-        self, instrument: TInstruCls, required: bool = True
-    ) -> "Instruments":
+    def record(self, instrument: _InstruCls, required: bool) -> "Instruments":
         """Adds an instrument entry to the method's metadata.
 
         Args:
             instrument (type[`BaseInstrument`]): The instrument class
                 to add to the method's metadata.
-            required (`bool`, optional): Whether the instrument is
-                required. Defaults to `True`.
+            required (`bool`): Whether the instrument is required.
 
         Returns:
             Instruments: The updated `Instruments` instance.
@@ -380,7 +323,7 @@ class Instruments:
         self._metadata.add(instrument, required)
         return self
 
-    def supported(self, required: bool | None = None) -> TInstrumentClsGen:
+    def supported(self, required: bool | None = None) -> _InstrumentClsGen:
         """Yields supported instrument classes filtered by requirement.
 
         Args:
@@ -422,11 +365,11 @@ class Instruments:
             [<class '...SomeInstrument'>, <class '...SomeInstrument'>]
         """
         if required is None:
-            yield from self
+            yield from (m.instrument_cls for m in self._metadata)
         elif not required:
-            yield from self.non_req_instruments
+            yield from self.non_req_instrums
         else:
-            yield from self.req_instruments
+            yield from self.req_instrums
 
     def __repr__(self) -> str:
         """Returns a string representation of the Instruments instance.

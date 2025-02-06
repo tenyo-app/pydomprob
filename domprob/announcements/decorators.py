@@ -1,50 +1,13 @@
-"""
-This module provides utilities for managing metadata associated with
-decorated methods using the `@announcement` decorator. It enables the
-management of metadata entries, validation of instrument requirements,
-and runtime execution of decorated methods with type safety.
-
-**Key Features**
-
-- Associate methods with metadata describing the required instruments.
-- Validate method arguments and runtime parameters using metadata.
-- Support stacking of `@announcement` decorators for enhanced
-  flexibility.
-
-**Key Classes**
-
-- `_Announcement`: A decorator class for associating metadata with
-  methods and enforcing runtime validation.
-
-**Usage**
-
-Decorate a method with `@announcement` to attach metadata and enforce
-instrument requirements at runtime. This facilitates the validation of
-method calls and their associated parameters.
-
-**Examples**
-
->>> class SomeInstrument:
-...     pass
-...
->>> # Define a class with a decorated method
->>> from domprob import announcement
->>>
->>> class Foo:
-...     @announcement(SomeInstrument)
-...     def bar(self, instrument: SomeInstrument) -> None:
-...         print(f"Executing with {instrument!r}")
-...
->>> foo = Foo()
->>> instru = SomeInstrument()
->>>
->>> foo.bar(instru)
-Executing with <...SomeInstrument object at 0x...>
-"""
-
 import functools
 from collections.abc import Callable
-from typing import Any, Generic, ParamSpec, TypeVar, cast, Concatenate
+from typing import (
+    Any,
+    Generic,
+    ParamSpec,
+    TypeVar,
+    cast,
+    Concatenate,
+)
 
 from domprob.announcements.method import AnnouncementMethod
 
@@ -57,7 +20,7 @@ _Instrument = TypeVar("_Instrument", bound=Any)
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_MethSig = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
+_Meth = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
 
 
 class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
@@ -79,6 +42,8 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
     Args:
         instrument (type[_Instrument]): The instrument class required
             by the decorated method.
+        required (bool): Whether the instrument is required. Defaults
+            to `False`.
 
     Examples:
 
@@ -153,11 +118,13 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         Observing 'Foo' with 'PrintInstrument()'
     """
 
-    def __init__(self, instrument: type[_Instrument]) -> None:
+    def __init__(
+        self, instrument: type[_Instrument], required: bool = False
+    ) -> None:
         self.instrument = instrument
-        self.required = True
+        self.required = required
 
-    def __call__(self, method: _MethSig) -> Callable[_P, _R]:
+    def __call__(self, method: _Meth) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime
         validation.
 
