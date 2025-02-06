@@ -20,7 +20,7 @@ _Instrument = TypeVar("_Instrument", bound=Any)
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_MethSig = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
+_Meth = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
 
 
 class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
@@ -124,7 +124,7 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         self.instrument = instrument
         self.required = required
 
-    def __call__(self, method: _MethSig) -> Callable[_P, _R]:
+    def __call__(self, method: _Meth) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime
         validation.
 

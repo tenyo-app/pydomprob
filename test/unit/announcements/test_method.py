@@ -72,12 +72,12 @@ class TestAnnouncementMethodBinder:
         # Assert
         assert binder.announce_meth == announcement_method
 
-    def test_signature(self, mock_method):
+    def test_get_signature(self, mock_method):
         # Arrange
         announcement_method = AnnouncementMethod(mock_method)
         binder = AnnouncementMethodBinder(announcement_method)
         # Act
-        signature = binder.signature()
+        signature = binder.get_signature()
         # Assert
         assert signature == inspect.signature(mock_method)
 
@@ -201,8 +201,7 @@ class TestAnnouncementMethod:
         cls_ = mock_cls()
         # Act
         bound_method = announcement_method.bind(cls_, mock_instrument)
-        foo = bound_method.instrument
-        foo
+        _ = bound_method.instrument
         # Assert
         assert isinstance(bound_method, BoundAnnouncementMethod)
         assert bound_method.params.args == (cls_, mock_instrument)

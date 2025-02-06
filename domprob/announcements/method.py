@@ -1,9 +1,17 @@
 from __future__ import annotations
 import inspect
-from collections.abc import Callable
+from collections.abc import Callable, ValuesView
 from functools import cached_property
-from inspect import BoundArguments
-from typing import Any, Generic, ParamSpec, TypeVar, Concatenate
+from inspect import BoundArguments, Parameter
+from typing import (
+    Any,
+    Generic,
+    ParamSpec,
+    TypeVar,
+    Concatenate,
+    TypeAlias,
+    Generator,
+)
 
 from domprob.announcements.exceptions import AnnouncementException
 from domprob.announcements.instruments import Instruments
@@ -57,6 +65,9 @@ class PartialBindException(AnnouncementException):
         return f"{self.__class__.__name__}(meth={self.meth!r}, e={self.e!r})"
 
 
+_AnnounceMeth: TypeAlias = "AnnouncementMethod[_PMeth, _RMeth]"
+
+
 class AnnouncementMethodBinder:
     """Handles argument binding for an `AnnouncementMethod`.
 
@@ -89,8 +100,14 @@ class AnnouncementMethodBinder:
         AnnouncementMethodBinder(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>))
     """
 
-    def __init__(self, announce_meth: AnnouncementMethod) -> None:
+    _instr: str = "instrument"
+
+    def __init__(self, announce_meth: _AnnounceMeth) -> None:
         self.announce_meth = announce_meth
+
+    @property
+    def instrums(self) -> Generator[Any, None, None]:
+        yield from (i for i, _ in self.announce_meth.supp_instrums)
 
     @staticmethod
     def _apply_defaults(b_params: BoundArguments) -> BoundArguments:
@@ -173,7 +190,7 @@ class AnnouncementMethodBinder:
             ...
             Failed partial binding
         """
-        sig = self.signature()
+        sig = self.get_signature()
         try:
             return sig.bind_partial(*args, **kwargs)
         except TypeError as e:
@@ -231,9 +248,57 @@ class AnnouncementMethodBinder:
         b_params = self._apply_defaults(b_params)
         return BoundAnnouncementMethod(self.announce_meth, b_params)
 
-    def signature(self) -> inspect.Signature:
+    def _rn(self, param: inspect.Parameter) -> inspect.Parameter:
+        return param.replace(name=self._instr)
+
+    def _infer_ann_params(
+        self, params: ValuesView[inspect.Parameter]
+    ) -> Generator[Parameter, Any, None] | None:
+        for param in params:
+            ann = param.annotation
+            if ann is inspect.Parameter.empty:  # No annotation defined
+                continue
+            if all(i for i in self.instrums if i == ann or issubclass(i, ann)):
+                return (self._rn(p) if p is param else p for p in params)
+        return None
+
+    def _infer_pos_params(
+        self, params: ValuesView[inspect.Parameter]
+    ) -> Generator[inspect.Parameter, None, None]:
+        params = iter(params)
+        first_param = next(params)
+        # Hacky 'self' check - could fail if first arg in instance method
+        # doesn't follow convention
+        if first_param.name == "self":
+            yield first_param
+        yield self._rn(next(params))
+        yield from params
+
+    def get_signature(self) -> inspect.Signature:
         """Retrieves the method signature of the wrapped
         `AnnouncementMethod`.
+
+        If an 'instrument' argument is not defined, manipulation
+        occurs before binding to enable instrument access on the
+        `BoundAnnouncementMethod` wrapper class. The parameters in the
+        method signature will change so that a parameter is renamed to
+        'instrument'. In priority order, an attempt is made to
+        manipulate the parameters in the following ways:
+
+        1. The parameters type hint annotations will be inspected. It
+           will check if the type hint of an argument defined in the
+           method signature is the same typemor a parent type of that
+           defined in all announcement decorators that wrap the
+           associated method.
+
+           .. Warning:: If multiple parameters exist that match the
+              type hinting criteria above, the leftmost parameter will
+              take precedence.
+
+        2. Fallback. If neither an 'instrument' parameter is defined or
+           a parameter with the correct type hint annotations are
+           defined, we will assign the first parameter (exc. 'self') as
+           the 'instrument' parameter.
 
         Returns:
             inspect.Signature: The signature of the decorated method.
@@ -244,10 +309,16 @@ class AnnouncementMethodBinder:
             ...
             >>> method = AnnouncementMethod(example_method)
             >>> binder = AnnouncementMethodBinder(method)
-            >>> binder.signature()
-            <Signature (x: 'int', y: 'str') -> 'None'>
+            >>> binder.get_signature()
+            <Signature (instrument: 'int', y: 'str') -> 'None'>
         """
-        return inspect.signature(self.announce_meth.meth)
+        sig = inspect.signature(self.announce_meth.meth)
+        if self._instr in sig.parameters.keys():
+            return sig
+        inf_params = self._infer_ann_params(sig.parameters.values())
+        if inf_params is None:  # Fallback - infer instrument to be first arg
+            inf_params = self._infer_pos_params(sig.parameters.values())
+        return sig.replace(parameters=tuple(inf_params))
 
     def __repr__(self) -> str:
         # pylint: disable=line-too-long
@@ -406,7 +477,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
     def __init__(
         self,
         meth: Callable[_PMeth, _RMeth],
-        supp_instrums: Instruments | None = None,
+        supp_instrums: Instruments[Any] | None = None,
     ) -> None:
         super().__init__(meth, supp_instrums)
         self._binder = AnnouncementMethodBinder(self)
@@ -414,7 +485,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
     @classmethod
     def from_callable(
         cls, meth: Callable[_PMeth, _RMeth]
-    ) -> AnnouncementMethod[_PMeth, _RMeth] | None:
+    ) -> _AnnounceMeth | None:
         """Creates an `AnnouncementMethod` instance from a callable if
         it supports instruments.
 

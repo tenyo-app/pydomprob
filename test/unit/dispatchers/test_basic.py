@@ -27,10 +27,10 @@ class MockObservation(BaseObservation):
     instrum = None
 
     @announcement(MockInstrument)
-    def foo(self, instrument: MockInstrument):
+    def foo(self, db):
         self.called += 1
         self.obs = self
-        self.instrum = instrument
+        self.instrum = db
 
 
 class MockObservationWithRequired(BaseObservation):
