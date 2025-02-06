@@ -356,5 +356,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release delete ${{ github.event.release.tag_name }} --yes
+          gh release delete ${{ github.event.release.tag_name }} --repo ${{ github.repository }} --yes
           gh api --method DELETE "/repos/${{ github.repository }}/git/refs/tags/${{ github.event.release.tag_name }}"
