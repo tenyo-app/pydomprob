@@ -294,7 +294,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload v${{ github.event.release.tag_name }} dist/* --clobber
+          gh release upload ${VERSION} dist/* --clobber
 
   deploy-package:
     runs-on: ubuntu-24.04
