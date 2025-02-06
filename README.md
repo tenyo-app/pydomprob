@@ -25,10 +25,17 @@ class Order:
             self.checkout_service.checkout_order(self.order)
         except CheckoutError as e:
             self.logger.error(f"Checkout for order {self.order} failed: {e}")
-            self.metrics.increment('checkout-failed', ('failed_orders': 1))
+            self.metrics.increment("checkout-failed", {
+                "failed_orders": 1, "customer": 6234654
+            })
             return
         self.logger.log(f"Order checkout completed successfully")
-        self.metrics.increment('checkout-successful', ('successful_orders': 1))
+        self.metrics.increment("checkout-successful", {
+            "successful_orders": 1, 
+            "customer": 6234654, 
+            "order_number": 2374, 
+            "sku": "JH-374-VJHV"
+        })
         self.analytics.add(**self.order.to_dict())
 ```
 
