@@ -29,6 +29,7 @@ class Order:
             return
         self.logger.log(f"Order checkout completed successfully")
         self.metrics.increment('checkout-successful', ('successful_orders': 1))
+        self.analytics.add(**self.order.to_dict())
 ```
 
 **Into ✨this✨:**
