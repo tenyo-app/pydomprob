@@ -6,6 +6,7 @@ from typing import (
     ParamSpec,
 )
 
+from domprob.base_exc import DomprobException
 from domprob.observations.observation import ObservationProtocol
 
 _P = ParamSpec("_P")
@@ -87,3 +88,14 @@ class DispatcherProtocol(Protocol):
         Returns:
             str: The string representation of the dispatcher.
         """
+
+
+class DispatcherException(DomprobException):
+    """Base exception for errors occurring within dispatchers.
+
+    This exception is raised when an error occurs while processing
+    observations within a dispatcher.
+
+    It inherits from `DomprobException`, allowing it to be caught
+    alongside other domain-specific exceptions.
+    """

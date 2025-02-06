@@ -6,7 +6,11 @@ from typing import Any, TypeVar
 
 from domprob import BaseObservation, announcement
 from domprob.announcements.method import AnnouncementMethod
-from domprob.dispatchers.basic import InstrumentImpRegistry, BasicDispatcher
+from domprob.dispatchers.basic import (
+    InstrumentImpRegistry,
+    BasicDispatcher,
+    ReqInstrumException,
+)
 
 _Instrument = TypeVar("_Instrument", bound=Any)
 
@@ -113,9 +117,8 @@ class TestInstrumentImpRegistry:
             registry.get(MockInstrument, required=True)
         # Assert
         assert str(exc.value) == (
-            '"Instrument class <class '
-            "'test.unit.dispatchers.test_basic.MockInstrument'> not found in"
-            ' instrument imps ()"'
+            "'Instrument `MockInstrument` not found in available "
+            "implementations: None'"
         )
 
     def test_registry_handles_unhashable_types(self):
@@ -184,9 +187,15 @@ class TestBasicDispatcher:
         # Arrange
         dispatcher = BasicDispatcher()
         observation = MockObservationWithRequired()
-        # Act + Assert
-        with pytest.raises(KeyError, match="Instrument class"):
+        # Act
+        with pytest.raises(ReqInstrumException) as exc:
             dispatcher.dispatch(observation)  # type: ignore
+        # Assert
+        assert str(exc.value) == (
+            "Required instrument `MockInstrument` in "
+            "`MockObservationWithRequired.foo(...)` is missing from available "
+            "implementations: None"
+        )
 
     def test_dispatcher_handles_unhashable_instrument(self):
         # Arrange

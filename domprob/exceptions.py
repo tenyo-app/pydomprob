@@ -10,22 +10,26 @@ from domprob.announcements.validation.chain_validation import (
     ValidationChainException,
 )
 from domprob.announcements.validation.validators import (
-    InstrumentTypeException,
-    MissingInstrumentException,
-    NoSupportedInstrumentsException,
+    InstrumTypeException,
+    MissingInstrumException,
+    NoSupportedInstrumsException,
 )
 from domprob.base_exc import DomprobException
+from domprob.dispatchers.dispatcher import DispatcherException
+from domprob.dispatchers.basic import ReqInstrumException
 
 __all__: Sequence[str] = [
     "DomprobException",
     "AnnouncementException",
     "PartialBindException",
     "ValidatorException",
-    "InstrumentTypeException",
-    "MissingInstrumentException",
-    "NoSupportedInstrumentsException",
+    "InstrumTypeException",
+    "MissingInstrumException",
+    "NoSupportedInstrumsException",
     "ValidationChainException",
     "EmptyChainException",
     "InvalidLinkException",
     "LinkExistsException",
+    "DispatcherException",
+    "ReqInstrumException",
 ]

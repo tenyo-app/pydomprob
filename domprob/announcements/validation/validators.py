@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     )
 
 
-class MissingInstrumentException(ValidatorException):
+class MissingInstrumException(ValidatorException):
     """Exception raised when the `instrument` parameter is missing during
     a call to a method.
 
@@ -26,14 +26,14 @@ class MissingInstrumentException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import MissingInstrumentException
+        >>> from domprob.announcements.validation.validators import MissingInstrumException
         >>> class Example:
         ...     def method(self):
         ...         pass
         ...
         >>> try:
-        ...     raise MissingInstrumentException(Example().method)
-        ... except MissingInstrumentException as e:
+        ...     raise MissingInstrumException(Example().method)
+        ... except MissingInstrumException as e:
         ...     print(f"Error: {e}")
         ...
         Error: 'instrument' param missing in Example.method(...)
@@ -56,7 +56,7 @@ class MissingInstrumentException(ValidatorException):
             ...     def method(self):
             ...         pass
             ...
-            >>> exc = MissingInstrumentException(Example().method)
+            >>> exc = MissingInstrumException(Example().method)
             >>> exc.msg
             "'instrument' param missing in Example.method(...)"
         """
@@ -88,7 +88,7 @@ class InstrumentParamExistsValidator(BaseValidator):
         >>> validator = InstrumentParamExistsValidator()
         >>> try:
         ...     validator.validate(bound_meth)
-        ... except MissingInstrumentException as e:
+        ... except MissingInstrumException as e:
         ...     print(f"Error: {e}")
         ...
         Error: 'instrument' param missing in Example.method(...)
@@ -107,11 +107,11 @@ class InstrumentParamExistsValidator(BaseValidator):
                 is `None`.
         """
         if b_meth.instrument is None:
-            raise MissingInstrumentException(b_meth.meth)
+            raise MissingInstrumException(b_meth.meth)
         return super().validate(b_meth)
 
 
-class InstrumentTypeException(ValidatorException):
+class InstrumTypeException(ValidatorException):
     # pylint: disable=line-too-long
     """
     Exception raised when the `instrument` parameter does not match the
@@ -142,8 +142,8 @@ class InstrumentTypeException(ValidatorException):
         >>> bound_meth = meth.bind(Example(), 'InvalidInstrument')  # type: ignore
         >>>
         >>> try:
-        ...     raise InstrumentTypeException(bound_meth)
-        ... except InstrumentTypeException as e:
+        ...     raise InstrumTypeException(bound_meth)
+        ... except InstrumTypeException as e:
         ...     print(f"Error: {e}")
         ...
         Error: Example.method(...) expects 'instrument' param to be one of: [SomeInstrument], but got: 'InvalidInstrument'
@@ -195,7 +195,7 @@ class InstrumentTypeValidator(BaseValidator):
         >>> validator = InstrumentTypeValidator()
         >>> try:
         ...     validator.validate(bound_meth)
-        ... except InstrumentTypeException as e:
+        ... except InstrumTypeException as e:
         ...     print(f"Error: {e}")
         ...
         Error: Example.method(...) expects 'instrument' param to be one of: [], but got: 'InvalidInstrument'
@@ -217,10 +217,10 @@ class InstrumentTypeValidator(BaseValidator):
             # pylint: disable=unidiomatic-typecheck
             if type(b_meth.instrument) is supp_instrum:
                 return super().validate(b_meth)
-        raise InstrumentTypeException(b_meth)
+        raise InstrumTypeException(b_meth)
 
 
-class NoSupportedInstrumentsException(ValidatorException):
+class NoSupportedInstrumsException(ValidatorException):
     """Exception raised when no supported instruments are defined for a
     method.
 
@@ -237,14 +237,14 @@ class NoSupportedInstrumentsException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import NoSupportedInstrumentsException
+        >>> from domprob.announcements.validation.validators import NoSupportedInstrumsException
         >>> class Example:
         ...     def method(self):
         ...         pass
         ...
         >>> try:
-        ...     raise NoSupportedInstrumentsException(Example().method)
-        ... except NoSupportedInstrumentsException as e:
+        ...     raise NoSupportedInstrumsException(Example().method)
+        ... except NoSupportedInstrumsException as e:
         ...     print(f"Error: {e}")
         ...
         Error: Example.method(...) has no supported instrument types defined
@@ -268,7 +268,7 @@ class NoSupportedInstrumentsException(ValidatorException):
             ...     def method(self):
             ...         pass
             ...
-            >>> exc = NoSupportedInstrumentsException(Example().method)
+            >>> exc = NoSupportedInstrumsException(Example().method)
             >>> exc.msg
             'Example.method(...) has no supported instrument types defined'
         """
@@ -298,7 +298,7 @@ class SupportedInstrumentsExistValidator(BaseValidator):
         >>> validator = SupportedInstrumentsExistValidator()
         >>> try:
         ...     validator.validate(bound_meth)
-        ... except NoSupportedInstrumentsException as e:
+        ... except NoSupportedInstrumsException as e:
         ...     print(f"Error: {e}")
         ...
         Error: Example.method(...) has no supported instrument types defined
@@ -317,5 +317,5 @@ class SupportedInstrumentsExistValidator(BaseValidator):
                 not an instance of any valid instrument classes.
         """
         if not b_meth.supp_instrums:
-            raise NoSupportedInstrumentsException(b_meth.meth)
+            raise NoSupportedInstrumsException(b_meth.meth)
         return super().validate(b_meth)

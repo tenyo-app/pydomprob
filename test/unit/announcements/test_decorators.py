@@ -3,7 +3,7 @@ import functools
 import pytest
 
 from domprob.announcements.decorators import _Announcement, announcement
-from domprob.announcements.validation.validators import InstrumentTypeException
+from domprob.announcements.validation.validators import InstrumTypeException
 
 
 class MockInstrument:
@@ -88,7 +88,7 @@ class TestAnnouncement:
         mock_cls.method = announcement_instance(mock_cls.method)  # type: ignore
         instance = mock_cls()
         # Act
-        with pytest.raises(InstrumentTypeException) as exc_info:
+        with pytest.raises(InstrumTypeException) as exc_info:
             # noinspection PyTypeChecker
             instance.method("invalid instrument")
         # Assert
