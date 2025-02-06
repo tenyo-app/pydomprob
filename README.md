@@ -39,7 +39,7 @@ class Order:
         self.analytics.add(**self.order.to_dict())
 ```
 
-**Into ✨this✨ (9 lines):**
+**→ Into ✨this✨ (9 lines):**
 
 ```python
 class Order:
