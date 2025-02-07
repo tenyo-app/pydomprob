@@ -50,7 +50,7 @@ class InstrumentImpRegistry(Collection[_Instrument]):
     """
 
     def __init__(self, *instruments: _Instrument) -> None:
-        self.instrums = tuple(instruments)
+        self._instrums = instruments
         self._cache: dict[type[_Instrument], _Instrument] = {}
 
     def __contains__(self, item: object) -> bool:
@@ -82,10 +82,10 @@ class InstrumentImpRegistry(Collection[_Instrument]):
             >>> object in registry
             False
         """
-        return item in self.instrums
+        return item in self._instrums
 
     def __hash__(self) -> int:
-        return hash(self.instrums)
+        return hash(self._instrums)
 
     def __iter__(self) -> Iterator[_Instrument]:
         """Iterate over stored instruments.
@@ -115,7 +115,7 @@ class InstrumentImpRegistry(Collection[_Instrument]):
             Log message added!
             Analytics entry added!
         """
-        yield from self.instrums
+        yield from self._instrums
 
     def __len__(self) -> int:
         """Return the number of stored instruments.
@@ -142,7 +142,7 @@ class InstrumentImpRegistry(Collection[_Instrument]):
             >>> len(registry)
             2
         """
-        return len(self.instrums)
+        return len(self._instrums)
 
     @staticmethod
     def _is_hashable(obj: Any) -> bool:
@@ -208,17 +208,17 @@ class InstrumentImpRegistry(Collection[_Instrument]):
         """
         if self._is_hashable(instrument_cls) and instrument_cls in self._cache:
             return self._cache[instrument_cls]
-        for instrum in self.instrums:
+        for instrum in self._instrums:
             # pylint: disable=unidiomatic-typecheck
             if type(instrum) is instrument_cls:
                 if self._is_hashable(instrument_cls):
                     self._cache[instrument_cls] = instrum
                 return instrum
         if required:
-            imps_str = ", ".join(f"`{repr(i)}`" for i in self.instrums) or None
+            imp_str = ", ".join(f"`{repr(i)}`" for i in self._instrums) or None
             raise KeyError(
                 f"Instrument `{instrument_cls.__name__}` not found in "
-                f"available implementations: {imps_str}"
+                f"available implementations: {imp_str}"
             )
         return None
 

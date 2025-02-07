@@ -91,12 +91,12 @@ def probe(*instruments: Any) -> Probe:
         >>> # Create a probe with a custom instrument
         >>> custom_probe = probe(logging.getLogger("custom"))
         >>> custom_probe
-        Probe(dispatcher=BasicDispatcher(instruments=('(<Logger custom (WARNING)>,)',)))
+        Probe(dispatcher=BasicDispatcher(instruments=('<Logger custom (WARNING)>',)))
         >>>
         >>> # Create a probe with default instruments
         >>> default_probe = probe()
         >>> default_probe
-        Probe(dispatcher=BasicDispatcher(instruments=('(<RootLogger root (WARNING)>,)',)))
+        Probe(dispatcher=BasicDispatcher(instruments=('<RootLogger root (WARNING)>',)))
     """
-    dispatcher = BasicDispatcher(instruments or _INSTRUMENTS)
+    dispatcher = BasicDispatcher(*instruments or _INSTRUMENTS)
     return Probe(dispatcher)

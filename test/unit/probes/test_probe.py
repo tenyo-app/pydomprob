@@ -6,6 +6,7 @@ import pytest
 
 from domprob.announcements.method import AnnouncementMethod
 from domprob.announcements.decorators import announcement
+# noinspection PyProtectedMember
 from domprob.probes.probe import probe, Probe, _INSTRUMENTS
 
 
@@ -79,7 +80,7 @@ class TestProbe:
     def test_probe_equality_different_dispatcher(self, mock_dispatcher_cls):
         # Arrange
         probe1 = Probe(mock_dispatcher_cls())
-        probe2 = Probe(MagicMock())
+        probe2 = Probe(MagicMock())  # type: ignore
         # Act + Assert
         assert probe1 != probe2
 
@@ -104,8 +105,8 @@ class TestProbe:
     def test_probe_hash_same_dispatcher(self):
         # Arrange
         mock_dispatcher = MagicMock()
-        probe1 = Probe(mock_dispatcher)
-        probe2 = Probe(mock_dispatcher)
+        probe1 = Probe(mock_dispatcher)  # type: ignore
+        probe2 = Probe(mock_dispatcher)  # type: ignore
         # Act
         probe1_hash = hash(probe1)
         probe2_hash = hash(probe2)
@@ -115,8 +116,8 @@ class TestProbe:
 
     def test_probe_hash_different_dispatchers(self):
         # Arrange
-        probe1 = Probe(MagicMock())
-        probe2 = Probe(MagicMock)
+        probe1 = Probe(MagicMock())  # type: ignore
+        probe2 = Probe(MagicMock)  # type: ignore
         # Act
         probe1_hash = hash(probe1)
         probe2_hash = hash(probe2)
@@ -126,8 +127,8 @@ class TestProbe:
     def test_probe_hashability_set(self):
         # Arrange
         mock_dispatcher = MagicMock()
-        probe1 = Probe(mock_dispatcher)
-        probe2 = Probe(mock_dispatcher)
+        probe1 = Probe(mock_dispatcher)  # type: ignore
+        probe2 = Probe(mock_dispatcher)  # type: ignore
         # Act
         probe_set = {probe1, probe2}
         # Assert
@@ -136,8 +137,8 @@ class TestProbe:
     def test_probe_hashability_dict(self):
         # Arrange
         mock_dispatcher = MagicMock()
-        probe1 = Probe(mock_dispatcher)
-        probe2 = Probe(mock_dispatcher)
+        probe1 = Probe(mock_dispatcher)  # type: ignore
+        probe2 = Probe(mock_dispatcher)  # type: ignore
         # Act
         probe_dict = {probe1: "value"}
         # Assert
@@ -174,9 +175,8 @@ def test_probe_with_instruments(mock_instrument_cls, mocker):
     mock_instrument = mock_instrument_cls()
     # Act
     result = probe(mock_instrument)
-    actual_instrums = result.dispatcher.mock_instruments
     # Assert
-    mock_dispatcher.assert_called_once_with((mock_instrument,))
+    mock_dispatcher.assert_called_once_with(mock_instrument,)
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)
     assert result == mock_probe.return_value
 
@@ -188,6 +188,6 @@ def test_probe_with_no_instruments(mocker):
     # Act
     result = probe()
     # Assert
-    mock_dispatcher.assert_called_once_with(_INSTRUMENTS)
+    mock_dispatcher.assert_called_once_with(*_INSTRUMENTS)
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)
     assert result == mock_probe.return_value
