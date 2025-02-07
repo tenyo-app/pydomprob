@@ -258,9 +258,7 @@ class AnnouncementMethodBinder:
             if obj is inspect.Parameter.empty:  # No annotation defined
                 continue
             if isinstance(obj, str):
-                obj = type_hints.get(param.name, None)
-                if obj is None:  # Can't resolve annotation for parameter
-                    continue
+                obj = type_hints[param.name]
             if all(i for i in instrums if i == obj or issubclass(i, obj)):
                 return (self._rn(p) if p is param else p for p in params)
         return None
