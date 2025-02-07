@@ -15,3 +15,4 @@
    components/announcements
    components/dispatchers
    components/observations
+   components/probes
