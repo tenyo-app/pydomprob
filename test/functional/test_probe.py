@@ -28,6 +28,11 @@ def mock_observation_cls(mock_instrument_cls) -> type[_Obs]:
         def mock_announcement(self, mock_instrum: mock_instrument_cls) -> None:
             mock_instrum.store("Announcement!")
 
+        @announcement(mock_instrument_cls)
+        @announcement(mock_instrument_cls)
+        def mock_announcement_again(self, mock_instrum: mock_instrument_cls) -> None:
+            mock_instrum.store("Stacked announcement!")
+
     return MockObservation
 
 
@@ -39,5 +44,7 @@ class TestProbe:
         # Act
         probe_.observe(mock_observation_cls())
         # Assert
-        assert len(instrum.msgs) == 1, "Mock instrument not called"
-        assert instrum.msgs[0] == "Announcement!"
+        assert len(instrum.msgs) == 3, "Mock instrument not called"
+        assert "Announcement!" in instrum.msgs
+        assert "Stacked announcement!" in instrum.msgs
+        assert "Stacked announcement!" in instrum.msgs
