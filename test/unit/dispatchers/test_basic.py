@@ -152,6 +152,79 @@ class TestBasicDispatcher:
         assert len(dispatcher.instrums) == 1
         assert dispatcher.instrums.get(MockInstrument) is instrum
 
+    def test_dispatcher_equality_same_instruments(self):
+        # Arrange
+        instrum = MockInstrument()
+        dispatcher1 = BasicDispatcher(instrum)
+        dispatcher2 = BasicDispatcher(instrum)
+        # Act + Assert
+        assert dispatcher1 == dispatcher2
+
+    def test_dispatcher_equality_different_instruments(self):
+        # Arrange
+        dispatcher1 = BasicDispatcher(MockInstrument())
+        dispatcher2 = BasicDispatcher(MockInstrument())
+        # Act + Assert
+        assert dispatcher1 != dispatcher2
+
+    def test_dispatcher_equality_different_type(self):
+        # Arrange
+        dispatcher = BasicDispatcher(MockInstrument())
+        # Act + Assert
+        assert dispatcher != object()
+
+    def test_dispatcher_equality_subclass(self):
+        # Arrange
+        class SubDispatcher(BasicDispatcher):
+            pass
+
+        instrum = MockInstrument()
+        dispatcher1 = BasicDispatcher(instrum)
+        dispatcher2 = SubDispatcher(instrum)
+        # Act + Assert
+        assert dispatcher1 != dispatcher2
+
+    def test_dispatcher_hash_same_instruments(self):
+        # Arrange
+        instrum = MockInstrument()
+        dispatcher1 = BasicDispatcher(instrum)
+        dispatcher2 = BasicDispatcher(instrum)
+        # Act
+        hash_dispatcher1 = hash(dispatcher1)
+        hash_dispatcher2 = hash(dispatcher2)
+        # Assert
+        assert hash_dispatcher1 == hash_dispatcher2
+
+    def test_dispatcher_hash_different_instruments(self):
+        # Arrange
+        dispatcher1 = BasicDispatcher(MockInstrument())
+        dispatcher2 = BasicDispatcher(MockInstrument())
+        # Act
+        hash_dispatcher1 = hash(dispatcher1)
+        hash_dispatcher2 = hash(dispatcher2)
+        # Assert
+        assert hash_dispatcher1 != hash_dispatcher2
+
+    def test_dispatcher_hashability_set(self):
+        # Arrange
+        instrum = MockInstrument()
+        dispatcher1 = BasicDispatcher(instrum)
+        dispatcher2 = BasicDispatcher(instrum)
+        # Act
+        dispatcher_set = {dispatcher1, dispatcher2}
+        # Assert
+        assert len(dispatcher_set) == 1
+
+    def test_dispatcher_hashability_dict(self):
+        # Arrange
+        instrum = MockInstrument()
+        dispatcher1 = BasicDispatcher(instrum)
+        dispatcher2 = BasicDispatcher(instrum)
+        # Act
+        dispatcher_dict = {dispatcher1: "value"}
+        # Assert
+        assert dispatcher_dict[dispatcher2] == "value"
+
     def test_dispatcher_handles_multiple_instruments(self):
         # Arrange
         instrum1 = MockInstrument()

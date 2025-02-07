@@ -1,15 +1,11 @@
-from typing import ParamSpec, TypeVar, Generic
-
 import pytest
 
-from domprob.dispatchers.dispatcher import DispatcherProtocol, _P, _R
+from domprob.dispatchers.dispatcher import DispatcherProtocol
 from domprob.observations.observation import ObservationProtocol
 
 
 class ProtocolImplementation:
-    def dispatch(
-        self, observation: ObservationProtocol[[_P.args, _P.kwargs], _R]
-    ) -> _R:
+    def dispatch(self, observation: ObservationProtocol) -> None:
         pass
 
 

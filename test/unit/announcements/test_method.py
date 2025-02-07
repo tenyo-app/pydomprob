@@ -95,6 +95,7 @@ class TestAnnouncementMethodBinder:
         class Cls:
             def meth(self, foo: str, instrument: MockInstrument) -> None:
                 pass
+
         announcement_method = AnnouncementMethod(Cls.meth)
         binder = AnnouncementMethodBinder(announcement_method)
         # Act
@@ -109,13 +110,16 @@ class TestAnnouncementMethodBinder:
             @announcement(MockInstrument)
             def meth(self, mock_var_name: MockInstrument) -> None:
                 pass
+
         announcement_method = AnnouncementMethod(Cls.meth)
         binder = AnnouncementMethodBinder(announcement_method)
         # Act
         signature = binder.get_signature()
         # Assert
-        assert 'instrument' in signature.parameters.keys()
-        assert signature.parameters.get('instrument').annotation == MockInstrument
+        assert "instrument" in signature.parameters.keys()
+        assert (
+            signature.parameters.get("instrument").annotation == MockInstrument
+        )
         assert len(signature.parameters) == 2
 
     def test_get_signature_infers_instrument_through_parent_annotations(self):
@@ -125,27 +129,36 @@ class TestAnnouncementMethodBinder:
             @announcement(AnotherMockInstrument)
             def meth(self, mock_var_name: MockInstrument) -> None:
                 pass
+
         announcement_method = AnnouncementMethod(Cls.meth)
         binder = AnnouncementMethodBinder(announcement_method)
         # Act
         signature = binder.get_signature()
         # Assert
-        assert 'instrument' in signature.parameters.keys()
-        assert signature.parameters.get('instrument').annotation == MockInstrument
+        assert "instrument" in signature.parameters.keys()
+        assert (
+            signature.parameters.get("instrument").annotation == MockInstrument
+        )
         assert len(signature.parameters) == 2
 
-    def test_get_signature_infers_instrument_through_position_instance_method(self):
+    def test_get_signature_infers_instrument_through_position_instance_method(
+        self,
+    ):
         # Arrange
         class Cls:
             def meth(self, mock_var_name) -> None:
                 pass
+
         announcement_method = AnnouncementMethod(Cls.meth)
         binder = AnnouncementMethodBinder(announcement_method)
         # Act
         signature = binder.get_signature()
         # Assert
-        assert 'instrument' in signature.parameters.keys()
-        assert signature.parameters.get('instrument').annotation == inspect.Signature.empty
+        assert "instrument" in signature.parameters.keys()
+        assert (
+            signature.parameters.get("instrument").annotation
+            == inspect.Signature.empty
+        )
         assert len(signature.parameters) == 2
 
     def test_get_signature_infers_instrument_through_position_function(self):
@@ -160,12 +173,19 @@ class TestAnnouncementMethodBinder:
         # Act
         signature = binder.get_signature()
         # Assert
-        assert 'instrument' in signature.parameters.keys()
-        assert signature.parameters.get('instrument').annotation == inspect.Signature.empty
+        assert "instrument" in signature.parameters.keys()
+        assert (
+            signature.parameters.get("instrument").annotation
+            == inspect.Signature.empty
+        )
         assert len(signature.parameters) == 1
 
-    @pytest.mark.xfail(reason="Checks func type by 'self' variable name convention")
-    def test_get_signature_infers_instrument_through_position_when_instance_method_with_incorrect_convention(self):
+    @pytest.mark.xfail(
+        reason="Checks func type by 'self' variable name convention"
+    )
+    def test_get_signature_infers_instrument_through_position_when_instance_method_with_incorrect_convention(
+        self,
+    ):
         # Arrange
         class Cls:
             def meth(uhoh, mock_var_name) -> None:
@@ -176,12 +196,17 @@ class TestAnnouncementMethodBinder:
         # Act
         signature = binder.get_signature()
         # Assert
-        assert 'uhoh' in signature.parameters.keys()
-        assert 'instrument' in signature.parameters.keys()
-        assert signature.parameters.get('instrument').annotation == inspect.Signature.empty
+        assert "uhoh" in signature.parameters.keys()
+        assert "instrument" in signature.parameters.keys()
+        assert (
+            signature.parameters.get("instrument").annotation
+            == inspect.Signature.empty
+        )
         assert len(signature.parameters) == 2
 
-    def test_get_signature_infers_instrument_through_position_stop_iteration_function(self):
+    def test_get_signature_infers_instrument_through_position_stop_iteration_function(
+        self,
+    ):
         # Arrange
         class Cls:
             @staticmethod
@@ -196,7 +221,9 @@ class TestAnnouncementMethodBinder:
         assert signature == inspect.signature(Cls.meth)
         assert len(signature.parameters) == 0
 
-    def test_get_signature_infers_instrument_through_position_stop_iteration_instance_method(self):
+    def test_get_signature_infers_instrument_through_position_stop_iteration_instance_method(
+        self,
+    ):
         # Arrange
         class Cls:
             def meth(self) -> None:

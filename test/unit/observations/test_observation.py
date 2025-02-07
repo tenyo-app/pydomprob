@@ -2,13 +2,13 @@ from typing import Generator
 
 import pytest
 
+from domprob.announcements.method import AnnouncementMethod
 from domprob.observations.observation import ObservationProtocol
-from domprob.observations.observation import _AnnounceSig
 
 
 class ProtocolImplementation:
     @classmethod
-    def announcements(cls) -> Generator[_AnnounceSig, None, None]:
+    def announcements(cls) -> Generator[AnnouncementMethod, None, None]:
         pass
 
 

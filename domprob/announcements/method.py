@@ -11,6 +11,7 @@ from typing import (
     Concatenate,
     TypeAlias,
     Generator,
+    get_type_hints,
 )
 
 from domprob.announcements.exceptions import AnnouncementException
@@ -251,11 +252,16 @@ class AnnouncementMethodBinder:
         self, params: ValuesView[inspect.Parameter]
     ) -> Generator[Parameter, Any, None] | None:
         instrums = (i for i, _ in self.announce_meth.supp_instrums)
+        type_hints = get_type_hints(self.announce_meth.meth)
         for param in params:
-            ann = param.annotation
-            if ann is inspect.Parameter.empty:  # No annotation defined
+            obj = param.annotation
+            if obj is inspect.Parameter.empty:  # No annotation defined
                 continue
-            if all(i for i in instrums if i == ann or issubclass(i, ann)):
+            if isinstance(obj, str):
+                obj = type_hints.get(param.name, None)
+                if obj is None:  # Can't resolve annotation for parameter
+                    continue
+            if all(i for i in instrums if i == obj or issubclass(i, obj)):
                 return (self._rn(p) if p is param else p for p in params)
         return None
 

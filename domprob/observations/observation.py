@@ -6,12 +6,11 @@ from domprob.announcements.method import AnnouncementMethod
 # Typing helpers: defines an @announcement method signature
 _P = ParamSpec("_P")
 _R_co = TypeVar("_R_co", bound=Any, covariant=True)
-_AnnounceSig = AnnouncementMethod[_P, _R_co]
 
 
 # pylint: disable=too-few-public-methods
 @runtime_checkable
-class ObservationProtocol(Protocol[_P, _R_co]):
+class ObservationProtocol(Protocol):
     """Protocol defining the structure of domain observations that
     provide announcements.
 
@@ -40,12 +39,10 @@ class ObservationProtocol(Protocol[_P, _R_co]):
     """
 
     @classmethod
-    def announcements(cls) -> Generator[_AnnounceSig, None, None]:
+    def announcements(cls) -> Generator[AnnouncementMethod, None, None]:
         """Retrieve all announcement methods defined in the class.
 
         Returns:
             Generator[_AnnounceSig, None, None]: A generator yielding
                 `AnnouncementMethod` instances.
         """
-
-    def __repr__(self): ...

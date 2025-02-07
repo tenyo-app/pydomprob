@@ -1,7 +1,10 @@
 from collections.abc import Collection, Iterator
-from typing import TypeVar, Any, Generic, ParamSpec, TypeAlias
+from typing import TypeVar, Any, ParamSpec
 
-from domprob.dispatchers.dispatcher import DispatcherException
+from domprob.dispatchers.dispatcher import (
+    DispatcherException,
+    DispatcherProtocol,
+)
 from domprob.announcements.method import AnnouncementMethod
 from domprob.observations.observation import ObservationProtocol
 
@@ -80,6 +83,9 @@ class InstrumentImpRegistry(Collection[_Instrument]):
             False
         """
         return item in self.instrums
+
+    def __hash__(self) -> int:
+        return hash(self.instrums)
 
     def __iter__(self) -> Iterator[_Instrument]:
         """Iterate over stored instruments.
@@ -228,14 +234,6 @@ class InstrumentImpRegistry(Collection[_Instrument]):
 _P = ParamSpec("_P")
 _R = TypeVar("_R", bound=Any)
 
-# Type alias to defer ParamSpec type resolution and simplify type
-# checking for PyCharm & Mypy due to Generic chaining. Using aliases
-# prevents direct generic resolution in function signatures while
-# maintaining full type safety
-_Obs: TypeAlias = ObservationProtocol[_P, _R]
-
-_Ann: TypeAlias = AnnouncementMethod[_P, _R]
-
 
 class ReqInstrumException(DispatcherException):
     """Exception raised when a required instrument is missing an
@@ -266,10 +264,10 @@ class ReqInstrumException(DispatcherException):
 
     def __init__(
         self,
-        observation: _Obs,
-        announcement: _Ann,
-        req_supp_instrum: type[_Instrument],
-        *instrum_imps: _Instrument,
+        observation: ObservationProtocol,
+        announcement: AnnouncementMethod,
+        req_supp_instrum: type[Any],
+        *instrum_imps: Any,
     ) -> None:
         self.observation = observation
         self.announcement = announcement
@@ -296,7 +294,7 @@ class ReqInstrumException(DispatcherException):
         )
 
 
-class BasicDispatcher(Generic[_Instrument, _P, _R]):
+class BasicDispatcher(DispatcherProtocol):
     # pylint: disable=line-too-long
     """Dispatches observations to registered instruments.
 
@@ -328,7 +326,7 @@ class BasicDispatcher(Generic[_Instrument, _P, _R]):
         ...
         >>> dispatcher = BasicDispatcher(LoggerInstrument(), AnalyticsInstrument())
         >>> dispatcher
-        BasicDispatcher(<domprob.dispatchers.basic.LoggerInstrument object at 0x...>, <domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>)
+        BasicDispatcher(instruments=('<domprob.dispatchers.basic.LoggerInstrument object at 0x...>', '<domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>'))
         >>>
         >>> from domprob import announcement, BaseObservation
         >>>
@@ -346,13 +344,22 @@ class BasicDispatcher(Generic[_Instrument, _P, _R]):
 
     def __init__(self, *instruments: _Instrument) -> None:
         self.instrums = InstrumentImpRegistry(*instruments)
-        self.cached_instrums: dict[type[_Instrument], _Instrument] = {}
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, type(self)):
+            return False
+        return (type(self) is type(other)) and (
+            tuple(self.instrums) == tuple(other.instrums)
+        )
+
+    def __hash__(self) -> int:
+        return hash(self.instrums)
 
     @staticmethod
     def _dispatch_instrum_ann(
-        observation: _Obs,
-        announcement: _Ann,
-        instrument: _Instrument | None,
+        observation: ObservationProtocol,
+        announcement: AnnouncementMethod,
+        instrument: Any,
     ) -> None:
         """Invoke an announcement method on an instrument.
 
@@ -370,8 +377,8 @@ class BasicDispatcher(Generic[_Instrument, _P, _R]):
 
     def _dispatch_ann(
         self,
-        observation: _Obs,
-        announcement: _Ann,
+        observation: ObservationProtocol,
+        announcement: AnnouncementMethod,
     ) -> None:
         """Process an announcement by identifying the required
         instrument.
@@ -392,7 +399,7 @@ class BasicDispatcher(Generic[_Instrument, _P, _R]):
                 ) from e
             self._dispatch_instrum_ann(observation, announcement, instrum_imp)
 
-    def dispatch(self, observation: _Obs) -> None:
+    def dispatch(self, observation: ObservationProtocol) -> None:
         # pylint: disable=line-too-long
         """Dispatch an observation to all applicable instruments.
 
@@ -422,7 +429,7 @@ class BasicDispatcher(Generic[_Instrument, _P, _R]):
             ...
             >>> dispatcher = BasicDispatcher(LoggerInstrument(), AnalyticsInstrument())
             >>> dispatcher
-            BasicDispatcher(<domprob.dispatchers.basic.LoggerInstrument object at 0x...>, <domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>)
+            BasicDispatcher(instruments=('<domprob.dispatchers.basic.LoggerInstrument object at 0x...>', '<domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>'))
             >>>
             >>> from domprob import announcement, BaseObservation
             >>>
@@ -468,7 +475,7 @@ class BasicDispatcher(Generic[_Instrument, _P, _R]):
             ...
             >>> dispatcher = BasicDispatcher(LoggerInstrument(), AnalyticsInstrument())
             >>> repr(dispatcher)
-            'BasicDispatcher(<domprob.dispatchers.basic.LoggerInstrument object at 0x...>, <domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>)'
+            "BasicDispatcher(instruments=('<domprob.dispatchers.basic.LoggerInstrument object at 0x...>', '<domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>'))"
         """
-        instrum_imps_str = ", ".join(repr(i) for i in self.instrums)
-        return f"{self.__class__.__name__}({instrum_imps_str})"
+        instrum_imps_str = tuple(repr(i) for i in self.instrums)
+        return f"{self.__class__.__name__}(instruments={instrum_imps_str})"

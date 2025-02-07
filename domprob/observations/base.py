@@ -3,7 +3,7 @@ import inspect
 from abc import ABC
 from collections.abc import Generator
 from functools import cached_property
-from typing import ParamSpec, TypeVar, Generic, Any
+from typing import ParamSpec, TypeVar, Any
 
 from domprob.announcements.method import AnnouncementMethod
 from domprob.observations.observation import ObservationProtocol
@@ -47,9 +47,7 @@ def _is_function(obj: object) -> bool:
     )
 
 
-class BaseObservation(
-    ABC, Generic[_P, _R, _Instrument], ObservationProtocol[[Any, Any], Any]
-):
+class BaseObservation(ABC, ObservationProtocol):
     """Base class for observations.
 
     Attributes:
@@ -73,10 +71,10 @@ class BaseObservation(
     """
 
     # cached per observation sub cls - avoids recompute for each instance
-    _announcements: list[_AnnounceSig] | None = None
+    _announcements: list[AnnouncementMethod] | None = None
 
     @classmethod
-    def announcements(cls) -> Generator[_AnnounceSig, None, None]:
+    def announcements(cls) -> Generator[AnnouncementMethod, None, None]:
         """Yield announcement methods defined in the class.
 
         Uses **lazy evaluation** to avoid unnecessary memory

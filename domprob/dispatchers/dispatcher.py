@@ -1,18 +1,13 @@
 from typing import (
-    TypeVar,
-    Any,
     Protocol,
     runtime_checkable,
-    ParamSpec,
 )
 
 from domprob.base_exc import DomprobException
 from domprob.observations.observation import ObservationProtocol
 
-_P = ParamSpec("_P")
-_R = TypeVar("_R", bound=Any)
 
-
+# pylint: disable=too-few-public-methods
 @runtime_checkable
 class DispatcherProtocol(Protocol):
     """Protocol defining the structure for dispatchers handling domain
@@ -34,7 +29,7 @@ class DispatcherProtocol(Protocol):
         >>>
         >>> class ConcreteDispatcher:
         ...     @staticmethod
-        ...     def dispatch(self, observation: ObservationProtocol[int, str]) -> str:
+        ...     def dispatch(self, observation: ObservationProtocol) -> str:
         ...         return "Processed observation"
         ...
         ...     def __repr__(self) -> str:
@@ -44,9 +39,7 @@ class DispatcherProtocol(Protocol):
         >>> assert isinstance(dispatcher, DispatcherProtocol)
     """
 
-    def dispatch(
-        self, observation: ObservationProtocol[[_P.args, _P.kwargs], _R]
-    ) -> _R:
+    def dispatch(self, observation: ObservationProtocol) -> None:
         # noinspection PyShadowingNames
         """Dispatch an observation and return a result.
 
@@ -64,7 +57,7 @@ class DispatcherProtocol(Protocol):
             >>>
             >>> class MyDispatcher:
             ...     @staticmethod
-            ...     def dispatch(observation: ObservationProtocol[int, str]) -> str:
+            ...     def dispatch(observation: ObservationProtocol) -> str:
             ...         return "Handled"
             ...
             >>> dispatcher = MyDispatcher()
@@ -80,13 +73,6 @@ class DispatcherProtocol(Protocol):
             >>> result = dispatcher.dispatch(Obs())
             >>> print(result)
             Handled
-        """
-
-    def __repr__(self) -> str:
-        """Return a string representation of the dispatcher.
-
-        Returns:
-            str: The string representation of the dispatcher.
         """
 
 

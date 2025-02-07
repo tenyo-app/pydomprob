@@ -42,7 +42,8 @@ dev = [
     "sphinx-autodoc-typehints>=3.0.1",
     "setuptools>=75.8.0",
     "wheel>=0.45.1",
-    "twine>=6.1.0"
+    "twine>=6.1.0",
+    "pytest-mock>=3.14.0",
 ]
 
 [tool.isort]
