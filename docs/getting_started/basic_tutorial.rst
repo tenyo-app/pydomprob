@@ -49,11 +49,14 @@ more details.
    from domprob import announcement, BaseObservation
 
 
-   class CheckoutSuccessfulObservation(BaseObservation):
+   class CheckoutSuccessful(BaseObservation):
+
+       def __init__(self, **order_details: Any) -> None:
+           self.order_details = order_details
 
        @announcement(logging.Logger, required=True)
        def log_observation(self, log: logging.Logger) -> None:
-           log.info("Checkout successful!")
+           log.info("Checkout successful!", **self.order_details)
 
        @announcement(MetricsAdapter)
        def increment_metric(self, metric_app: MetricsAdapter) -> None:
@@ -107,4 +110,4 @@ more control over customisation, any user-defined class that implements
                self.checkout_service.checkout_order(self.order)
            except CheckoutError as e:
                raise
-           self.probe.observe(CheckoutSuccessfulObservation())
+           self.probe.observe(CheckoutSuccessful(**self.order_aggregate))

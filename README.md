@@ -74,3 +74,41 @@ poetry add domprob
 ```
 
 ## Usage
+
+### Define an observation
+
+```python
+import logging
+from typing import Any
+
+from domprob import announcement, BaseObservation
+
+
+class CheckoutSuccessful(BaseObservation):
+    
+        def __init__(self, **order_details: Any) -> None:
+            self.order_details = order_details
+
+        @announcement(logging.Logger)
+        def log_observation(self, log: logging.Logger) -> None:
+           log.info("Checkout successful!", **self.order_details)
+
+```
+
+### Calling the observation
+
+```python
+   from domprob import probe
+
+   class OrderService:
+       
+       def checkout(self):
+           try:
+               self.checkout_service.checkout_order(self.order)
+           except CheckoutError as e:
+               raise
+           probe.observe(CheckoutSuccessful(**self.order_entity))
+
+```
+
+Check out [the docs](https://domprob.readthedocs.io/en/latest/) for more detail!
