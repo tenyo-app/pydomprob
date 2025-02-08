@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from psutil import cpu_percent, virtual_memory
 from typing import Any
 
 from domprob.dispatchers.dispatcher import DispatcherProtocol
@@ -119,6 +120,13 @@ class Probe:
         return f"{self.__class__.__name__}(dispatcher={self.dispatcher!r})"
 
 
+class PsutilFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        txt = f"cpu{cpu_percent():02.0f}% mem{virtual_memory().percent:02.0f}%"
+        record.psutil = txt
+        return True
+
+
 def get_probe(*instruments: Any) -> Probe:
     """Creates a `Probe` instance with the provided instruments.
 
@@ -148,9 +156,10 @@ def get_probe(*instruments: Any) -> Probe:
     """
     if not instruments:
         log = logging.getLogger("default")
+        log.addFilter(PsutilFilter())
         handler = logging.StreamHandler()
         formatter = logging.Formatter(
-            "[%(asctime)s] %(levelname)s: %(message)s"
+            "%(asctime)s - %(levelname)s: %(message)s"
         )
         handler.setFormatter(formatter)
         log.addHandler(handler)
