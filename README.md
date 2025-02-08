@@ -14,7 +14,7 @@ Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-o
 
 Keep your business logic comprehensible by abstracting the observability code away.
 
-**Turn this (21 lines):**
+**Turn this (20 lines):**
 
 ```python
 class OrderService:
