@@ -14,10 +14,10 @@ Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-o
 
 Keep your business logic comprehensible by abstracting the observability code away.
 
-**Turn this (19 lines):**
+**Turn this (21 lines):**
 
 ```python
-class Order:
+class OrderService:
     def checkout(self):
         self.logger.log(f"Attempting to checkout order {self.order}")
         try:
@@ -28,14 +28,15 @@ class Order:
                 "failed_orders": 1, "customer": 6234654
             })
             return
-        self.logger.log(f"Order checkout completed successfully")
         self.metrics.increment("checkout-successful", {
+            "successful_orders": 1, 
+         })
+        self.logger.log(f"Order checkout completed successfully", {
             "successful_orders": 1, 
             "customer": 6234654, 
             "order_number": 2374, 
             "sku": "JH-374-VJHV"
         })
-        self.analytics.add(**self.order.to_dict())
 ```
 
 **→ Into ✨this✨ (9 lines):**

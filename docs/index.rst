@@ -5,7 +5,7 @@
    :maxdepth: 1
    :caption: Getting Started
 
-   getting_started/install
+   getting_started/overview
    getting_started/basic_tutorial
 
 .. toctree::

@@ -154,3 +154,11 @@ def get_probe(*instruments: Any) -> Probe:
 
 
 probe = get_probe()
+"""The default probe.
+
+Example:
+    >>> from domprob.probes.probe import probe
+    >>> 
+    >>> probe
+    Probe(dispatcher=BasicDispatcher(instruments=('<RootLogger root (WARNING)>',)))
+"""
