@@ -148,7 +148,13 @@ def get_probe(*instruments: Any) -> Probe:
     """
     if not instruments:
         log = logging.getLogger("default")
-        log.level = logging.DEBUG
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            "[%(asctime)s] %(levelname)s: %(message)s"
+        )
+        handler.setFormatter(formatter)
+        log.addHandler(handler)
+        log.setLevel(logging.DEBUG)
         instruments = (log,)
     dispatcher = BasicDispatcher(*instruments)
 
