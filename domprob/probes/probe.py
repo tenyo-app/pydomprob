@@ -119,9 +119,6 @@ class Probe:
         return f"{self.__class__.__name__}(dispatcher={self.dispatcher!r})"
 
 
-_INSTRUMENTS: tuple[Any, ...] = (logging.getLogger(),)
-
-
 def get_probe(*instruments: Any) -> Probe:
     """Creates a `Probe` instance with the provided instruments.
 
@@ -147,9 +144,14 @@ def get_probe(*instruments: Any) -> Probe:
         >>> # Create a probe with default instruments
         >>> default_probe = get_probe()
         >>> default_probe
-        Probe(dispatcher=BasicDispatcher(instruments=('<RootLogger root (WARNING)>',)))
+        Probe(dispatcher=BasicDispatcher(instruments=('<Logger default (DEBUG)>',)))
     """
-    dispatcher = BasicDispatcher(*instruments or _INSTRUMENTS)
+    if not instruments:
+        log = logging.getLogger("default")
+        log.level = logging.DEBUG
+        instruments = (log,)
+    dispatcher = BasicDispatcher(*instruments)
+
     return Probe(dispatcher)
 
 

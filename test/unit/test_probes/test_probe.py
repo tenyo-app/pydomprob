@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Generator
 from typing import TypeVar
 from unittest.mock import MagicMock
@@ -6,9 +7,7 @@ import pytest
 
 from domprob.announcements.method import AnnouncementMethod
 from domprob.announcements.decorators import announcement
-
-# noinspection PyProtectedMember
-from domprob.probes.probe import get_probe, Probe, _INSTRUMENTS
+from domprob.probes.probe import get_probe, Probe
 
 
 @pytest.fixture
@@ -191,6 +190,8 @@ def test_probe_with_no_instruments(mocker):
     # Act
     result = get_probe()
     # Assert
-    mock_dispatcher.assert_called_once_with(*_INSTRUMENTS)
+    logger = logging.getLogger("default")
+    logger.level = logging.DEBUG
+    mock_dispatcher.assert_called_once_with(logger)
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)
     assert result == mock_probe.return_value

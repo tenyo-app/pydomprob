@@ -3,6 +3,7 @@ class TestObservationImports:
         # Arrange
         from domprob import BaseObservation as AliasedBaseObservation
         from domprob.observations.base import BaseObservation
+
         # Act
         # Assert
         assert AliasedBaseObservation is BaseObservation
