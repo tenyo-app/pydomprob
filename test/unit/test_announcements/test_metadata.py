@@ -45,7 +45,7 @@ class TestAnnouncementMetadataEntry:
         assert entry.instrument_cls is MockInstrument
         assert entry.required is False
 
-        item_default = AnnouncementMetadataEntry(MockInstrument)
+        item_default = AnnouncementMetadataEntry(MockInstrument, True)
         assert item_default.required is True
 
     def test_metadata_item_repr(self):

@@ -4,6 +4,9 @@ test-unit:
 test-functional:
 	uv run --frozen pytest test/functional
 
+test-integration:
+	uv run --frozen pytest test/integration
+
 .PHONY: test
 test:
 	uv run --frozen pytest -s test/

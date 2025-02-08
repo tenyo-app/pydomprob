@@ -121,12 +121,14 @@ class TestAnnouncementMethodBinder:
         assert annotation == MockInstrument
         assert len(signature.parameters) == 2
 
-    def test_get_signature_infers_instrument_through_string_forwarded_annotations(self):
+    def test_get_signature_infers_instrument_through_string_forwarded_annotations(
+        self,
+    ):
         # Arrange
         class Cls:
             @announcement(MockInstrument)
             @announcement(MockInstrument)
-            def meth(self, mock_var_name: 'MockInstrument') -> None:
+            def meth(self, mock_var_name: "MockInstrument") -> None:
                 pass
 
         announcement_method = AnnouncementMethod(Cls.meth)
@@ -136,7 +138,7 @@ class TestAnnouncementMethodBinder:
         # Assert
         assert "instrument" in signature.parameters.keys()
         annotation = signature.parameters.get("instrument").annotation
-        assert annotation == 'MockInstrument'
+        assert annotation == "MockInstrument"
         assert len(signature.parameters) == 2
 
     def test_get_signature_infers_instrument_through_parent_annotations(self):

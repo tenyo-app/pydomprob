@@ -258,7 +258,9 @@ class AnnouncementMethodBinder:
             if obj is inspect.Parameter.empty:  # No annotation defined
                 continue
             if isinstance(obj, str):
-                obj = type_hints[param.name]
+                obj = type_hints.get(param.name)
+                if obj is None:
+                    continue
             if all(i for i in instrums if i == obj or issubclass(i, obj)):
                 return (self._rn(p) if p is param else p for p in params)
         return None
@@ -271,8 +273,8 @@ class AnnouncementMethodBinder:
             first_param = next(params_iter)
         except StopIteration:
             return
-        # Hacky 'self' check - could fail if first arg in instance method
-        # doesn't follow convention
+        # Hacky 'self' check. This could fail if first arg in instance method
+        # doesn't follow naming convention.
         if first_param.name != "self":
             first_param = self._rn(first_param)
         yield first_param

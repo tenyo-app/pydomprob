@@ -6,8 +6,9 @@ import pytest
 
 from domprob.announcements.method import AnnouncementMethod
 from domprob.announcements.decorators import announcement
+
 # noinspection PyProtectedMember
-from domprob.probes.probe import probe, Probe, _INSTRUMENTS
+from domprob.probes.probe import get_probe, Probe, _INSTRUMENTS
 
 
 @pytest.fixture
@@ -174,9 +175,11 @@ def test_probe_with_instruments(mock_instrument_cls, mocker):
     mock_probe = mocker.patch("domprob.probes.probe.Probe")
     mock_instrument = mock_instrument_cls()
     # Act
-    result = probe(mock_instrument)
+    result = get_probe(mock_instrument)
     # Assert
-    mock_dispatcher.assert_called_once_with(mock_instrument,)
+    mock_dispatcher.assert_called_once_with(
+        mock_instrument,
+    )
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)
     assert result == mock_probe.return_value
 
@@ -186,7 +189,7 @@ def test_probe_with_no_instruments(mocker):
     mock_dispatcher = mocker.patch("domprob.probes.probe.BasicDispatcher")
     mock_probe = mocker.patch("domprob.probes.probe.Probe")
     # Act
-    result = probe()
+    result = get_probe()
     # Assert
     mock_dispatcher.assert_called_once_with(*_INSTRUMENTS)
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)

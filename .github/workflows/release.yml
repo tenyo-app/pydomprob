@@ -113,11 +113,34 @@ jobs:
       - name: "Functional test (python: ${{ matrix.python-version }})"
         run: make test-functional
 
+  integration-tests:
+    runs-on: ubuntu-24.04
+    needs:
+      - pylint
+      - black
+      - mypy
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v5.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Integration test (python: ${{ matrix.python-version }})"
+        run: make test-integration
+
   doc-tests:
     runs-on: ubuntu-24.04
     needs:
       - unit-tests
       - functional-tests
+      - integration-tests
     strategy:
       fail-fast: false
       matrix:

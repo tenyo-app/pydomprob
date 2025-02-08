@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-@dataclass
+@dataclass(frozen=True)
 class AnnouncementMetadataEntry:
     """Represents metadata entry for an announcement's method. Includes
     the instrument class and its requirement status.
@@ -36,7 +36,7 @@ class AnnouncementMetadataEntry:
     """
 
     instrument_cls: type[Any]
-    required: bool = True
+    required: bool
 
 
 class AnnouncementMetadata:
