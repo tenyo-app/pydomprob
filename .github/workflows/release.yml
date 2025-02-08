@@ -363,6 +363,7 @@ jobs:
     - mypy
     - unit-tests
     - functional-tests
+    - integration-tests
     - doc-tests
     - build-docs-check
     - build-package
