@@ -95,8 +95,6 @@ poetry add domprob
 pip install domprob
 ```
 
-<br>
-
 ## Usage
 
 **Define an observation:**
@@ -136,8 +134,6 @@ class CheckoutSuccessful(BaseObservation):
 ```
 
 Check out [the docs](https://domprob.readthedocs.io/en/latest/) for more detail!
-
-<br>
 
 ## Contributing
 
