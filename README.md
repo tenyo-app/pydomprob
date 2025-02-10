@@ -34,7 +34,7 @@ to reason about their system in business terms.
         <strong>Tidy Domain Logic:</strong> Keeps domain logic clean by separating observability concerns, 
         ensuring insights don’t clutter core business code.
     </summary>
-    <p>
+    
 	Turn this (20 lines):
 
     ```python
@@ -59,7 +59,6 @@ to reason about their system in business terms.
                 "sku": "JH-374-VJHV"
             })
     ```
-    </p>
 </details>
 
 **Turn this (20 lines):**
