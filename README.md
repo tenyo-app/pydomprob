@@ -97,7 +97,7 @@ pip install domprob
 
 ## Usage
 
-### Define an observation
+**Define an observation:**
 
 ```python
 import logging
@@ -117,7 +117,7 @@ class CheckoutSuccessful(BaseObservation):
 
 ```
 
-### Calling the observation
+**Calling the observation:**
 
 ```python
    from domprob import probe
