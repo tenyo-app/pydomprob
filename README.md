@@ -61,6 +61,21 @@ to reason about their system in business terms.
 >             "sku": "JH-374-VJHV"
 >         })
 > ```
+> 
+> **→ Into ✨this✨ (9 lines):**
+> 
+> ```python
+> class Order:
+>     def checkout(self):
+>         probe.observe(AttemptingCheckoutObservation())
+>         try:
+>             self.checkout_service.checkout_order(self.order)
+>         except CheckoutError as e:
+>             probe.observe(CheckoutFailedObservation())
+>             return
+>         probe.observe(CheckoutSuccessfulObservation())
+> ```
+> 
 </details>
 
 **Turn this (20 lines):**
