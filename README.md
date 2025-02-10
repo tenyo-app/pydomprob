@@ -34,30 +34,32 @@ to reason about their system in business terms.
         <strong>Tidy Domain Logic:</strong> Keeps domain logic clean by separating observability concerns, 
         ensuring insights don’t clutter core business code.
     </summary>
+
 &nbsp;
+
 Turn this (20 lines):
 
 ```python
-class OrderService:
-    def checkout(self):
-        self.logger.log(f"Attempting to checkout order {self.order}")
-        try:
-            self.checkout_service.checkout_order(self.order)
-        except CheckoutError as e:
-            self.logger.error(f"Checkout for order {self.order} failed: {e}")
-            self.metrics.increment("checkout-failed", {
-                "failed_orders": 1, "customer": 6234654
+    class OrderService:
+        def checkout(self):
+            self.logger.log(f"Attempting to checkout order {self.order}")
+            try:
+                self.checkout_service.checkout_order(self.order)
+            except CheckoutError as e:
+                self.logger.error(f"Checkout for order {self.order} failed: {e}")
+                self.metrics.increment("checkout-failed", {
+                    "failed_orders": 1, "customer": 6234654
+                })
+                return
+            self.metrics.increment("checkout-successful", {
+                "successful_orders": 1, 
+             })
+            self.logger.log(f"Order checkout completed successfully", {
+                "successful_orders": 1, 
+                "customer": 6234654, 
+                "order_number": 2374, 
+                "sku": "JH-374-VJHV"
             })
-            return
-        self.metrics.increment("checkout-successful", {
-            "successful_orders": 1, 
-         })
-        self.logger.log(f"Order checkout completed successfully", {
-            "successful_orders": 1, 
-            "customer": 6234654, 
-            "order_number": 2374, 
-            "sku": "JH-374-VJHV"
-        })
 ```
 </details>
 
