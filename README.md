@@ -95,6 +95,8 @@ poetry add domprob
 pip install domprob
 ```
 
+<br>
+
 ## Usage
 
 **Define an observation:**
@@ -134,3 +136,10 @@ class CheckoutSuccessful(BaseObservation):
 ```
 
 Check out [the docs](https://domprob.readthedocs.io/en/latest/) for more detail!
+
+<br>
+
+## Contributing
+
+- Our code of conduct is [here](https://github.com/tenyo-app/pydomprob?tab=coc-ov-file).
+- Check out all our issues [here](https://github.com/tenyo-app/pydomprob/issues). We've compiled a least of good first issues [here](https://github.com/tenyo-app/pydomprob/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22).

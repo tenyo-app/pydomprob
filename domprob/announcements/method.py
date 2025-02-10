@@ -260,7 +260,7 @@ class AnnouncementMethodBinder:
             if isinstance(obj, str):
                 obj = type_hints.get(param.name)
                 if obj is None:  # Can't get type from annotation
-                    continue  # Could should be unreachable - safety check
+                    continue  # Should be unreachable - safety check
             if all(i for i in instrums if i == obj or issubclass(i, obj)):
                 return (self._rn(p) if p is param else p for p in params)
         return None
