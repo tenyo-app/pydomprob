@@ -75,7 +75,7 @@ to reason about their system in business terms.
 > ```
 </details>
 
-### Installation
+## Installation
 
 **uv**
 
