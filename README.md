@@ -12,6 +12,8 @@ Observability Domain Probes Python Package
 
 [📄 Documentation](https://domprob.readthedocs.io/en/latest/) | [🐍 PyPI](https://pypi.org/project/domprob/)
 
+&nbsp;
+
 </div>
 
 ## domprob 🛰️
