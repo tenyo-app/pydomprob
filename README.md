@@ -35,6 +35,8 @@ to reason about their system in business terms.
         ensuring insights don’t clutter core business code.
     </summary>
 
+<div style="margin-left: 20px;">
+
 > &nbsp;
 >
 > **Turn this (20 lines):**
@@ -76,6 +78,7 @@ to reason about their system in business terms.
 >         probe.observe(CheckoutSuccessfulObservation())
 > ```
 > 
+</div>
 </details>
 
 ### Installation
