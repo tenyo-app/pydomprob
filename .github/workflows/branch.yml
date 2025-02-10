@@ -19,6 +19,8 @@ jobs:
       - name: astral-sh/setup-uv
         uses: astral-sh/setup-uv@v5.1.0
         with:
+          version: "0.5.29"
+          checksum: "46d3fcf04d64be42bded914d648657cd62d968172604e3aaf8386142c09d2317"
           python-version: ${{ matrix.python-version }}
 
       - name: "Pylint (python: ${{ matrix.python-version }})"
