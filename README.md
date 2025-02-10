@@ -1,5 +1,7 @@
+<div style="text-align: center;">
+
 # domprob 🛰️
-Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-observability.html), domprob is a Python package to implement observability domain probes in your projects.
+Observability Domain Probes Python Package
 
 ![PyPI - Package Version](https://img.shields.io/pypi/v/domprob.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/domprob)
@@ -10,9 +12,53 @@ Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-o
 
 [📄 Documentation](https://domprob.readthedocs.io/en/latest/) | [🐍 PyPI](https://pypi.org/project/domprob/)
 
-## Overview
+</div>
 
-Keep your business logic comprehensible by abstracting the observability code away.
+## domprob 🛰️
+
+ keep your business logic comprehensible by abstracting the observability code away.
+
+### Motivation
+
+Observability often focuses on low-level signals, missing domain-specific insights that explain why a system behaves a 
+certain way. Inspired by [this blog post](https://martinfowler.com/articles/domain-oriented-observability.html) titled 
+"Domain-Oriented Observability", domprob helps expose meaningful domain events and causal relationships, enabling teams 
+to reason about their system in business terms.
+
+### Key Features
+
+<details>
+    <summary>
+        <strong>Tidy Domain Logic:</strong> Keeps domain logic clean by separating observability concerns, 
+        ensuring insights don’t clutter core business code.
+    </summary>
+    <p>
+	Turn this (20 lines):
+
+    ```python
+    class OrderService:
+        def checkout(self):
+            self.logger.log(f"Attempting to checkout order {self.order}")
+            try:
+                self.checkout_service.checkout_order(self.order)
+            except CheckoutError as e:
+                self.logger.error(f"Checkout for order {self.order} failed: {e}")
+                self.metrics.increment("checkout-failed", {
+                    "failed_orders": 1, "customer": 6234654
+                })
+                return
+            self.metrics.increment("checkout-successful", {
+                "successful_orders": 1, 
+             })
+            self.logger.log(f"Order checkout completed successfully", {
+                "successful_orders": 1, 
+                "customer": 6234654, 
+                "order_number": 2374, 
+                "sku": "JH-374-VJHV"
+            })
+    ```
+    </p>
+</details>
 
 **Turn this (20 lines):**
 
@@ -53,24 +99,24 @@ class Order:
         probe.observe(CheckoutSuccessfulObservation())
 ```
 
-## Installation
+### Installation
 
-Install using uv:
+**uv**
 
 ```shell
 uv add domprob
 ```
 
-Using pip:
-
-```shell
-pip install domprob
-```
-
-Using poetry:
+**poetry**
 
 ```shell
 poetry add domprob
+```
+
+**pip**
+
+```shell
+pip install domprob
 ```
 
 ## Usage
