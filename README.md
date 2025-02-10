@@ -73,7 +73,7 @@ to reason about their system in business terms.
 >             return
 >         probe.observe(CheckoutSuccessfulObservation())
 > ```
-</details><br>
+</details>
 
 ## Installation
 
