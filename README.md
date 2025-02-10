@@ -35,9 +35,8 @@ to reason about their system in business terms.
         ensuring insights don’t clutter core business code.
     </summary>
 
->
-> &nbsp;
-> 
+&nbsp;
+
 > **Turn this (20 lines):**
 > 
 > ```python
