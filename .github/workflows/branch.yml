@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: astral-sh/setup-uv
-        uses: astral-sh/setup-uv@v5.1.0
+        uses: astral-sh/setup-uv@9832a7b18c8e2319a47c3dd414ef15a29bc012372ea5d60ed28543ab4cdd8153  # v5.2.2
         with:
           version: "0.5.29"
           checksum: "46d3fcf04d64be42bded914d648657cd62d968172604e3aaf8386142c09d2317"
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: astral-sh/setup-uv
-        uses: astral-sh/setup-uv@v5.1.0
+        uses: astral-sh/setup-uv@9832a7b18c8e2319a47c3dd414ef15a29bc012372ea5d60ed28543ab4cdd8153  # v5.2.2
         with:
           python-version: ${{ matrix.python-version }}
 
