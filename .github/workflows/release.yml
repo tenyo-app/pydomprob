@@ -366,8 +366,6 @@ jobs:
     - doc-tests
     - build-docs-check
     - build-package
-    - deploy-docs
-    - deploy-package
     if: failure() || cancelled()
     permissions:
       contents: write
