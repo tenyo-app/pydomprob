@@ -18,7 +18,7 @@ Observability Domain Probes Python Package
 
 ## domprob 🛰️
 
- keep your business logic comprehensible by abstracting the observability code away.
+Implement the domain probe pattern with observability events easily with domprob.
 
 ### Motivation
 
@@ -133,7 +133,7 @@ class CheckoutSuccessful(BaseObservation):
 
 ```
 
-Check out [the docs](https://domprob.readthedocs.io/en/latest/) for more detail!
+Check out [the docs](https://domprob.readthedocs.io/en/latest/) for more detailed examples!
 
 ## Contributing
 
