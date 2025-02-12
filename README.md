@@ -120,16 +120,20 @@ class CheckoutSuccessful(BaseObservation):
 **Calling the observation:**
 
 ```python
-   from domprob import probe
+import logging
+from domprob import get_probe
 
-   class OrderService:
-       
-       def checkout(self):
-           try:
-               self.checkout_service.checkout_order(self.order)
-           except CheckoutError as e:
-               raise
-           probe.observe(CheckoutSuccessful(**self.order_entity))
+probe = get_probe(logging.getLogger(__name__))
+
+
+class OrderService:
+
+    def checkout(self):
+        try:
+            self.checkout_service.checkout_order(self.order)
+        except CheckoutError as e:
+            raise
+        probe.observe(CheckoutSuccessful(**self.order_entity))
 
 ```
 
