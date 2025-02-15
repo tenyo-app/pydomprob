@@ -13,7 +13,7 @@ _R = TypeVar("_R")
 _AnnounceSig = AnnouncementMethod[_P, _R]
 
 
-class AnnouncementSet(Set):
+class AnnouncementSet(Set[_AnnounceSig]):
     """A custom set-like collection for storing `AnnouncementMethod`
     instances.
 
