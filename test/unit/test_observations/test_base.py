@@ -2,76 +2,83 @@ import pytest
 
 from domprob.announcements.method import AnnouncementMethod
 from domprob import announcement
-from domprob.observations.base import _is_function, BaseObservation
+from domprob.observations.base import BaseObservation, AnnouncementSet
 from domprob.observations.observation import ObservationProtocol
 
 
-def test_is_function_valid_function():
-    # Arrange
-    def sample_function():
-        pass
+class MockObservation(BaseObservation):
 
-    # Act
-    is_func_result = _is_function(sample_function)
-    # Assert
-    assert is_func_result is True
+    def __init__(self):
+        self.called = False
 
-
-def test_is_function_property_is_not_function():
-    # Arrange
-    class SampleClass:
-        @property
-        def sample_prop(self):
-            return 42
-
-    # Act
-    is_func_result = _is_function(SampleClass.sample_prop)
-    # Assert
-    assert is_func_result is False
+    @announcement("mock_instrument")  # type: ignore
+    def sample_announcement(self, _: str):
+        self.called = True
+        return "Hello, Observer!"
 
 
-def test_is_function_cached_property_is_not_function():
-    # Arrange
-    from functools import cached_property
-
-    class SampleClass:
-        @cached_property
-        def cached_prop(self):
-            return 42
-
-    # Act
-    is_func_result = _is_function(SampleClass.cached_prop)
-    # Assert
-    assert is_func_result is False
+@pytest.fixture
+def observation_cls():
+    return MockObservation
 
 
-def test_is_function_dunder_method_is_not_function():
-    # Arrange
-    class SampleClass:
-        def __str__(self):
-            return "Sample"
+class TestAnnouncementSet:
 
-    # Act
-    is_func_result = _is_function(SampleClass.__str__)
-    # Assert
-    assert is_func_result is False
+    def test_init(self, observation_cls):
+        # Arrange
+        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        # Act
+        announcements = AnnouncementSet(meth, meth)
+        # Assert
+        assert len(announcements._announcement_methods) == 1
+        assert announcements._announcement_methods == {meth}
+
+    def test_from_observation_cls_method(self, observation_cls):
+        # Arrange
+        # Act
+        announcements = AnnouncementSet.from_observation(observation_cls)
+        # Assert
+        assert len(announcements._announcement_methods) == 1
+        meth, = announcements._announcement_methods
+        assert meth.meth == observation_cls.sample_announcement
+
+    def test_contains(self, observation_cls):
+        # Arrange
+        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        # Act
+        announcements = AnnouncementSet(meth, meth)
+        # Assert
+        assert meth in announcements
+        assert "" not in announcements
+        assert AnnouncementMethod(lambda: ...) not in announcements
+
+    def test_iter(self, observation_cls):
+        # Arrange
+        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        # Act
+        announcement_set = AnnouncementSet(meth, meth)
+        # Assert
+        assert set(iter(announcement_set)) == {meth, meth}
+
+    def test_len(self, observation_cls):
+        # Arrange
+        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        # Act
+        announcements = AnnouncementSet(meth, meth)
+        # Assert
+        assert len(announcements) == 1
+
+    def test_repr(self, observation_cls):
+        # Arrange
+        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        announcements = AnnouncementSet(meth, meth)
+        # Act
+        announcements_repr = repr(announcements)
+        # Assert
+        assert announcements_repr == 'AnnouncementSet(num_announcements=1)'
 
 
 class TestBaseObservation:
-
-    class MockObservation(BaseObservation):
-
-        def __init__(self):
-            self.called = False
-
-        @announcement("mock_instrument")  # type: ignore
-        def sample_announcement(self, _: str):
-            self.called = True
-            return "Hello, Observer!"
-
-    @pytest.fixture
-    def observation_cls(self):
-        return TestBaseObservation.MockObservation
 
     def test_follows_observation_protocol(self, observation_cls):
         # Arrange

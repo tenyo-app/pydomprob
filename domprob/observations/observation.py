@@ -1,4 +1,4 @@
-from collections.abc import Generator
+from collections.abc import Iterable
 from typing import ParamSpec, Protocol, TypeVar, runtime_checkable, Any
 
 from domprob.announcements.method import AnnouncementMethod
@@ -32,14 +32,14 @@ class ObservationProtocol(Protocol):
 
         >>> class ConcreteObservation:
         ...     @classmethod
-        ...     def announcements(cls) -> Generator[AnnouncementMethod, None, None]:
+        ...     def announcements(cls) -> Iterable[AnnouncementMethod]:
         ...         yield AnnouncementMethod(lambda x: x)
         ...
         >>> assert isinstance(ConcreteObservation, ObservationProtocol)
     """
 
     @classmethod
-    def announcements(cls) -> Generator[AnnouncementMethod, None, None]:
+    def announcements(cls) -> Iterable[AnnouncementMethod]:
         """Retrieve all announcement methods defined in the class.
 
         Returns:
