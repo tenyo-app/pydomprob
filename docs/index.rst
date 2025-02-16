@@ -13,6 +13,7 @@
    :caption: Components
 
    components/announcements
+   components/consumers
    components/dispatchers
    components/observations
    components/probes

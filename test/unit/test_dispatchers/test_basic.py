@@ -1,290 +1,151 @@
-import copy
+from typing import Any, Iterable
 
 import pytest
-from unittest.mock import Mock
-from typing import Any, TypeVar
 
-from domprob import BaseObservation, announcement
 from domprob.announcements.method import AnnouncementMethod
-from domprob.dispatchers.basic import (
-    InstrumentImpRegistry,
-    BasicDispatcher,
-    ReqInstrumException,
-)
-
-_Instrument = TypeVar("_Instrument", bound=Any)
+from domprob.consumers.consumer import ConsumerProtocol
+from domprob import BasicDispatcher
+from domprob.observations.observation import ObservationProtocol
 
 
-class MockInstrument:
-    @staticmethod
-    def action():
-        return "Instrument action"
+class MockConsumer(ConsumerProtocol):
+    consumed = []
+
+    def __eq__(self, other: Any):
+        pass
+
+    def __hash__(self) -> int:
+        return 1
+
+    def consume(self, observation: ObservationProtocol) -> None:
+        self.consumed.append(observation)
 
 
-class MockObservation(BaseObservation):
-    called = 0
-    obs = None
-    instrum = None
-
-    @announcement(MockInstrument)
-    def foo(self, db):
-        self.called += 1
-        self.obs = self
-        self.instrum = db
+@pytest.fixture
+def mock_consumer():
+    return MockConsumer
 
 
-class MockObservationWithRequired(BaseObservation):
-    @announcement(MockInstrument, required=True)
-    def foo(self, instrument: MockInstrument):
+class MockObservation(ObservationProtocol):
+    @classmethod
+    def announcements(cls) -> Iterable[AnnouncementMethod]:
         pass
 
 
-class MockAnnouncementMethod(AnnouncementMethod):
-    def __init__(self):
-        super().__init__(Mock())
-        self._supp_instrums = [(MockInstrument, False)]
-
-
-class UnhashableMeta(type):
-    def __hash__(cls):
-        raise TypeError(f"Cannot hash class {cls.__name__}")
-
-
-class UnhashableInstrument(metaclass=UnhashableMeta):
-    pass
-
-
-class TestInstrumentImpRegistry:
-    def test_registry_initialization(self):
-        # Arrange
-        instrum1 = MockInstrument()
-        instrum2 = MockInstrument()
-        # Act
-        registry = InstrumentImpRegistry(instrum1, instrum2)
-        # Assert
-        assert len(registry) == 2
-        assert instrum1 in registry
-        assert instrum2 in registry
-
-    def test_registry_get_existing_instrument(self):
-        # Arrange
-        instrum = MockInstrument()
-        registry = InstrumentImpRegistry(instrum)
-        # Act
-        retrieved = registry.get(MockInstrument)
-        # Assert
-        assert retrieved is instrum
-
-    def test_registry_cache(self):
-        # Arrange
-        instrum = MockInstrument()
-        registry = InstrumentImpRegistry(instrum)
-        cache_before = copy.deepcopy(registry._cache)
-        # Act
-        _ = registry.get(MockInstrument)
-        cache_after = registry._cache
-        # Assert
-        assert MockInstrument not in cache_before
-        assert MockInstrument in cache_after
-
-    def test_registry_get_missing_instrument(self):
-        # Arrange
-        registry = InstrumentImpRegistry()
-        # Act
-        instrum = registry.get(MockInstrument)
-        # Asert
-        assert instrum is None
-
-    def test_registry_get_cached_instrument(self):
-        # Arrange
-        instrum = MockInstrument()
-        registry = InstrumentImpRegistry(instrum)
-        # Act
-        retrieved = registry.get(MockInstrument)
-        cache_before = copy.deepcopy(registry._cache)
-        retrieved_again = registry.get(MockInstrument)
-        cache_after = registry._cache
-        # Assert
-        assert retrieved is retrieved_again
-        assert len(cache_after) == 1
-        assert len(cache_before) == len(cache_after)
-
-    def test_registry_get_required_instrument(self):
-        # Arrange
-        registry = InstrumentImpRegistry()
-        # Act
-        with pytest.raises(KeyError) as exc:
-            registry.get(MockInstrument, required=True)
-        # Assert
-        assert str(exc.value) == (
-            "'Instrument `MockInstrument` not found in available "
-            "implementations: None'"
-        )
-
-    def test_registry_handles_unhashable_types(self):
-        # Arrange
-        instrum = UnhashableInstrument()
-        registry = InstrumentImpRegistry(instrum)
-        # Act
-        retrieved = registry.get(UnhashableInstrument)
-        # Assert
-        assert retrieved is instrum
-        assert len(registry._cache) == 0
-
-    def test_repr(self):
-        # Arrange
-        instrum = UnhashableInstrument()
-        registry = InstrumentImpRegistry(instrum)
-        # Act
-        registry_repr = repr(registry)
-        # Assert
-        assert registry_repr == "InstrumentImpRegistry(num_instruments=1)"
+@pytest.fixture
+def mock_observation():
+    return MockObservation
 
 
 class TestBasicDispatcher:
 
-    def test_dispatcher_initialization(self):
+    def test_init(self, mock_consumer):
         # Arrange
-        instrum = MockInstrument()
+        consumer = mock_consumer()
         # Act
-        dispatcher = BasicDispatcher(instrum)
+        dispatcher = BasicDispatcher(consumer)
         # Assert
-        assert len(dispatcher.instrums) == 1
-        assert dispatcher.instrums.get(MockInstrument) is instrum
+        assert len(dispatcher.consumers) == 1
 
-    def test_dispatcher_equality_same_instruments(self):
+    def test_equality_same_consumers(self, mock_consumer):
         # Arrange
-        instrum = MockInstrument()
-        dispatcher1 = BasicDispatcher(instrum)
-        dispatcher2 = BasicDispatcher(instrum)
-        # Act + Assert
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = BasicDispatcher(consumer1, consumer2)
+        # Act
+        # Assert
         assert dispatcher1 == dispatcher2
 
-    def test_dispatcher_equality_different_instruments(self):
+    def test_equality_not_same_consumers(self, mock_consumer):
         # Arrange
-        dispatcher1 = BasicDispatcher(MockInstrument())
-        dispatcher2 = BasicDispatcher(MockInstrument())
-        # Act + Assert
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = BasicDispatcher(consumer1)
+        # Act
+        # Assert
         assert dispatcher1 != dispatcher2
 
-    def test_dispatcher_equality_different_type(self):
+    def test_equality_different_type(self, mock_consumer):
         # Arrange
-        dispatcher = BasicDispatcher(MockInstrument())
-        # Act + Assert
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher = BasicDispatcher(consumer1, consumer2)
+        # Act
+        # Assert
         assert dispatcher != object()
 
-    def test_dispatcher_equality_subclass(self):
+    def test_equality_subclass(self, mock_consumer):
         # Arrange
-        class SubDispatcher(BasicDispatcher):
+        class AnotherDispatcher(BasicDispatcher):
             pass
 
-        instrum = MockInstrument()
-        dispatcher1 = BasicDispatcher(instrum)
-        dispatcher2 = SubDispatcher(instrum)
-        # Act + Assert
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = AnotherDispatcher(consumer1, consumer2)
+        # Act
+        # Assert
         assert dispatcher1 != dispatcher2
 
-    def test_dispatcher_hash_same_instruments(self):
+    def test_hash_same_consumers(self, mock_consumer):
         # Arrange
-        instrum = MockInstrument()
-        dispatcher1 = BasicDispatcher(instrum)
-        dispatcher2 = BasicDispatcher(instrum)
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = BasicDispatcher(consumer1, consumer2)
         # Act
-        hash_dispatcher1 = hash(dispatcher1)
-        hash_dispatcher2 = hash(dispatcher2)
         # Assert
-        assert hash_dispatcher1 == hash_dispatcher2
+        assert hash(dispatcher1) == hash(dispatcher2)
 
-    def test_dispatcher_hash_different_instruments(self):
+    def test_hash_different_consumers(self, mock_consumer):
         # Arrange
-        dispatcher1 = BasicDispatcher(MockInstrument())
-        dispatcher2 = BasicDispatcher(MockInstrument())
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = BasicDispatcher(consumer1)
         # Act
-        hash_dispatcher1 = hash(dispatcher1)
-        hash_dispatcher2 = hash(dispatcher2)
         # Assert
-        assert hash_dispatcher1 != hash_dispatcher2
+        assert hash(dispatcher1) != hash(dispatcher2)
 
-    def test_dispatcher_hashability_set(self):
+    def test_hashability_set(self, mock_consumer):
         # Arrange
-        instrum = MockInstrument()
-        dispatcher1 = BasicDispatcher(instrum)
-        dispatcher2 = BasicDispatcher(instrum)
-        # Act
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = BasicDispatcher(consumer1, consumer2)
         dispatcher_set = {dispatcher1, dispatcher2}
+        # Act
         # Assert
         assert len(dispatcher_set) == 1
 
-    def test_dispatcher_hashability_dict(self):
+    def test_hashability_dict(self, mock_consumer):
         # Arrange
-        instrum = MockInstrument()
-        dispatcher1 = BasicDispatcher(instrum)
-        dispatcher2 = BasicDispatcher(instrum)
-        # Act
+        consumer1 = mock_consumer()
+        consumer2 = mock_consumer()
+        dispatcher1 = BasicDispatcher(consumer1, consumer2)
+        dispatcher2 = BasicDispatcher(consumer1, consumer2)
         dispatcher_dict = {dispatcher1: "value"}
+        # Act
         # Assert
         assert dispatcher_dict[dispatcher2] == "value"
 
-    def test_dispatcher_handles_multiple_instruments(self):
+    def test_consume(self, mock_consumer, mock_observation):
         # Arrange
-        instrum1 = MockInstrument()
-        instrum2 = MockInstrument()
+        consumer = mock_consumer()
+        dispatcher = BasicDispatcher(consumer, consumer)
         # Act
-        dispatcher = BasicDispatcher(instrum1, instrum2)
+        dispatcher.dispatch(mock_observation())
         # Assert
-        assert len(dispatcher.instrums) == 2
-        assert dispatcher.instrums.get(MockInstrument) in {instrum1, instrum2}
+        assert len(consumer.consumed) == 2
 
-    def test_dispatcher_announcement(self):
+    def test_repr(self, mock_consumer):
         # Arrange
-        instrum = MockInstrument()
-        dispatcher = BasicDispatcher(instrum)
-        observation = MockObservation()
-        # Act
-        dispatcher.dispatch(observation)  # type: ignore
-        # Assert
-        assert observation.called == 1
-        assert observation.obs == observation
-        assert observation.instrum == instrum
-
-    def test_dispatcher_handles_missing_instrument(self):
-        # Arrange
-        dispatcher = BasicDispatcher()
-        observation = MockObservation()
-        # Act
-        dispatcher.dispatch(observation)  # type: ignore
-        # Assert
-        assert observation.called == 0
-
-    def test_dispatcher_required_missing_instrument(self):
-        # Arrange
-        dispatcher = BasicDispatcher()
-        observation = MockObservationWithRequired()
-        # Act
-        with pytest.raises(ReqInstrumException) as exc:
-            dispatcher.dispatch(observation)  # type: ignore
-        # Assert
-        assert str(exc.value) == (
-            "Required instrument `MockInstrument` in "
-            "`MockObservationWithRequired.foo(...)` is missing from available "
-            "implementations: None"
-        )
-
-    def test_dispatcher_handles_unhashable_instrument(self):
-        # Arrange
-        instrum = UnhashableInstrument()
-        # Act
-        dispatcher = BasicDispatcher(instrum)
-        # Assert
-        assert dispatcher.instrums.get(UnhashableInstrument) is instrum
-        assert len(dispatcher.instrums._cache) == 0
-
-    def test_dispatcher_repr(self):
-        # Arrange
-        instrum = MockInstrument()
-        dispatcher = BasicDispatcher(instrum)
+        consumer = mock_consumer()
+        dispatcher = BasicDispatcher(consumer)
         # Act
         dispatcher_repr = repr(dispatcher)
         # Assert
-        assert "BasicDispatcher" in dispatcher_repr
-        assert "MockInstrument" in dispatcher_repr
+        assert "BasicDispatcher(" in dispatcher_repr
+        assert "consumers=(<" in dispatcher_repr

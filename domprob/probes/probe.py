@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from domprob.consumers.basic import BasicConsumer
 from domprob.dispatchers.dispatcher import DispatcherProtocol
 from domprob.dispatchers.basic import BasicDispatcher
 from domprob.observations.observation import ObservationProtocol
@@ -19,8 +20,13 @@ class Probe:
             observations.
 
     Example:
-        >>> from domprob import announcement, BaseObservation, Probe
-        >>> from domprob.dispatchers.basic import BasicDispatcher
+        >>> from domprob import (
+        ...     announcement,
+        ...     BaseObservation,
+        ...     BasicConsumer,
+        ...     BasicDispatcher,
+        ...     Probe,
+        ... )
         >>>
         >>> class SomeInstrument:
         ...
@@ -34,8 +40,8 @@ class Probe:
         ...     def announce(self, some_instrument: SomeInstrument) -> None:
         ...         some_instrument.call("Announcement!")
         ...
-        >>>
-        >>> dispatcher = BasicDispatcher(SomeInstrument())
+        >>> consumer = BasicConsumer(SomeInstrument())
+        >>> dispatcher = BasicDispatcher(consumer)
         >>> probe = Probe(dispatcher)
         >>>
         >>> probe.observe(SampleObservation())
@@ -114,12 +120,13 @@ class Probe:
             >>>
             >>> probe = Probe(BasicDispatcher())
             >>> repr(probe)
-            'Probe(dispatcher=BasicDispatcher(instruments=()))'
+            'Probe(dispatcher=BasicDispatcher(consumers=()))'
         """
         return f"{self.__class__.__name__}(dispatcher={self.dispatcher!r})"
 
 
 def get_probe(*instruments: Any) -> Probe:
+    # pylint: disable=line-too-long
     """Creates a `Probe` instance with the provided instruments.
 
     If no instruments are provided, it defaults to using a default
@@ -139,12 +146,12 @@ def get_probe(*instruments: Any) -> Probe:
         >>> # Create a probe with a custom instrument
         >>> custom_probe = get_probe(logging.getLogger("custom"))
         >>> custom_probe
-        Probe(dispatcher=BasicDispatcher(instruments=('<Logger custom (WARNING)>',)))
+        Probe(dispatcher=BasicDispatcher(consumers=(BasicConsumer(instruments=('<Logger custom (WARNING)>',)),)))
         >>>
         >>> # Create a probe with default instruments
         >>> default_probe = get_probe()
         >>> default_probe
-        Probe(dispatcher=BasicDispatcher(instruments=('<Logger default (DEBUG)>',)))
+        Probe(dispatcher=BasicDispatcher(consumers=(BasicConsumer(instruments=('<Logger default (DEBUG)>',)),)))
     """
     if not instruments:
         log = logging.getLogger("default")
@@ -156,7 +163,8 @@ def get_probe(*instruments: Any) -> Probe:
         log.addHandler(handler)
         log.setLevel(logging.DEBUG)
         instruments = (log,)
-    dispatcher = BasicDispatcher(*instruments)
+    consumer = BasicConsumer(*instruments)
+    dispatcher = BasicDispatcher(consumer)
 
     return Probe(dispatcher)
 

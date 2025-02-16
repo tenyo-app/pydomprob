@@ -39,7 +39,7 @@ class TestAnnouncementSet:
         announcements = AnnouncementSet.from_observation(observation_cls)
         # Assert
         assert len(announcements._announcement_methods) == 1
-        meth, = announcements._announcement_methods
+        (meth,) = announcements._announcement_methods
         assert meth.meth == observation_cls.sample_announcement
 
     def test_contains(self, observation_cls):
@@ -75,7 +75,7 @@ class TestAnnouncementSet:
         # Act
         announcements_repr = repr(announcements)
         # Assert
-        assert announcements_repr == 'AnnouncementSet(num_announcements=1)'
+        assert announcements_repr == "AnnouncementSet(num_announcements=1)"
 
 
 class TestBaseObservation:

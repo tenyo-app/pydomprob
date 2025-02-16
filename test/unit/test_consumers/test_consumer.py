@@ -1,11 +1,19 @@
+from typing import Any
+
 import pytest
 
-from domprob.dispatchers.dispatcher import DispatcherProtocol
+from domprob.consumers.consumer import ConsumerProtocol
 from domprob.observations.observation import ObservationProtocol
 
 
 class ProtocolImplementation:
-    def dispatch(self, observation: ObservationProtocol) -> None:
+    def __eq__(self, other: Any) -> bool:
+        pass
+
+    def __hash__(self) -> int:
+        pass
+
+    def consume(self, observation: ObservationProtocol) -> None:
         pass
 
 
@@ -23,12 +31,12 @@ def wrong_protocol_imp():
     return WrongProtocolImplementation()
 
 
-class TestDispatcherProtocol:
+class TestConsumerProtocol:
     def test_runnable_correct_protocol_implementation(self, protocol_imp):
         # Arrange
         # Act
         # Assert
-        assert isinstance(protocol_imp, DispatcherProtocol)
+        assert isinstance(protocol_imp, ConsumerProtocol)
 
     def test_runnable_incorrect_protocol_implementation(
         self, wrong_protocol_imp
@@ -36,4 +44,4 @@ class TestDispatcherProtocol:
         # Arrange
         # Act
         # Assert
-        assert not isinstance(wrong_protocol_imp, DispatcherProtocol)
+        assert not isinstance(wrong_protocol_imp, ConsumerProtocol)

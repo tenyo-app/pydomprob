@@ -16,7 +16,8 @@ from domprob.announcements.validation.validators import (
 )
 from domprob.base_exc import DomprobException
 from domprob.dispatchers.dispatcher import DispatcherException
-from domprob.dispatchers.basic import ReqInstrumException
+from domprob.consumers.basic import ReqInstrumException
+from domprob.consumers.consumer import ConsumerException
 
 __all__: Sequence[str] = [
     "DomprobException",
@@ -31,5 +32,6 @@ __all__: Sequence[str] = [
     "InvalidLinkException",
     "LinkExistsException",
     "DispatcherException",
+    "ConsumerException",
     "ReqInstrumException",
 ]

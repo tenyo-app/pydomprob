@@ -170,21 +170,24 @@ class TestProbe:
 
 def test_probe_with_instruments(mock_instrument_cls, mocker):
     # Arrange
+    mock_consumer = mocker.patch("domprob.probes.probe.BasicConsumer")
     mock_dispatcher = mocker.patch("domprob.probes.probe.BasicDispatcher")
     mock_probe = mocker.patch("domprob.probes.probe.Probe")
     mock_instrument = mock_instrument_cls()
     # Act
     result = get_probe(mock_instrument)
     # Assert
-    mock_dispatcher.assert_called_once_with(
+    mock_consumer.assert_called_once_with(
         mock_instrument,
     )
+    mock_dispatcher.assert_called_once_with(mock_consumer())
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)
     assert result == mock_probe.return_value
 
 
 def test_probe_with_no_instruments(mocker):
     # Arrange
+    mock_consumer = mocker.patch("domprob.probes.probe.BasicConsumer")
     mock_dispatcher = mocker.patch("domprob.probes.probe.BasicDispatcher")
     mock_probe = mocker.patch("domprob.probes.probe.Probe")
     # Act
@@ -192,6 +195,7 @@ def test_probe_with_no_instruments(mocker):
     # Assert
     logger = logging.getLogger("default")
     logger.level = logging.DEBUG
-    mock_dispatcher.assert_called_once_with(logger)
+    mock_consumer.assert_called_once_with(logger)
+    mock_dispatcher.assert_called_once_with(mock_consumer())
     mock_probe.assert_called_once_with(mock_dispatcher.return_value)
     assert result == mock_probe.return_value

@@ -55,11 +55,11 @@ more details.
            self.order_details = order_details
 
        @announcement(logging.Logger, required=True)
-       def log_observation(self, log: logging.Logger) -> None:
+       def log_checkout_successful(self, log: logging.Logger) -> None:
            log.info("Checkout successful!", **self.order_details)
 
        @announcement(MetricsAdapter)
-       def increment_metric(self, metric_app: MetricsAdapter) -> None:
+       def increment_successful_checkouts(self, metric_app: MetricsAdapter) -> None:
            metric_app.increment('successful-checkouts', 1)
 
 
