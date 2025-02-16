@@ -5,6 +5,7 @@ class TestConsumerExceptionImports:
             ConsumerException as AliasConsumerException,
         )
         from domprob.consumers.consumer import ConsumerException
+
         # Act
         # Assert
         assert AliasConsumerException is ConsumerException
@@ -15,6 +16,7 @@ class TestConsumerExceptionImports:
             ReqInstrumException as AliasReqInstrumException,
         )
         from domprob.consumers.basic import ReqInstrumException
+
         # Act
         # Assert
         assert AliasReqInstrumException is ReqInstrumException

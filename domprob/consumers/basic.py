@@ -294,6 +294,34 @@ class ReqInstrumException(ConsumerException):
 
 
 class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
+    """A consumer that processes observations by applying instrument
+    implementations.
+
+    This class acts as a consumer that takes in instrument
+    implementations and processes observations by executing their
+    associated announcement methods with the relevant instrument.
+
+    Args:
+        *instruments (_Instrument): One or more instrument instances.
+
+    Example:
+        >>> from domprob import announcement, BaseObservation
+        >>>
+        >>> class LoggerInstrument:
+        ...     def log(self, message: str):
+        ...         print(f"LOG: {message}")
+        ...
+        >>> class SomeObservation(BaseObservation):
+        ...     @announcement(LoggerInstrument)
+        ...     def announce_event(self, instrument: LoggerInstrument):
+        ...         instrument.log("Event announced!")
+        ...
+        >>> logger = LoggerInstrument()
+        >>> consumer = BasicConsumer(logger)
+        >>>
+        >>> consumer.consume(SomeObservation())
+        LOG: Event announced!
+    """
 
     def __init__(self, *instruments: _Instrument) -> None:
         self.instrums = InstrumentImpRegistry(*instruments)
@@ -307,16 +335,64 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         return hash(self.instrums)
 
     def consume(self, observation: ObservationProtocol) -> None:
+        """Processes an observation by invoking the relevant instrument
+        methods.
+
+        The method iterates through the observation’s announcements and
+        applies the required instrument implementations.
+
+        Args:
+            observation (ObservationProtocol): The observation to
+                process.
+        """
         for ann in observation.announcements():
             for instrum_imp in self.instrum_imps(observation, ann):
                 if instrum_imp is not None:
-                    ann.meth(observation, instrum_imp)
+                    ann.meth(observation, instrum_imp)  # Executes announcement
 
     def instrum_imps(
         self,
         observation: ObservationProtocol,
         announcement: AnnouncementMethod,
     ) -> Generator[_Instrument | None, None, None]:
+        # noinspection PyCallingNonCallable
+        """Retrieves instrument implementations required for an
+        announcement.
+
+        Args:
+            observation (ObservationProtocol): The observation being
+                processed.
+            announcement (AnnouncementMethod): The announcement to
+                handle.
+
+        Yields:
+            _Instrument | None: The appropriate instrument
+                implementation or `None` if non-required instrument
+                implementations are missing.
+
+        Raises:
+            ReqInstrumException: If a required instrument is missing.
+
+        Example:
+            >>> from domprob import announcement, BaseObservation
+            >>> from domprob.announcements.method import AnnouncementMethod
+            >>>
+            >>> class LoggerInstrument:
+            ...     def log(self, message: str):
+            ...         print(f"LOG: {message}")
+            ...
+            >>> class SomeObservation(BaseObservation):
+            ...     @announcement(LoggerInstrument)
+            ...     def announce_event(self, instrument: LoggerInstrument):
+            ...         instrument.log("Event announced!")
+            ...
+            >>> logger = LoggerInstrument()
+            >>> consumer = BasicConsumer(logger)
+            >>> announce_meth = AnnouncementMethod(SomeObservation.announce_event)
+            >>>
+            >>> list(consumer.instrum_imps(SomeObservation(), announce_meth))
+            [<domprob.consumers.basic.LoggerInstrument object at 0x...>]
+        """
         for supp_instrum, req in announcement.supp_instrums:
             try:
                 instrum_imp = self.instrums.get(supp_instrum, req)
