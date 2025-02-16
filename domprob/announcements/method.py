@@ -487,7 +487,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         AnnouncementMethod(meth=<function Foo.bar at 0x...>)
     """
 
-    __slots__: list[str] = ['_meth', '_supp_instrums', '_binder']
+    __slots__: list[str] = ["_meth", "_supp_instrums", "_binder"]
 
     def __init__(
         self,
