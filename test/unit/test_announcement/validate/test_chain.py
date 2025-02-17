@@ -351,7 +351,7 @@ class TestValidationChain:
             mock_validator_chain.validate_chain(mock_method)
         # Assert
         except ValidationChainException:
-            pytest.fail("Unexpected exception raised during validation.")
+            pytest.fail("Unexpected exception raised during validate.")
 
     def test_contains(self, mock_validator_chain, mock_good_chain_links):
         # Arrange

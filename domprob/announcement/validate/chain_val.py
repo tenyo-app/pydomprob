@@ -16,21 +16,21 @@ _ChainLink = TypeVar("_ChainLink", bound=BaseValidator)
 
 
 class ValidationChainException(AnnouncementException):
-    """Base exception class for errors related to validation chains.
+    """Base exception class for errors related to validate chains.
 
-    This exception serves as the root for all validation chain-related
+    This exception serves as the root for all validate chain-related
     errors, such as issues with chain construction, execution, or
     invalid links. It is designed to be extended by more specific
-    exceptions within the validation framework.
+    exceptions within the validate framework.
     """
 
 
 class InvalidLinkException(ValidationChainException):
-    """Exception raised when an invalid link is added to a validation
+    """Exception raised when an invalid link is added to a validate
     chain.
 
-    This exception is used to indicate that a link in the validation
-    chain does not meet the required criteria or fails validation. It
+    This exception is used to indicate that a link in the validate
+    chain does not meet the required criteria or fails validate. It
     provides detailed information about the invalid link and the
     expected type.
 
@@ -42,7 +42,7 @@ class InvalidLinkException(ValidationChainException):
     Args:
         link (Any): The link object that is invalid.
         expected_type (type[Any]): The expected type for links in the
-            validation chain.
+            validate chain.
 
     Examples:
         >>> from domprob.exceptions import InvalidLinkException
@@ -84,17 +84,17 @@ class InvalidLinkException(ValidationChainException):
 
 
 class EmptyChainException(ValidationChainException):
-    """Exception raised when a validation chain is empty.
+    """Exception raised when a validate chain is empty.
 
     This exception indicates that no validators have been added to a
-    validation chain, which prevents the chain from performing any
-    meaningful validation.
+    validate chain, which prevents the chain from performing any
+    meaningful validate.
 
     Args:
-        chain (ValidationChain): The empty validation chain.
+        chain (ValidationChain): The empty validate chain.
 
     Attributes:
-        chain (ValidationChain): The empty validation chain.
+        chain (ValidationChain): The empty validate chain.
 
     Examples:
         >>> from domprob.exceptions import EmptyChainException
@@ -118,7 +118,7 @@ class EmptyChainException(ValidationChainException):
         """Returns the error message associated with the exception.
 
         Returns:
-            str: The error message describing the empty validation
+            str: The error message describing the empty validate
                 chain issue.
 
         Examples:
@@ -135,17 +135,17 @@ class EmptyChainException(ValidationChainException):
 
 class LinkExistsException(ValidationChainException):
     # pylint: disable=line-too-long
-    """Exception raised when a duplicate link is added to a validation
+    """Exception raised when a duplicate link is added to a validate
     chain.
 
     This exception is used to indicate that the specified link already
-    exists in the validation chain and duplicates are not allowed. It
+    exists in the validate chain and duplicates are not allowed. It
     provides details about the duplicate link and the chain where the
     conflict occurred.
 
     Args:
         link (Any): The duplicate link that caused the exception.
-        chain (ValidationChain): The validation chain where the
+        chain (ValidationChain): The validate chain where the
             duplicate was found.
 
     Attributes:
@@ -174,7 +174,7 @@ class LinkExistsException(ValidationChainException):
     @property
     def msg(self) -> str:
         """Constructs a detailed error message indicating a duplicate
-        link in the validation chain.
+        link in the validate chain.
 
         Returns:
             str: A message indicating the duplicate link and the
@@ -195,18 +195,18 @@ class LinkExistsException(ValidationChainException):
 
 # pylint: disable=too-few-public-methods
 class ABCLinkValidator(ABC):
-    """Abstract base class for validators in a validation chain.
+    """Abstract base class for validators in a validate chain.
 
     This class defines the structure for implementing validators that
-    perform specific checks on links within a validation chain.
+    perform specific checks on links within a validate chain.
 
     Attributes:
-        chain (ValidationChain): The validation chain associated with
-            this validator. It provides context for the validation
+        chain (ValidationChain): The validate chain associated with
+            this validator. It provides context for the validate
             process.
 
     Args:
-        chain (ValidationChain): The validation chain to associate with
+        chain (ValidationChain): The validate chain to associate with
             this validator.
 
     Examples:
@@ -224,10 +224,10 @@ class ABCLinkValidator(ABC):
 
     @abstractmethod
     def validate(self, link: _ChainLink) -> None:
-        """Validates a single link in the validation chain.
+        """Validates a single link in the validate chain.
 
         This abstract method must be implemented by subclasses to
-        define specific validation logic.
+        define specific validate logic.
 
         Args:
             link (_ChainLink): The link to validate.
@@ -243,7 +243,7 @@ class ABCLinkValidator(ABC):
 
         Returns:
             str: A string representation of the validator, including
-                its class name and the validation chain it belongs to.
+                its class name and the validate chain it belongs to.
 
         Examples:
             >>> from domprob.announcement.validate.chain import ABCLinkValidator
@@ -263,16 +263,16 @@ class ABCLinkValidator(ABC):
 
 
 class LinkTypeValidator(ABCLinkValidator):
-    """Validator to ensure that links in the validation chain are of
+    """Validator to ensure that links in the validate chain are of
     the expected type.
 
-    This validator checks whether each link added to the validation
+    This validator checks whether each link added to the validate
     chain is an instance of the chain's base type. If a link does not
     match the expected type, it raises an `InvalidLinkException`. This
     ensures type safety and consistency within the chain.
 
     Attributes:
-        chain (ValidationChain): The validation chain this validator is
+        chain (ValidationChain): The validate chain this validator is
             associated with.
 
     Examples:
@@ -323,16 +323,16 @@ class LinkTypeValidator(ABCLinkValidator):
 
 class UniqueLinkValidator(ABCLinkValidator):
     # pylint: disable=line-too-long
-    """Validator to ensure that links in the validation chain are
+    """Validator to ensure that links in the validate chain are
     unique.
 
     This validator checks whether a link already exists in the
-    validation chain. If a duplicate link is detected, it raises a
+    validate chain. If a duplicate link is detected, it raises a
     `LinkExistsException`. This ensures that all links in the chain are
     unique.
 
     Attributes:
-        chain (ValidationChain): The validation chain this validator is
+        chain (ValidationChain): The validate chain this validator is
             associated with.
 
     Examples:
@@ -361,10 +361,10 @@ class UniqueLinkValidator(ABCLinkValidator):
     def validate(self, link: _ChainLink) -> None:
         # noinspection PyShadowingNames
         """Validates that the provided link does not already exist in
-        the validation chain.
+        the validate chain.
 
         This method checks whether the given link is already present in
-        the validation chain. If the link is a duplicate, it raises a
+        the validate chain. If the link is a duplicate, it raises a
         `LinkExistsException`. This ensures that all links within the
         chain are unique.
 
@@ -372,7 +372,7 @@ class UniqueLinkValidator(ABCLinkValidator):
             link (_ChainLink): The link to validate.
 
         Raises:
-            LinkExistsException: If the link already exists in the validation chain.
+            LinkExistsException: If the link already exists in the validate chain.
 
         Examples:
             >>> from domprob.announcement.validate.chain_val import LinkTypeValidator
@@ -402,21 +402,21 @@ class UniqueLinkValidator(ABCLinkValidator):
 
 class ABCLinkValidatorContext(ABC):
     """Abstract base class for context-aware link validators in a
-    validation chain.
+    validate chain.
 
     This class provides an interface for validators that need
-    additional context about the validation chain during the validation
+    additional context about the validate chain during the validate
     process. It enforces the implementation of the `validate` method,
     allowing subclasses to perform more sophisticated validations that
     depend on the state of the chain.
 
     Attributes:
-        chain (ValidationChain): The validation chain associated with
-            this validator. It provides context for the validation
+        chain (ValidationChain): The validate chain associated with
+            this validator. It provides context for the validate
             process.
 
     Args:
-        chain (ValidationChain): The validation chain to associate with
+        chain (ValidationChain): The validate chain to associate with
             this context-aware validator.
 
     Examples:
@@ -452,16 +452,16 @@ class ABCLinkValidatorContext(ABC):
     @abstractmethod
     def add_validators(self, *validators: type[ABCLinkValidator]) -> None:
         # noinspection PyShadowingNames
-        """Adds one or more validators to the validation chain.
+        """Adds one or more validators to the validate chain.
 
         This abstract method is designed to allow additional validators
-        to be dynamically added to the validation chain during runtime.
+        to be dynamically added to the validate chain during runtime.
         Each validator is appended to the chain, enabling
-        customisation and extensibility of the validation process.
+        customisation and extensibility of the validate process.
 
         Args:
             *validators (ABCLinkValidator): One or more validator
-                instances to add to the validation chain.
+                instances to add to the validate chain.
 
         Examples:
             >>> from domprob.announcement.validate.chain import (
@@ -495,7 +495,7 @@ class ABCLinkValidatorContext(ABC):
         This method must be implemented by subclasses to provide logic
         for validating a link with additional contextual information.
         This allows the validator to account for dynamic rules or
-        states during validation.
+        states during validate.
 
         Args:
             link (_ChainLink): The link to validate.
@@ -533,7 +533,7 @@ class ABCLinkValidatorContext(ABC):
 
         Returns:
             str: A string representation of the validator, showing the
-                class name and the validation chain it is associated
+                class name and the validate chain it is associated
                 with.
 
         Examples:
@@ -566,17 +566,17 @@ class LinkValidatorContext(ABCLinkValidatorContext):
     """Concrete implementation of a context-aware link validator.
 
     The `LinkValidatorContext` class extends `ABCLinkValidatorContext`
-    to provide validation logic for links in a chain, utilising
+    to provide validate logic for links in a chain, utilising
     additional contextual information. It allows flexible and dynamic
-    validation of links, depending on the state of the chain or
+    validate of links, depending on the state of the chain or
     external conditions.
 
     Attributes:
-        chain (ValidationChain): The validation chain associated with
+        chain (ValidationChain): The validate chain associated with
             this context-aware validator.
 
     Args:
-        chain (ValidationChain): The validation chain to associate with
+        chain (ValidationChain): The validate chain to associate with
             the validator.
 
     Examples:
@@ -608,16 +608,16 @@ class LinkValidatorContext(ABCLinkValidatorContext):
         super().__init__(chain, *self.DEFAULT_VALIDATORS, *validators)
 
     def add_validators(self, *validators: type[ABCLinkValidator]) -> None:
-        """Adds one or more validators to the validation chain.
+        """Adds one or more validators to the validate chain.
 
         This method allows the dynamic addition of validators to the
-        validation chain at runtime. Each provided validator is
-        appended to the chain, enabling custom validation logic and
+        validate chain at runtime. Each provided validator is
+        appended to the chain, enabling custom validate logic and
         extensibility.
 
         Args:
             *validators (ABCLinkValidator): One or more validator
-                instances to add to the validation chain.
+                instances to add to the validate chain.
 
         Examples:
             >>> from domprob.announcement.validate.chain import (
@@ -638,8 +638,8 @@ class LinkValidatorContext(ABCLinkValidatorContext):
     def validate(self, *links: _ChainLink) -> None:
         """Validates a link in the chain.
 
-        This method performs validation on the given links using the
-        validators in the validation chain. It ensures that the link
+        This method performs validate on the given links using the
+        validators in the validate chain. It ensures that the link
         meets all the criteria enforced by the chain's validators.
 
         Args:
@@ -676,7 +676,7 @@ class LinkValidatorContext(ABCLinkValidatorContext):
 
         Returns:
             str: A string representation of the context, including its
-                class name and the associated validation chain.
+                class name and the associated validate chain.
 
         Examples:
             >>> from domprob.announcement.validate.chain import (

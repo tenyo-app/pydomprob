@@ -12,10 +12,10 @@ if TYPE_CHECKING:
 
 
 class ValidatorException(AnnouncementException):
-    """Exception raised when a validation error occurs in a validator.
+    """Exception raised when a validate error occurs in a validator.
 
-    This exception is used to indicate that validation has failed
-    during the execution of a validation chain. It inherits from
+    This exception is used to indicate that validate has failed
+    during the execution of a validate chain. It inherits from
     `AnnouncementException` to ensure consistency in exception handling
     across the package.
     """
@@ -26,16 +26,16 @@ class BaseValidator(ABC):
     Abstract base class for creating validators in a chain of
     responsibility pattern.
 
-    This class defines a structure for implementing validation logic
-    where each validator can perform a specific validation task and
-    optionally pass the validation responsibility to the next validator
+    This class defines a structure for implementing validate logic
+    where each validator can perform a specific validate task and
+    optionally pass the validate responsibility to the next validator
     in the chain. Subclasses must override the `validate` method to
-    provide specific validation logic.
+    provide specific validate logic.
 
     Args:
         next_ (BaseValidator | None, optional): The next validator in
             the chain. Defaults to `None`, indicating no further
-            validation.
+            validate.
 
     Attributes:
         next_ (BaseValidator | None): Holds the reference to the next
@@ -82,18 +82,18 @@ class BaseValidator(ABC):
     def validate(self, b_meth: BoundAnnouncementMethod) -> None:
         """Validates a `BoundAnnouncementMethod` instance.
 
-        This method performs the validation logic for the current
+        This method performs the validate logic for the current
         validator and delegates to the next validator in the chain if
         one is defined. Subclasses must implement the specific
-        validation logic by overriding this method.
+        validate logic by overriding this method.
 
         Args:
             b_meth (BoundAnnouncementMethod): Bound method wrapper to
                 validate.
 
         Raises:
-            ValidatorException: If the validation fails.
-            Exception: If an unexpected error occurs during validation.
+            ValidatorException: If the validate fails.
+            Exception: If an unexpected error occurs during validate.
 
         Examples:
             >>> from domprob.announcement.validate.base_val import BaseValidator

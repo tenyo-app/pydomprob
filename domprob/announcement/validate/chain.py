@@ -64,7 +64,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         )
 
     def __bool__(self) -> bool:
-        """Checks if the validation chain contains any validators.
+        """Checks if the validate chain contains any validators.
 
         Returns:
             bool: `True` if the chain has validators, `False` otherwise.
@@ -91,7 +91,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         return bool(self._links)
 
     def __contains__(self, item: object) -> bool:
-        """Checks if a specific validator exists in the validation
+        """Checks if a specific validator exists in the validate
         chain.
 
         Args:
@@ -123,7 +123,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         return item in self._links
 
     def __delitem__(self, index: SupportsIndex | slice, /) -> None:
-        """Removes a validator at a specified index from the validation
+        """Removes a validator at a specified index from the validate
         chain.
 
         This method allows the use of the `del` keyword to remove a
@@ -161,9 +161,9 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             raise TypeError(f"Invalid index type: {type(index).__name__}")
 
     def __eq__(self, other: Any) -> bool:
-        """Compares two validation chains for equality.
+        """Compares two validate chains for equality.
 
-        Two validation chains are considered equal if they have the
+        Two validate chains are considered equal if they have the
         same base type and contain the same validators in the same
         order.
 
@@ -210,7 +210,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         self, index: int | slice, /
     ) -> _ChainLink | MutableSequence[_ChainLink]:
         """Retrieves the validator at a specific index in the
-        validation chain.
+        validate chain.
 
         This method allows the use of indexing to access a validator in
         the chain.
@@ -241,10 +241,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         return self._links[index]
 
     def __iter__(self) -> Generator[_ChainLink, None, None]:
-        """Returns an iterator over the validators in the validation
+        """Returns an iterator over the validators in the validate
         chain.
 
-        This method allows the validation chain to be iterated over
+        This method allows the validate chain to be iterated over
         directly, returning each validator in sequence.
 
         Returns:
@@ -273,7 +273,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         yield from self._links
 
     def __len__(self) -> int:
-        """Returns the number of validators in the validation chain.
+        """Returns the number of validators in the validate chain.
 
         This method allows the use of the `len()` function to determine
         how many validators are in the chain.
@@ -316,7 +316,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         /,
     ) -> None:
         """Replaces a validator at the specified index in the
-        validation chain.
+        validate chain.
 
         This method allows the use of indexing to replace a validator
         at a specific position in the chain.
@@ -405,7 +405,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             value.next_ = self._links[index + 1]
 
     def append(self, value: _ChainLink) -> None:
-        """Adds a validator to the end of the validation chain.
+        """Adds a validator to the end of the validate chain.
 
         This method allows adding a new validator to the chain,
         ensuring it follows the chain's base type requirements.
@@ -434,7 +434,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         self._set_next__links(len(self._links) - 1, value)
 
     def clear(self) -> None:
-        """Removes all validators from the validation chain.
+        """Removes all validators from the validate chain.
 
         Examples:
             >>> from domprob.announcement.validate.base_val import BaseValidator
@@ -457,7 +457,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         self._links.clear()
 
     def extend(self, values: Iterable[_ChainLink]) -> None:
-        """Adds multiple validators to the end of the validation chain.
+        """Adds multiple validators to the end of the validate chain.
 
         This method appends a list of validators to the chain. It
         ensures that each validator conforms to the chain's base type
@@ -496,7 +496,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         self._links.extend(new_links)
 
     def insert(self, index: int, value: _ChainLink) -> None:
-        """Inserts a validator at the specified index in the validation
+        """Inserts a validator at the specified index in the validate
         chain.
 
         This method adds a new validator at a specific position in the

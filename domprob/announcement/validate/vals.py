@@ -119,10 +119,10 @@ class InstrumTypeException(ValidatorException):
 
     Args:
         b_meth (`BoundAnnouncementMethod`): Bound method that failed
-            validation.
+            validate.
 
     Attributes:
-        method (Callable[..., Any]): The method that failed validation.
+        method (Callable[..., Any]): The method that failed validate.
         instrument (Any): The invalid `instrument` instance.
         supp_instrums (Instruments): The supported instrument types.
 
@@ -226,7 +226,7 @@ class NoSupportedInstrumsException(ValidatorException):
 
     This exception indicates that the method's metadata does not
     include any supported instrument types, which is required for
-    proper validation.
+    proper validate.
 
     Args:
         method (Callable[..., Any]): The method where the missing

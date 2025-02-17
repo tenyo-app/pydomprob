@@ -604,7 +604,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
 
     This class is used to wrap a method that has been partially bound
     with runtime arguments, including the `instrument` parameter. It
-    facilitates logic, like validation, on the method with the runtime
+    facilitates logic, like validate, on the method with the runtime
     parameters before the method is executed.
 
     Args:
@@ -763,16 +763,16 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         return self.meth(*self.params.args, **self.params.kwargs)
 
     def validate(self) -> None:
-        """Validates the bound method using the validation
+        """Validates the bound method using the validate
         orchestrator.
 
         This method ensures that all runtime arguments and metadata
-        associated with the bound method meet the specified validation
-        criteria. If validation fails, an appropriate exception is
+        associated with the bound method meet the specified validate
+        criteria. If validate fails, an appropriate exception is
         raised.
 
         Raises:
-            AnnouncementValidationException: If any validation rule
+            AnnouncementValidationException: If any validate rule
                 fails.
 
         Examples:

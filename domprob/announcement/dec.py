@@ -28,7 +28,7 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
 
     This class enables the decoration of methods with metadata
     describing their required instruments. It enforces runtime
-    validation to ensure that the method is called with the correct
+    validate to ensure that the method is called with the correct
     parameters and that the `instrument` argument satisfies the
     specified requirements.
 
@@ -126,19 +126,19 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
 
     def __call__(self, method: _Meth) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime
-        validation.
+        validate.
 
         This method is invoked when the `@announcement` decorator is
         used on a method. It attaches metadata, including the
         instrument class and requirement status, to the method and
-        enforces validation when the method is called at runtime.
+        enforces validate when the method is called at runtime.
 
         Args:
             method (Callable[P, R]): The method to decorate.
 
         Returns:
             Callable[P, R]: A wrapped version of the input method with
-            metadata and validation applied.
+            metadata and validate applied.
 
         Examples:
             >>> class SomeInstrument:

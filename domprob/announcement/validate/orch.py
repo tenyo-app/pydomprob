@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class AnnouncementValidationOrchestrator:
     # pylint: disable=line-too-long
-    """Orchestrates the validation of `BoundAnnouncementMethod`
+    """Orchestrates the validate of `BoundAnnouncementMethod`
     instances using a chain of validators.
 
     The orchestrator is initialised with a `ValidationChain`, which can
@@ -31,12 +31,12 @@ class AnnouncementValidationOrchestrator:
             A tuple of default validator classes used to initialise the
             chain.
         _chain (ValidationChain):
-            The validation chain that manages the sequence of
+            The validate chain that manages the sequence of
             validators.
 
     Args:
         chain (ValidationChain | None, optional):
-            A custom validation chain. If not provided, a default chain
+            A custom validate chain. If not provided, a default chain
             is created with `DEFAULT_VALIDATORS`.
 
     Examples:
@@ -74,7 +74,7 @@ class AnnouncementValidationOrchestrator:
         self, *validators: type[BaseValidator]
     ) -> AnnouncementValidationOrchestrator:
         # pylint: disable=line-too-long
-        """Registers additional validators to the validation chain.
+        """Registers additional validators to the validate chain.
 
         Validators are appended to the existing chain, and their
         instances are created dynamically.
@@ -96,7 +96,7 @@ class AnnouncementValidationOrchestrator:
 
     def validate(self, method: BoundAnnouncementMethod):
         # pylint: disable=line-too-long
-        """Executes the validation chain on a `BoundAnnouncementMethod`
+        """Executes the validate chain on a `BoundAnnouncementMethod`
         instance.
 
         This method ensures that all registered validators are applied
@@ -135,7 +135,7 @@ class AnnouncementValidationOrchestrator:
         """Returns a string representation of the orchestrator.
 
         The representation includes the class name and the associated
-        validation chain.
+        validate chain.
 
         Returns:
             str: A string representation of the orchestrator.
