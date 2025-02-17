@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.announcements.method import BoundAnnouncementMethod
+from domprob.announcements.meth import BoundAnnouncementMethod
 from domprob.announcements.validation.base_validator import BaseValidator
 from domprob.announcements.validation.chain import (
     EmptyChainException,

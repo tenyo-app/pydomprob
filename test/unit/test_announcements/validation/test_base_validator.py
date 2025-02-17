@@ -4,7 +4,7 @@ from collections import OrderedDict
 import pytest
 
 from domprob.announcements.exceptions import AnnouncementException
-from domprob.announcements.method import (
+from domprob.announcements.meth import (
     BoundAnnouncementMethod,
     AnnouncementMethod,
 )

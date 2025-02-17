@@ -2,7 +2,7 @@ from collections.abc import Iterator, Collection, Generator
 from typing import Any, TypeVar, ParamSpec, Generic
 
 from domprob.consumers.consumer import ConsumerProtocol
-from domprob.announcements.method import AnnouncementMethod
+from domprob.announcements.meth import AnnouncementMethod
 from domprob.consumers.consumer import ConsumerException
 from domprob.observations.observation import ObservationProtocol
 
@@ -375,7 +375,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
 
         Example:
             >>> from domprob import announcement, BaseObservation
-            >>> from domprob.announcements.method import AnnouncementMethod
+            >>> from domprob.announcements.meth import AnnouncementMethod
             >>>
             >>> class LoggerInstrument:
             ...     def log(self, message: str):

@@ -1,6 +1,6 @@
 import pytest
 
-from domprob.announcements.method import AnnouncementMethod
+from domprob.announcements.meth import AnnouncementMethod
 from domprob import announcement
 from domprob.observations.base import BaseObservation, AnnouncementSet
 from domprob.observations.observation import ObservationProtocol

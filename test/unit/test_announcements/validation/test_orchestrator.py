@@ -49,7 +49,7 @@ class TestAnnouncementValidationOrchestrator:
         assert len(orchestrator._chain._links) == 4
         assert isinstance(orchestrator._chain._links[3], MockValidator)
 
-    @patch("domprob.announcements.method.BoundAnnouncementMethod")
+    @patch("domprob.announcements.meth.BoundAnnouncementMethod")
     def test_validate_chain(self, mock_method):
         # Arrange
         mock_chain = MagicMock(spec=ValidationChain)

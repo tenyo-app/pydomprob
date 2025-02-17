@@ -41,7 +41,7 @@ class AnnouncementValidationOrchestrator:
 
     Examples:
         >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
-        >>> from domprob.announcements.method import AnnouncementMethod
+        >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -112,7 +112,7 @@ class AnnouncementValidationOrchestrator:
 
         Examples:
             >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
-            >>> from domprob.announcements.method import AnnouncementMethod
+            >>> from domprob.announcements.meth import AnnouncementMethod
             >>>
             >>> class SomeInstrument:
             ...     pass

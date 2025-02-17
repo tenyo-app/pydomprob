@@ -18,7 +18,7 @@ class TestAnnouncementMethodExceptionImport:
         from domprob.exceptions import (
             PartialBindException as AliasPartialBindException,
         )
-        from domprob.announcements.method import PartialBindException
+        from domprob.announcements.meth import PartialBindException
 
         # Act
         # Assert

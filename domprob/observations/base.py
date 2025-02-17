@@ -4,7 +4,7 @@ from abc import ABC
 from collections.abc import Generator, Set
 from typing import ParamSpec, TypeVar, Any
 
-from domprob.announcements.method import AnnouncementMethod
+from domprob.announcements.meth import AnnouncementMethod
 from domprob.observations.observation import ObservationProtocol
 
 # Typing helpers: defines an @announcement method signature

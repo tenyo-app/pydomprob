@@ -73,7 +73,7 @@ class InstrumentParamExistsValidator(BaseValidator):
 
     Examples:
         >>> from domprob.announcements.validation.validators import InstrumentParamExistsValidator
-        >>> from domprob.announcements.method import AnnouncementMethod
+        >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -127,7 +127,7 @@ class InstrumTypeException(ValidatorException):
         supp_instrums (Instruments): The supported instrument types.
 
     Examples:
-        >>> from domprob.announcements.method import AnnouncementMethod
+        >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -181,7 +181,7 @@ class InstrumentTypeValidator(BaseValidator):
 
     Examples:
         >>> from domprob.announcements.validation.validators import InstrumentTypeValidator
-        >>> from domprob.announcements.method import AnnouncementMethod
+        >>> from domprob.announcements.meth import AnnouncementMethod
         >>> class MockInstrument:
         ...     pass
         ...
@@ -287,7 +287,7 @@ class SupportedInstrumentsExistValidator(BaseValidator):
 
     Examples:
         >>> from domprob.announcements.validation.validators import SupportedInstrumentsExistValidator
-        >>> from domprob.announcements.method import AnnouncementMethod
+        >>> from domprob.announcements.meth import AnnouncementMethod
         >>> class Example:
         ...     def method(self, instrument: Any) -> None:
         ...         pass

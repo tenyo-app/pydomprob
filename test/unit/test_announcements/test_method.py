@@ -8,7 +8,7 @@ import pytest
 from domprob import announcement
 from domprob.announcements.instruments import Instruments
 from domprob.announcements.metadata import AnnouncementMetadata
-from domprob.announcements.method import (
+from domprob.announcements.meth import (
     AnnouncementMethod,
     BoundAnnouncementMethod,
     PartialBindException,

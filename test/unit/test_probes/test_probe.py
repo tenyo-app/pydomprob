@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.announcements.method import AnnouncementMethod
+from domprob.announcements.meth import AnnouncementMethod
 from domprob.announcements.decorators import announcement
 from domprob.probes.probe import get_probe, Probe
 

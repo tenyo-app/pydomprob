@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import ParamSpec, Protocol, TypeVar, runtime_checkable, Any
 
-from domprob.announcements.method import AnnouncementMethod
+from domprob.announcements.meth import AnnouncementMethod
 
 # Typing helpers: defines an @announcement method signature
 _P = ParamSpec("_P")

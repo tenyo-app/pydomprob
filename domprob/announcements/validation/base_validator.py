@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from domprob.announcements.exceptions import AnnouncementException
 
 if TYPE_CHECKING:
-    from domprob.announcements.method import (  # pragma: no cover
+    from domprob.announcements.meth import (  # pragma: no cover
         BoundAnnouncementMethod,
     )
 
@@ -44,7 +44,7 @@ class BaseValidator(ABC):
 
     Examples:
         >>> from domprob.announcements.validation.base_validator import BaseValidator
-        >>> from domprob.announcements.method import AnnouncementMethod
+        >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class ExampleValidator(BaseValidator):
         ...     def validate(self, method: BoundAnnouncementMethod) -> None:
@@ -97,7 +97,7 @@ class BaseValidator(ABC):
 
         Examples:
             >>> from domprob.announcements.validation.base_validator import BaseValidator
-            >>> from domprob.announcements.method import AnnouncementMethod
+            >>> from domprob.announcements.meth import AnnouncementMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
@@ -135,7 +135,7 @@ class BaseValidator(ABC):
 
         Examples:
             >>> from domprob.announcements.validation.base_validator import BaseValidator
-            >>> from domprob.announcements.method import BoundAnnouncementMethod
+            >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
             ...         pass
