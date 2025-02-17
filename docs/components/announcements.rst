@@ -11,12 +11,12 @@ Announcements
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.metadata
+.. automodule:: domprob.announcements.meth_meta
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.method
+.. automodule:: domprob.announcements.meth
     :members:
     :undoc-members:
     :show-inheritance:
