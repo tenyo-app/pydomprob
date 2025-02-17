@@ -2,7 +2,7 @@ import functools
 
 import pytest
 
-from domprob.announcements.decorators import _Announcement, announcement
+from domprob.announcements.dec import _Announcement, announcement
 from domprob.announcements.validation.validators import InstrumTypeException
 
 

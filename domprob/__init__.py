@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from domprob.announcements.decorators import announcement
+from domprob.announcements.dec import announcement
 from domprob.consumers.basic import BasicConsumer
 from domprob.dispatchers.basic import BasicDispatcher
 from domprob.observations.base import BaseObservation
