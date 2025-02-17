@@ -54,11 +54,11 @@ more details.
        def __init__(self, **order_details: Any) -> None:
            self.order_details = order_details
 
-       @announce(logging.Logger, required=True)
+       @announce(with_instrum=logging.Logger, required=True)
        def log_checkout_successful(self, log: logging.Logger) -> None:
            log.info("Checkout successful!", **self.order_details)
 
-       @announce(MetricsAdapter)
+       @announce(with_instrum=MetricsAdapter)
        def increment_successful_checkouts(self, metric_app: MetricsAdapter) -> None:
            metric_app.increment('successful-checkouts', 1)
 

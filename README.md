@@ -111,7 +111,7 @@ class CheckoutSuccessful(BaseObservation):
         def __init__(self, **order_details: Any) -> None:
             self.order_details = order_details
 
-        @announce(logging.Logger)
+        @announce(with_instrum=logging.Logger)
         def log_observation(self, log: logging.Logger) -> None:
            log.info("Checkout successful!", **self.order_details)
 
