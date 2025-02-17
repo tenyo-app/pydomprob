@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from domprob.announcements.validate.base_val import BaseValidator
 from domprob.announcements.validate.chain import ValidationChain
-from domprob.announcements.validate.validators import (
+from domprob.announcements.validate.vals import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,
@@ -85,7 +85,7 @@ class AnnouncementValidationOrchestrator:
 
         Examples:
             >>> from domprob.announcements.validate.orch import AnnouncementValidationOrchestrator
-            >>> from domprob.announcements.validate.validators import InstrumentTypeValidator
+            >>> from domprob.announcements.validate.vals import InstrumentTypeValidator
             >>>
             >>> orchestrator = AnnouncementValidationOrchestrator()
             >>> orchestrator.register(InstrumentTypeValidator)

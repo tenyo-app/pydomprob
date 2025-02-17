@@ -26,7 +26,7 @@ class MissingInstrumException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validate.validators import MissingInstrumException
+        >>> from domprob.announcements.validate.vals import MissingInstrumException
         >>> class Example:
         ...     def method(self):
         ...         pass
@@ -72,7 +72,7 @@ class InstrumentParamExistsValidator(BaseValidator):
     `instrument` parameter is `None`.
 
     Examples:
-        >>> from domprob.announcements.validate.validators import InstrumentParamExistsValidator
+        >>> from domprob.announcements.validate.vals import InstrumentParamExistsValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
@@ -180,7 +180,7 @@ class InstrumentTypeValidator(BaseValidator):
     types.
 
     Examples:
-        >>> from domprob.announcements.validate.validators import InstrumentTypeValidator
+        >>> from domprob.announcements.validate.vals import InstrumentTypeValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>> class MockInstrument:
         ...     pass
@@ -237,7 +237,7 @@ class NoSupportedInstrumsException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validate.validators import NoSupportedInstrumsException
+        >>> from domprob.announcements.validate.vals import NoSupportedInstrumsException
         >>> class Example:
         ...     def method(self):
         ...         pass
@@ -286,7 +286,7 @@ class SupportedInstrumentsExistValidator(BaseValidator):
     method's metadata does not include any supported instrument types.
 
     Examples:
-        >>> from domprob.announcements.validate.validators import SupportedInstrumentsExistValidator
+        >>> from domprob.announcements.validate.vals import SupportedInstrumentsExistValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>> class Example:
         ...     def method(self, instrument: Any) -> None:

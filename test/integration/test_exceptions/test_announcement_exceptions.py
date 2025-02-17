@@ -32,7 +32,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             ValidatorException as AliasValidatorException,
         )
-        from domprob.announcements.validate.validators import (
+        from domprob.announcements.validate.vals import (
             ValidatorException,
         )
 
@@ -45,7 +45,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             InstrumTypeException as AliasInstrumTypeException,
         )
-        from domprob.announcements.validate.validators import (
+        from domprob.announcements.validate.vals import (
             InstrumTypeException,
         )
 
@@ -58,7 +58,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             MissingInstrumException as AliasMissingInstrumException,
         )
-        from domprob.announcements.validate.validators import (
+        from domprob.announcements.validate.vals import (
             MissingInstrumException,
         )
 
@@ -71,7 +71,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             NoSupportedInstrumsException as AliasNoSupportedInstrumsException,
         )
-        from domprob.announcements.validate.validators import (
+        from domprob.announcements.validate.vals import (
             NoSupportedInstrumsException,
         )
 

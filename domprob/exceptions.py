@@ -9,7 +9,7 @@ from domprob.announcements.validate.chain_val import (
     LinkExistsException,
     ValidationChainException,
 )
-from domprob.announcements.validate.validators import (
+from domprob.announcements.validate.vals import (
     InstrumTypeException,
     MissingInstrumException,
     NoSupportedInstrumsException,

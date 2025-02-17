@@ -26,7 +26,7 @@ Announcements
     :undoc-members:
     :show-inheritance:
 
-Validation
+Validate
 ----------
 
 .. automodule:: domprob.announcements.validate.base_val
@@ -49,7 +49,7 @@ Validation
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.validators
+.. automodule:: domprob.announcements.validate.vals
     :members:
     :undoc-members:
     :show-inheritance:

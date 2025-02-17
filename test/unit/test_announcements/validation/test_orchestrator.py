@@ -7,7 +7,7 @@ from domprob.announcements.validate.chain import ValidationChain
 from domprob.announcements.validate.orch import (
     AnnouncementValidationOrchestrator,
 )
-from domprob.announcements.validate.validators import (
+from domprob.announcements.validate.vals import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,
