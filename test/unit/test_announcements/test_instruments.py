@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from domprob.announcements.instruments import Instruments
+from domprob.announcements.instrums import Instruments
 from domprob.announcements.meth_meta import AnnouncementMetadata
 
 

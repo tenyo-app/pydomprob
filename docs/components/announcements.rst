@@ -6,7 +6,7 @@ Announcements
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.instruments
+.. automodule:: domprob.announcements.instrums
     :members:
     :undoc-members:
     :show-inheritance:
