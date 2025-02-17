@@ -11,7 +11,7 @@ from domprob.announcements.validation.validators import (
 )
 
 if TYPE_CHECKING:
-    from domprob.announcements.method import (  # pragma: no cover
+    from domprob.announcements.meth import (  # pragma: no cover
         BoundAnnouncementMethod,
     )
 
