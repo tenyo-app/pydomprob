@@ -26,11 +26,11 @@ class AnnouncementSet(Set[_AnnounceSig]):
             method instances.
 
     Example:
-        >>> from domprob import announcement
+        >>> from domprob import announce
         >>>
         >>> class MyObservation:
         ...
-        ...     @announcement(...)
+        ...     @announce(...)
         ...     def announce_hello(self, _):
         ...         pass
         ...
@@ -64,11 +64,11 @@ class AnnouncementSet(Set[_AnnounceSig]):
             AnnouncementSet: A set of extracted announcement methods.
 
         Example:
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class MyObservation:
             ...
-            ...     @announcement(...)
+            ...     @announce(...)
             ...     def announce_hello(self, _):
             ...         pass
             ...
@@ -135,13 +135,13 @@ class BaseObservation(ABC, ObservationProtocol):
             to keep memory footprint low.
 
     Example:
-        >>> from domprob import announcement, BaseObservation
+        >>> from domprob import announce, BaseObservation
         >>>
         >>> class SomeInstrument:
         ...     pass
         ...
         >>> class MyObservation(BaseObservation):
-        ...     @announcement(SomeInstrument)
+        ...     @announce(SomeInstrument)
         ...     def my_method(self, instrument: SomeInstrument) -> str:
         ...         pass
         ...
@@ -164,13 +164,13 @@ class BaseObservation(ABC, ObservationProtocol):
             _AnnounceSig: Announcement method instances.
 
         Example:
-            >>> from domprob import announcement, BaseObservation
+            >>> from domprob import announce, BaseObservation
             >>>
             >>> class SomeInstrument:
             ...     pass
             ...
             >>> class MyObservation(BaseObservation):
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def event_occurred(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -189,13 +189,13 @@ class BaseObservation(ABC, ObservationProtocol):
             int: Count of announcement in the class.
 
         Example:
-            >>> from domprob import announcement, BaseObservation
+            >>> from domprob import announce, BaseObservation
             >>>
             >>> class SomeInstrument:
             ...     pass
             ...
             >>> class MyObservation(BaseObservation):
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def my_method(self, instrument: SomeInstrument) -> str:
             ...         pass
             ...

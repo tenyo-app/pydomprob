@@ -38,11 +38,11 @@ class BasicDispatcher(DispatcherProtocol):
         >>> dispatcher
         BasicDispatcher(consumers=(BasicConsumer(instruments=('<domprob.dispatchers.basic.LoggerInstrument object at 0x...>', '<domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>')),))
         >>>
-        >>> from domprob import announcement, BaseObservation
+        >>> from domprob import announce, BaseObservation
         >>>
         >>> class SomeObservation(BaseObservation):
-        ...     @announcement(LoggerInstrument)
-        ...     @announcement(AnalyticsInstrument)
+        ...     @announce(LoggerInstrument)
+        ...     @announce(AnalyticsInstrument)
         ...     def foo(self, instrument: BaseInstrument) -> None:
         ...         print(instrument.add())
         ...
@@ -100,11 +100,11 @@ class BasicDispatcher(DispatcherProtocol):
             >>> dispatcher
             BasicDispatcher(consumers=(BasicConsumer(instruments=('<domprob.dispatchers.basic.LoggerInstrument object at 0x...>', '<domprob.dispatchers.basic.AnalyticsInstrument object at 0x...>')),))
             >>>
-            >>> from domprob import announcement, BaseObservation
+            >>> from domprob import announce, BaseObservation
             >>>
             >>> class SomeObservation(BaseObservation):
-            ...     @announcement(LoggerInstrument)
-            ...     @announcement(AnalyticsInstrument)
+            ...     @announce(LoggerInstrument)
+            ...     @announce(AnalyticsInstrument)
             ...     def foo(self, instrument: BaseInstrument) -> None:
             ...         print(instrument.add())
             ...

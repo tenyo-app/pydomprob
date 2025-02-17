@@ -103,7 +103,7 @@ pip install domprob
 import logging
 from typing import Any
 
-from domprob import announcement, BaseObservation
+from domprob import announce, BaseObservation
 
 
 class CheckoutSuccessful(BaseObservation):
@@ -111,7 +111,7 @@ class CheckoutSuccessful(BaseObservation):
         def __init__(self, **order_details: Any) -> None:
             self.order_details = order_details
 
-        @announcement(logging.Logger)
+        @announce(logging.Logger)
         def log_observation(self, log: logging.Logger) -> None:
            log.info("Checkout successful!", **self.order_details)
 

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob import announcement
+from domprob import announce
 from domprob.announcement.instrums import Instruments
 from domprob.announcement.meth_meta import AnnouncementMetadata
 from domprob.announcement.meth import (
@@ -106,8 +106,8 @@ class TestAnnouncementMethodBinder:
     def test_get_signature_infers_instrument_through_annotations(self):
         # Arrange
         class Cls:
-            @announcement(MockInstrument)
-            @announcement(MockInstrument)
+            @announce(MockInstrument)
+            @announce(MockInstrument)
             def meth(self, mock_var_name: MockInstrument) -> None:
                 pass
 
@@ -126,8 +126,8 @@ class TestAnnouncementMethodBinder:
     ):
         # Arrange
         class Cls:
-            @announcement(MockInstrument)
-            @announcement(MockInstrument)
+            @announce(MockInstrument)
+            @announce(MockInstrument)
             def meth(self, mock_var_name: "MockInstrument") -> None:
                 pass
 
@@ -144,8 +144,8 @@ class TestAnnouncementMethodBinder:
     def test_get_signature_infers_instrument_through_parent_annotations(self):
         # Arrange
         class Cls:
-            @announcement(YetAnotherMockInstrument)
-            @announcement(AnotherMockInstrument)
+            @announce(YetAnotherMockInstrument)
+            @announce(AnotherMockInstrument)
             def meth(self, mock_var_name: MockInstrument) -> None:
                 pass
 

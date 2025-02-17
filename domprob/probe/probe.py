@@ -21,7 +21,7 @@ class Probe:
 
     Example:
         >>> from domprob import (
-        ...     announcement,
+        ...     announce,
         ...     BaseObservation,
         ...     BasicConsumer,
         ...     BasicDispatcher,
@@ -36,8 +36,8 @@ class Probe:
         >>>
         >>> class SampleObservation(BaseObservation):
         ...
-        ...     @announcement(SomeInstrument)
-        ...     def announce(self, some_instrument: SomeInstrument) -> None:
+        ...     @announce(SomeInstrument)
+        ...     def announce_msg(self, some_instrument: SomeInstrument) -> None:
         ...         some_instrument.call("Announcement!")
         ...
         >>> consumer = BasicConsumer(SomeInstrument())
@@ -61,7 +61,7 @@ class Probe:
             other (Any): The object to compare with.
 
         Returns:
-            bool: True if the probes are equal, False otherwise.
+            bool: True if the probe are equal, False otherwise.
 
         Example:
             >>> from domprob import BasicDispatcher
@@ -81,7 +81,7 @@ class Probe:
         """Computes the hash value of the `Probe` instance.
 
         The hash is based on the dispatcher's hash, ensuring that
-        probes with the same dispatcher have the same hash.
+        probe with the same dispatcher have the same hash.
 
         Returns:
             int: The hash value of the instance.
@@ -141,7 +141,7 @@ def get_probe(*instruments: Any) -> Probe:
             `BasicDispatcher`.
 
     Example:
-        >>> from domprob.probes.probe import get_probe
+        >>> from domprob.probe.probe import get_probe
         >>>
         >>> # Create a probe with a custom instrument
         >>> custom_probe = get_probe(logging.getLogger("custom"))
@@ -173,7 +173,7 @@ probe = get_probe()
 """The default probe.
 
 Example:
-    >>> from domprob.probes.probe import probe
+    >>> from domprob.probe.probe import probe
     >>> 
     >>> probe
     Probe(dispatcher=BasicDispatcher(instruments=('<RootLogger root (WARNING)>',)))

@@ -1,7 +1,7 @@
 import pytest
 
 from domprob.announcement.meth import AnnouncementMethod
-from domprob import announcement
+from domprob import announce
 from domprob.observations.base import BaseObservation, AnnouncementSet
 from domprob.observations.observation import ObservationProtocol
 
@@ -11,7 +11,7 @@ class MockObservation(BaseObservation):
     def __init__(self):
         self.called = False
 
-    @announcement("mock_instrument")  # type: ignore
+    @announce("mock_instrument")  # type: ignore
     def sample_announcement(self, _: str):
         self.called = True
         return "Hello, Observer!"

@@ -241,11 +241,11 @@ class ReqInstrumException(ConsumerException):
     An instrument is marked as required with the `required`
     flag in the `@announcement` decorator:
 
-    >>> from domprob import announcement, BaseObservation
+    >>> from domprob import announce, BaseObservation
     >>>
     >>> class SomeObservation(BaseObservation):
     ...
-    ...     @announcement(..., required=True)
+    ...     @announce(..., required=True)
     ...     def some_method(self, instrument: ...) -> None:
     ...         ...
     ...
@@ -305,14 +305,14 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         *instruments (_Instrument): One or more instrument instances.
 
     Example:
-        >>> from domprob import announcement, BaseObservation
+        >>> from domprob import announce, BaseObservation
         >>>
         >>> class LoggerInstrument:
         ...     def log(self, message: str):
         ...         print(f"LOG: {message}")
         ...
         >>> class SomeObservation(BaseObservation):
-        ...     @announcement(LoggerInstrument)
+        ...     @announce(LoggerInstrument)
         ...     def announce_event(self, instrument: LoggerInstrument):
         ...         instrument.log("Event announced!")
         ...
@@ -374,7 +374,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
             ReqInstrumException: If a required instrument is missing.
 
         Example:
-            >>> from domprob import announcement, BaseObservation
+            >>> from domprob import announce, BaseObservation
             >>> from domprob.announcement.meth import AnnouncementMethod
             >>>
             >>> class LoggerInstrument:
@@ -382,7 +382,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
             ...         print(f"LOG: {message}")
             ...
             >>> class SomeObservation(BaseObservation):
-            ...     @announcement(LoggerInstrument)
+            ...     @announce(LoggerInstrument)
             ...     def announce_event(self, instrument: LoggerInstrument):
             ...         instrument.log("Event announced!")
             ...

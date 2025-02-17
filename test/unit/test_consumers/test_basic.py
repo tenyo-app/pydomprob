@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from domprob import announcement, BaseObservation
+from domprob import announce, BaseObservation
 from domprob.consumers.basic import (
     InstrumentImpRegistry,
     BasicConsumer,
@@ -21,7 +21,7 @@ class MockObservation(BaseObservation):
     obs = None
     instrum = None
 
-    @announcement(MockInstrument)
+    @announce(MockInstrument)
     def foo(self, db):
         self.called += 1
         self.obs = self
@@ -29,7 +29,7 @@ class MockObservation(BaseObservation):
 
 
 class MockObservationWithRequired(BaseObservation):
-    @announcement(MockInstrument, required=True)
+    @announce(MockInstrument, required=True)
     def foo(self, instrument: MockInstrument):
         pass
 

@@ -440,10 +440,10 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -473,10 +473,10 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         ...     pass
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announcement
+        >>> from domprob import announce
         >>>
         >>> class Foo:
-        ...     @announcement(SomeInstrument)
+        ...     @announce(SomeInstrument)
         ...     def bar(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
@@ -520,13 +520,13 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
                 - `None` if the callable does not support instruments.
 
         Example:
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class SomeInstrument:
             ...     pass
             ...
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         print(f"Instrument: {instrument}")
             ...
@@ -575,10 +575,10 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -618,10 +618,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         ...     pass
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announcement
+        >>> from domprob import announce
         >>>
         >>> class Foo:
-        ...     @announcement(SomeInstrument)
+        ...     @announce(SomeInstrument)
         ...     def bar(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
@@ -662,10 +662,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -702,10 +702,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -740,10 +740,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> str:
             ...         return "Executed"
             ...
@@ -780,10 +780,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -815,10 +815,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> str:
             ...         return "Executed"
             ...

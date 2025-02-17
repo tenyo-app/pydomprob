@@ -2,7 +2,7 @@ class TestProbeImports:
     def test_get_probe(self):
         # Arrange
         from domprob import get_probe as alias_get_probe
-        from domprob.probes.probe import get_probe
+        from domprob.probe.probe import get_probe
 
         # Act
         # Assert
@@ -11,7 +11,7 @@ class TestProbeImports:
     def test_probe(self):
         # Arrange
         from domprob import probe as alias_probe
-        from domprob.probes.probe import probe
+        from domprob.probe.probe import probe
 
         # Act
         # Assert
@@ -20,7 +20,7 @@ class TestProbeImports:
     def test_probe_cls(self):
         # Arrange
         from domprob import Probe as AliasProbe
-        from domprob.probes.probe import Probe
+        from domprob.probe.probe import Probe
 
         # Act
         # Assert

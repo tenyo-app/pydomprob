@@ -23,7 +23,7 @@ _R = TypeVar("_R")
 _Meth = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
 
 
-class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
+class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
     """Decorator class for associating metadata and validating methods.
 
     This class enables the decoration of methods with metadata
@@ -59,10 +59,10 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         ...         return f"{self.__class__.__name__}()"
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announcement
+        >>> from domprob import announce
         >>>
         >>> class Foo:
-        ...     @announcement(PrintInstrument)
+        ...     @announce(PrintInstrument)
         ...     def bar(self, instrument: PrintInstrument) -> None:
         ...         instrument.stdout(f"Executing with {instrument!r}")
         ...
@@ -103,11 +103,11 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
         ...         logger.info(f"Observing '{cls_name}' with '{self!r}'\")
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announcement
+        >>> from domprob import announce
         >>>
         >>> class Foo:
-        ...     @announcement(PrintInstrument)
-        ...     @announcement(LogInstrument)
+        ...     @announce(PrintInstrument)
+        ...     @announce(LogInstrument)
         ...     def bar(self, instrument: AbstractStdOutInstrument) -> None:
         ...         instrument.stdout(self.__class__.__name__)
         ...
@@ -145,10 +145,10 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announcement
+            >>> from domprob import announce
             >>>
             >>> class Foo:
-            ...     @announcement(SomeInstrument)
+            ...     @announce(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         print(f"Executing with {instrument!r}")
             ...
@@ -192,12 +192,12 @@ class _Announcement(Generic[_MethodCls, _Instrument, _P, _R]):
             >>> class SomeInstrument:
             ...     pass
             ...
-            >>> announcement = _Announcement(SomeInstrument)
-            >>> repr(announcement)
-            "_Announcement(instrument=<class '...SomeInstrument'>)"
+            >>> announce = _Announce(SomeInstrument)
+            >>> repr(announce)
+            "_Announce(instrument=<class '...SomeInstrument'>)"
         """
         return f"{self.__class__.__name__}(instrument={self.instrument!r})"
 
 
 # pylint: disable=invalid-name
-announcement = _Announcement  # Alias to be pythonic
+announce = _Announce  # Alias to be pythonic

@@ -2,7 +2,7 @@ import functools
 
 import pytest
 
-from domprob.announcement.dec import _Announcement, announcement
+from domprob.announcement.dec import _Announce, announce
 from domprob.announcement.validate.vals import InstrumTypeException
 
 
@@ -24,20 +24,20 @@ def mock_cls():
 @pytest.fixture
 def announcement_instance():
     """Fixture for creating an Announcement instance."""
-    return _Announcement(MockInstrument)
+    return _Announce(MockInstrument)
 
 
 class TestAnnouncement:
     def test_initialisation(self):
         """Test that Announcement is initialised correctly."""
-        ann = _Announcement(MockInstrument, True)
+        ann = _Announce(MockInstrument, True)
         assert ann.instrument is MockInstrument
         assert ann.required is True
 
     def test_repr(self):
         """Test the string representation of Announcement."""
-        ann = _Announcement(MockInstrument)
-        expected_repr = f"_Announcement(instrument={MockInstrument!r})"
+        ann = _Announce(MockInstrument)
+        expected_repr = f"_Announce(instrument={MockInstrument!r})"
         assert repr(ann) == expected_repr
 
     def test_call_method_executes_correctly(
@@ -62,7 +62,7 @@ class TestAnnouncement:
             return wrapper
 
         class Cls:
-            @announcement(MockInstrument)
+            @announce(MockInstrument)
             @some_decorator
             def method(self, instrument: MockInstrument):
                 return f"Instrument: {instrument}"
@@ -100,4 +100,4 @@ class TestAnnouncement:
 
 
 def test_announcement_lower_is_announcement_cls():
-    assert announcement == _Announcement
+    assert announce == _Announce
