@@ -21,7 +21,7 @@ Announcements
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.exceptions
+.. automodule:: domprob.announcements.exc
     :members:
     :undoc-members:
     :show-inheritance:

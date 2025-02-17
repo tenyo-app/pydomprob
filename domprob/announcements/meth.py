@@ -14,7 +14,7 @@ from typing import (
     get_type_hints,
 )
 
-from domprob.announcements.exceptions import AnnouncementException
+from domprob.announcements.exc import AnnouncementException
 from domprob.announcements.instrums import Instruments
 from domprob.announcements.validation.orchestrator import (
     AnnouncementValidationOrchestrator,

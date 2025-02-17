@@ -4,7 +4,7 @@ class TestAnnouncementExceptionImport:
         from domprob.exceptions import (
             AnnouncementException as AliasAnnouncementException,
         )
-        from domprob.announcements.exceptions import AnnouncementException
+        from domprob.announcements.exc import AnnouncementException
 
         # Act
         # Assert

@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from domprob.announcements.exceptions import AnnouncementException
+from domprob.announcements.exc import AnnouncementException
 from domprob.announcements.validation.base_validator import BaseValidator
 
 if TYPE_CHECKING:

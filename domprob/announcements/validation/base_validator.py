@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from domprob.announcements.exceptions import AnnouncementException
+from domprob.announcements.exc import AnnouncementException
 
 if TYPE_CHECKING:
     from domprob.announcements.meth import (  # pragma: no cover
