@@ -1,16 +1,16 @@
 import pytest
 
-from domprob.announcements.exc import AnnouncementException
-from domprob.announcements.meth import BoundAnnouncementMethod
-from domprob.announcements.validate.base_val import BaseValidator
-from domprob.announcements.validate.chain import (
+from domprob.announcement.exc import AnnouncementException
+from domprob.announcement.meth import BoundAnnouncementMethod
+from domprob.announcement.validate.base_val import BaseValidator
+from domprob.announcement.validate.chain import (
     ABCLinkValidator,
     ABCLinkValidatorContext,
     EmptyChainException,
     LinkValidatorContext,
     ValidationChain,
 )
-from domprob.announcements.validate.chain_val import (
+from domprob.announcement.validate.chain_val import (
     InvalidLinkException,
     LinkExistsException,
     LinkTypeValidator,

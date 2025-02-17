@@ -1,6 +1,6 @@
 import pytest
 
-from domprob.announcements.meth import AnnouncementMethod
+from domprob.announcement.meth import AnnouncementMethod
 from domprob import announcement
 from domprob.observations.base import BaseObservation, AnnouncementSet
 from domprob.observations.observation import ObservationProtocol
@@ -123,4 +123,4 @@ class TestBaseObservation:
         # Act
         obs_repr = repr(observation_cls())
         # Assert
-        assert obs_repr == "MockObservation(announcements=1)"
+        assert obs_repr == "MockObservation(announcement=1)"

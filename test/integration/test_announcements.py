@@ -2,7 +2,7 @@ class TestDecoratorImports:
     def test_announcement_decorator(self):
         # Arrange
         from domprob import announcement as alias_announcement
-        from domprob.announcements.dec import announcement
+        from domprob.announcement.dec import announcement
 
         # Act
         # Assert

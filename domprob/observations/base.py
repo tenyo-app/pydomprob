@@ -4,7 +4,7 @@ from abc import ABC
 from collections.abc import Generator, Set
 from typing import ParamSpec, TypeVar, Any
 
-from domprob.announcements.meth import AnnouncementMethod
+from domprob.announcement.meth import AnnouncementMethod
 from domprob.observations.observation import ObservationProtocol
 
 # Typing helpers: defines an @announcement method signature
@@ -122,7 +122,7 @@ class AnnouncementSet(Set[_AnnounceSig]):
 
         Returns:
             str: A string describing the number of stored
-                announcements.
+                announcement.
         """
         return f"{self.__class__.__name__}(num_announcements={len(self)})"
 
@@ -147,7 +147,7 @@ class BaseObservation(ABC, ObservationProtocol):
         ...
         >>> observation = MyObservation()
         >>> observation
-        MyObservation(announcements=1)
+        MyObservation(announcement=1)
     """
 
     # cached per observation cls imp - avoids recompute for each instance
@@ -183,10 +183,10 @@ class BaseObservation(ABC, ObservationProtocol):
         return cls._announcements
 
     def __len__(self) -> int:
-        """Return the number of announcements.
+        """Return the number of announcement.
 
         Returns:
-            int: Count of announcements in the class.
+            int: Count of announcement in the class.
 
         Example:
             >>> from domprob import announcement, BaseObservation
@@ -206,4 +206,4 @@ class BaseObservation(ABC, ObservationProtocol):
         return len(list(self.announcements()))
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(announcements={len(self)})"
+        return f"{self.__class__.__name__}(announcement={len(self)})"

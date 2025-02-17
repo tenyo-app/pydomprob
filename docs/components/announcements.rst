@@ -1,27 +1,27 @@
-Announcements
-=============
+Announcement
+============
 
-.. automodule:: domprob.announcements.dec
+.. automodule:: domprob.announcement.dec
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.instrums
+.. automodule:: domprob.announcement.instrums
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.meth_meta
+.. automodule:: domprob.announcement.meth_meta
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.meth
+.. automodule:: domprob.announcement.meth
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.exc
+.. automodule:: domprob.announcement.exc
     :members:
     :undoc-members:
     :show-inheritance:
@@ -29,22 +29,22 @@ Announcements
 Validate
 ----------
 
-.. automodule:: domprob.announcements.validate.base_val
+.. automodule:: domprob.announcement.validate.base_val
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.chain
+.. automodule:: domprob.announcement.validate.chain
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.chain_val
+.. automodule:: domprob.announcement.validate.chain_val
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.orch
+.. automodule:: domprob.announcement.validate.orch
     :members:
     :undoc-members:
     :show-inheritance:

@@ -2,8 +2,8 @@ import copy
 
 import pytest
 
-from domprob.announcements.instrums import Instruments
-from domprob.announcements.meth_meta import AnnouncementMetadata
+from domprob.announcement.instrums import Instruments
+from domprob.announcement.meth_meta import AnnouncementMetadata
 
 
 class MockInstrument:

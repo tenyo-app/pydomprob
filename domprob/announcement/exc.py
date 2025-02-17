@@ -6,5 +6,5 @@ class AnnouncementException(DomprobException):
     functionality.
 
     This serves as a parent class for all exceptions raised within
-    the announcements framework.
+    the announcement framework.
     """

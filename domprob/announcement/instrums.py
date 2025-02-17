@@ -2,7 +2,7 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from typing import Any, TypeVar, Generic
 
-from domprob.announcements.meth_meta import AnnouncementMetadata
+from domprob.announcement.meth_meta import AnnouncementMetadata
 
 # Typing helpers
 _InstruCls = TypeVar("_InstruCls", bound=type[Any])
@@ -25,11 +25,11 @@ class Instruments(Generic[_InstruCls]):
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> from domprob.announcements import meth_meta
+        >>> from domprob.announcement import meth_meta
         >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
         >>>
         >>> # Access metadata instruments
-        >>> from domprob.announcements.instrums import Instruments
+        >>> from domprob.announcement.instrums import Instruments
         >>> instruments = Instruments(meta)
         >>>
         >>> instruments
@@ -53,7 +53,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create instruments handler for method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>>
             >>> # Define an instrument
@@ -63,7 +63,7 @@ class Instruments(Generic[_InstruCls]):
             >>> instruments.record(SomeInstrument, True)
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments)
-            [(<class 'domprob.announcements.instrums.SomeInstrument'>, True)]
+            [(<class 'domprob.announcement.instrums.SomeInstrument'>, True)]
         """
         yield from ((m.instrument_cls, m.required) for m in self._metadata)
 
@@ -84,7 +84,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create instruments handler for method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> # Initially, no instruments are recorded
             >>> len(instruments)
@@ -126,7 +126,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create Instruments instances for the same method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments1 = Instruments.from_method(Foo.bar)
             >>> instruments2 = Instruments.from_method(Foo.bar)
             >>>
@@ -173,7 +173,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create an Instruments instance directly from the method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> instruments
             Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
@@ -195,7 +195,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create an Instruments instance directly from the method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>>
             >>> # Define an instrument class
@@ -230,7 +230,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create an Instruments instance directly from the method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>>
             >>> # Define an instrument class
@@ -267,7 +267,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create instruments handler for method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>>
             >>> # Define an instrument class
@@ -306,7 +306,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create instruments handler for the method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>>
             >>> # Define an instrument class
@@ -343,7 +343,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create instruments handler for method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>>
             >>> # Define an instrument class
@@ -384,7 +384,7 @@ class Instruments(Generic[_InstruCls]):
             ...         pass
             ...
             >>> # Create instruments handler for method
-            >>> from domprob.announcements.instrums import Instruments
+            >>> from domprob.announcement.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> repr(instruments)
             'Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))'

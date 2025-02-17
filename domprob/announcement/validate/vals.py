@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-from domprob.announcements.validate.base_val import (
+from domprob.announcement.validate.base_val import (
     BaseValidator,
     ValidatorException,
 )
 
 if TYPE_CHECKING:
-    from domprob.announcements.meth import (  # pragma: no cover
+    from domprob.announcement.meth import (  # pragma: no cover
         BoundAnnouncementMethod,
     )
 
@@ -26,7 +26,7 @@ class MissingInstrumException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validate.vals import MissingInstrumException
+        >>> from domprob.announcement.validate.vals import MissingInstrumException
         >>> class Example:
         ...     def method(self):
         ...         pass
@@ -72,8 +72,8 @@ class InstrumentParamExistsValidator(BaseValidator):
     `instrument` parameter is `None`.
 
     Examples:
-        >>> from domprob.announcements.validate.vals import InstrumentParamExistsValidator
-        >>> from domprob.announcements.meth import AnnouncementMethod
+        >>> from domprob.announcement.validate.vals import InstrumentParamExistsValidator
+        >>> from domprob.announcement.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -127,7 +127,7 @@ class InstrumTypeException(ValidatorException):
         supp_instrums (Instruments): The supported instrument types.
 
     Examples:
-        >>> from domprob.announcements.meth import AnnouncementMethod
+        >>> from domprob.announcement.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -180,8 +180,8 @@ class InstrumentTypeValidator(BaseValidator):
     types.
 
     Examples:
-        >>> from domprob.announcements.validate.vals import InstrumentTypeValidator
-        >>> from domprob.announcements.meth import AnnouncementMethod
+        >>> from domprob.announcement.validate.vals import InstrumentTypeValidator
+        >>> from domprob.announcement.meth import AnnouncementMethod
         >>> class MockInstrument:
         ...     pass
         ...
@@ -237,7 +237,7 @@ class NoSupportedInstrumsException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validate.vals import NoSupportedInstrumsException
+        >>> from domprob.announcement.validate.vals import NoSupportedInstrumsException
         >>> class Example:
         ...     def method(self):
         ...         pass
@@ -286,8 +286,8 @@ class SupportedInstrumentsExistValidator(BaseValidator):
     method's metadata does not include any supported instrument types.
 
     Examples:
-        >>> from domprob.announcements.validate.vals import SupportedInstrumentsExistValidator
-        >>> from domprob.announcements.meth import AnnouncementMethod
+        >>> from domprob.announcement.validate.vals import SupportedInstrumentsExistValidator
+        >>> from domprob.announcement.meth import AnnouncementMethod
         >>> class Example:
         ...     def method(self, instrument: Any) -> None:
         ...         pass

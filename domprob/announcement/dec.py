@@ -9,7 +9,7 @@ from typing import (
     Concatenate,
 )
 
-from domprob.announcements.meth import AnnouncementMethod
+from domprob.announcement.meth import AnnouncementMethod
 
 # Typing helper: Describes the class where the method resides
 _MethodCls = TypeVar("_MethodCls", bound=Any)

@@ -10,9 +10,9 @@ class AnnouncementMetadataEntry:
 
     Args:
         instrument_cls (type[`BaseInstrument`]): The type of
-            instrument for which the announcements should be executed.
+            instrument for which the announcement should be executed.
         required (`bool`), optional: Whether the instrument instance
-            at runtime is required or optional for the announcements.
+            at runtime is required or optional for the announcement.
             Defaults to `True` if not provided during instantiation.
 
     Examples:
@@ -25,7 +25,7 @@ class AnnouncementMetadataEntry:
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> from domprob.announcements import meth_meta
+        >>> from domprob.announcement import meth_meta
         >>> entry = meth_meta.AnnouncementMetadataEntry(SomeInstrument, required=False)
         >>> entry
         AnnouncementMetadataEntry(instrument_cls=<class '...SomeInstrument'>, required=False)
@@ -53,7 +53,7 @@ class AnnouncementMetadata:
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> from domprob.announcements import meth_meta
+        >>> from domprob.announcement import meth_meta
         >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
         >>>
         >>> meta
@@ -83,7 +83,7 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import meth_meta
+            >>> from domprob.announcement import meth_meta
             >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>>
             >>> len(meta)
@@ -113,7 +113,7 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import meth_meta
+            >>> from domprob.announcement import meth_meta
             >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>>
             >>> # Define an instrument
@@ -152,7 +152,7 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import meth_meta
+            >>> from domprob.announcement import meth_meta
             >>> meta_1 = meth_meta.AnnouncementMetadata(Foo.bar)
             >>> meta_1 == "string"
             False
@@ -174,7 +174,7 @@ class AnnouncementMetadata:
         return self._method == other._method
 
     def add(self, instrument: Any, required: bool) -> "AnnouncementMetadata":
-        """Adds an announcements metadata entry to the method.
+        """Adds an announcement metadata entry to the method.
 
         Args:
             instrument (type[`BaseInstrument`]): The instrument class
@@ -191,7 +191,7 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import meth_meta
+            >>> from domprob.announcement import meth_meta
             >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>>
             >>> len(meta)
@@ -224,7 +224,7 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import meth_meta
+            >>> from domprob.announcement import meth_meta
             >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>> repr(meta)
             'AnnouncementMetadata(method=<function Foo.bar at 0x...>)'

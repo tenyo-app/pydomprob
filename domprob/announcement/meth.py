@@ -14,9 +14,9 @@ from typing import (
     get_type_hints,
 )
 
-from domprob.announcements.exc import AnnouncementException
-from domprob.announcements.instrums import Instruments
-from domprob.announcements.validate.orch import (
+from domprob.announcement.exc import AnnouncementException
+from domprob.announcement.instrums import Instruments
+from domprob.announcement.validate.orch import (
     AnnouncementValidationOrchestrator,
 )
 
@@ -87,7 +87,7 @@ class AnnouncementMethodBinder:
 
     Examples:
         >>> from collections import OrderedDict
-        >>> from domprob.announcements.meth import (
+        >>> from domprob.announcement.meth import (
         ...     AnnouncementMethod, AnnouncementMethodBinder
         ... )
         >>>
@@ -124,7 +124,7 @@ class AnnouncementMethodBinder:
 
         Examples:
             >>> from collections import OrderedDict
-            >>> from domprob.announcements.meth import (
+            >>> from domprob.announcement.meth import (
             ...     AnnouncementMethod, AnnouncementMethodBinder
             ... )
             >>>
@@ -165,7 +165,7 @@ class AnnouncementMethodBinder:
 
         Examples:
             >>> from collections import OrderedDict
-            >>> from domprob.announcements.meth import (
+            >>> from domprob.announcement.meth import (
             ...     AnnouncementMethod, AnnouncementMethodBinder
             ... )
             >>>
@@ -219,7 +219,7 @@ class AnnouncementMethodBinder:
 
         Examples:
             >>> from collections import OrderedDict
-            >>> from domprob.announcements.meth import (
+            >>> from domprob.announcement.meth import (
             ...     AnnouncementMethod, AnnouncementMethodBinder
             ... )
             >>>
@@ -391,7 +391,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
                 announcement.
 
         Examples:
-            >>> from domprob.announcements.meth import BaseAnnouncementMethod
+            >>> from domprob.announcement.meth import BaseAnnouncementMethod
             >>>
             >>> def example_method():
             ...     pass
@@ -414,7 +414,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
                 about the method’s supported instruments.
 
         Examples:
-            >>> from domprob.announcements.meth import BaseAnnouncementMethod
+            >>> from domprob.announcement.meth import BaseAnnouncementMethod
             >>>
             >>> class SomeInstrument:
             ...     pass
@@ -593,7 +593,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> args = (foo, instrument_instance)
             >>> bound_method = bar_method.bind(*args)
             >>> bound_method
-            BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcements.meth.Foo object at 0x...>, instrument=<domprob.announcements.meth.SomeInstrument object at 0x...>)>)
+            BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcement.meth.Foo object at 0x...>, instrument=<domprob.announcement.meth.SomeInstrument object at 0x...>)>)
         """
         return self._binder.bind(cls_instance, *args, **kwargs)
 
@@ -636,7 +636,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
         >>>
         >>> bound_method
-        BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcements.meth.Foo object at 0x...>, instrument=<domprob.announcements.meth.SomeInstrument object at 0x...>)>)
+        BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcement.meth.Foo object at 0x...>, instrument=<domprob.announcement.meth.SomeInstrument object at 0x...>)>)
     """
 
     def __init__(
@@ -672,7 +672,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> # Create an BoundAnnouncementMethod instance
             >>> import inspect
             >>> from collections import OrderedDict
-            >>> from domprob.announcements.meth import (
+            >>> from domprob.announcement.meth import (
             ...     AnnouncementMethod, BoundAnnouncementMethod
             ... )
             >>>
@@ -712,7 +712,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> # Create an BoundAnnouncementMethod instance
             >>> import inspect
             >>> from collections import OrderedDict
-            >>> from domprob.announcements.meth import (
+            >>> from domprob.announcement.meth import (
             ...     AnnouncementMethod, BoundAnnouncementMethod
             ... )
             >>>
@@ -833,7 +833,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
             >>>
             >>> repr(bound_method)
-            'BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcements.meth.Foo object at 0x...>, instrument=<domprob.announcements.meth.SomeInstrument object at 0x...>)>)'
+            'BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcement.meth.Foo object at 0x...>, instrument=<domprob.announcement.meth.SomeInstrument object at 0x...>)>)'
 
         """
         params = (

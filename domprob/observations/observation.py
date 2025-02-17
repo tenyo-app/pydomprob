@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import ParamSpec, Protocol, TypeVar, runtime_checkable, Any
 
-from domprob.announcements.meth import AnnouncementMethod
+from domprob.announcement.meth import AnnouncementMethod
 
 # Typing helpers: defines an @announcement method signature
 _P = ParamSpec("_P")
@@ -12,10 +12,10 @@ _R_co = TypeVar("_R_co", bound=Any, covariant=True)
 @runtime_checkable
 class ObservationProtocol(Protocol):
     """Protocol defining the structure of domain observations that
-    provide announcements.
+    provide announcement.
 
     Classes implementing this protocol must define a `@classmethod`
-    named `announcements` that returns a `Generator` of
+    named `announcement` that returns a `Generator` of
     `AnnouncementMethod` instances.
 
     This protocol is `@runtime_checkable`, meaning
@@ -29,7 +29,9 @@ class ObservationProtocol(Protocol):
             method.
 
     Example:
-
+        >>> from domprob.announcement.meth import AnnouncementMethod
+        >>> from domprob.observations.observation import ObservationProtocol
+        >>>
         >>> class ConcreteObservation:
         ...     @classmethod
         ...     def announcements(cls) -> Iterable[AnnouncementMethod]:

@@ -2,8 +2,8 @@ import functools
 
 import pytest
 
-from domprob.announcements.dec import _Announcement, announcement
-from domprob.announcements.validate.vals import InstrumTypeException
+from domprob.announcement.dec import _Announcement, announcement
+from domprob.announcement.validate.vals import InstrumTypeException
 
 
 class MockInstrument:

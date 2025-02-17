@@ -1,15 +1,15 @@
 from collections.abc import Sequence
 
-from domprob.announcements.exc import AnnouncementException
-from domprob.announcements.meth import PartialBindException
-from domprob.announcements.validate.base_val import ValidatorException
-from domprob.announcements.validate.chain import EmptyChainException
-from domprob.announcements.validate.chain_val import (
+from domprob.announcement.exc import AnnouncementException
+from domprob.announcement.meth import PartialBindException
+from domprob.announcement.validate.base_val import ValidatorException
+from domprob.announcement.validate.chain import EmptyChainException
+from domprob.announcement.validate.chain_val import (
     InvalidLinkException,
     LinkExistsException,
     ValidationChainException,
 )
-from domprob.announcements.validate.vals import (
+from domprob.announcement.validate.vals import (
     InstrumTypeException,
     MissingInstrumException,
     NoSupportedInstrumsException,
