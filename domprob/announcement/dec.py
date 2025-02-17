@@ -119,9 +119,9 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
     """
 
     def __init__(
-        self, instrument: type[_Instrument], required: bool = False
+        self, with_instrum: type[_Instrument], required: bool = False
     ) -> None:
-        self.instrument = instrument
+        self.with_instrum = with_instrum
         self.required = required
 
     def __call__(self, method: _Meth) -> Callable[_P, _R]:
@@ -160,17 +160,17 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
         """
 
         meth = AnnouncementMethod(method)
-        meth.supp_instrums.record(self.instrument, self.required)
+        meth.supp_instrums.record(self.with_instrum, self.required)
 
         @functools.wraps(method)
         def wrapper(
             cls_instance: _MethodCls,
-            instrument: _Instrument,
+            with_instrum: _Instrument,
             /,
             *args: _P.args,
             **kwargs: _P.kwargs,
         ) -> _R:
-            bound_meth = meth.bind(cls_instance, instrument, *args, **kwargs)
+            bound_meth = meth.bind(cls_instance, with_instrum, *args, **kwargs)
             bound_meth.validate()
             return bound_meth.execute()
 
@@ -196,7 +196,7 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
             >>> repr(announce)
             "_Announce(instrument=<class '...SomeInstrument'>)"
         """
-        return f"{self.__class__.__name__}(instrument={self.instrument!r})"
+        return f"{self.__class__.__name__}(instrument={self.with_instrum!r})"
 
 
 # pylint: disable=invalid-name

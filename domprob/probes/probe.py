@@ -12,7 +12,7 @@ from domprob.observations.observation import ObservationProtocol
 class Probe:
     # noinspection PyShadowingNames
     """
-    A class representing a probe that facilitates the dispatching of
+    A class representing a probes that facilitates the dispatching of
     observations.
 
     Attributes:
@@ -42,9 +42,9 @@ class Probe:
         ...
         >>> consumer = BasicConsumer(SomeInstrument())
         >>> dispatcher = BasicDispatcher(consumer)
-        >>> probe = Probe(dispatcher)
+        >>> probes = Probe(dispatcher)
         >>>
-        >>> probe.observe(SampleObservation())
+        >>> probes.observe(SampleObservation())
         Announcement!
     """
 
@@ -61,7 +61,7 @@ class Probe:
             other (Any): The object to compare with.
 
         Returns:
-            bool: True if the probe are equal, False otherwise.
+            bool: True if the probes are equal, False otherwise.
 
         Example:
             >>> from domprob import BasicDispatcher
@@ -81,7 +81,7 @@ class Probe:
         """Computes the hash value of the `Probe` instance.
 
         The hash is based on the dispatcher's hash, ensuring that
-        probe with the same dispatcher have the same hash.
+        probes with the same dispatcher have the same hash.
 
         Returns:
             int: The hash value of the instance.
@@ -118,8 +118,8 @@ class Probe:
         Example:
             >>> from domprob import BasicDispatcher
             >>>
-            >>> probe = Probe(BasicDispatcher())
-            >>> repr(probe)
+            >>> probes = Probe(BasicDispatcher())
+            >>> repr(probes)
             'Probe(dispatcher=BasicDispatcher(consumers=()))'
         """
         return f"{self.__class__.__name__}(dispatcher={self.dispatcher!r})"
@@ -141,14 +141,14 @@ def get_probe(*instruments: Any) -> Probe:
             `BasicDispatcher`.
 
     Example:
-        >>> from domprob.probe.probe import get_probe
+        >>> from domprob import get_probe
         >>>
-        >>> # Create a probe with a custom instrument
+        >>> # Create a probes with a custom instrument
         >>> custom_probe = get_probe(logging.getLogger("custom"))
         >>> custom_probe
         Probe(dispatcher=BasicDispatcher(consumers=(BasicConsumer(instruments=('<Logger custom (WARNING)>',)),)))
         >>>
-        >>> # Create a probe with default instruments
+        >>> # Create a probes with default instruments
         >>> default_probe = get_probe()
         >>> default_probe
         Probe(dispatcher=BasicDispatcher(consumers=(BasicConsumer(instruments=('<Logger default (DEBUG)>',)),)))
@@ -170,11 +170,11 @@ def get_probe(*instruments: Any) -> Probe:
 
 
 probe = get_probe()
-"""The default probe.
+"""The default probes.
 
 Example:
-    >>> from domprob.probe.probe import probe
+    >>> from domprob.probes.probes import probes
     >>> 
-    >>> probe
+    >>> probes
     Probe(dispatcher=BasicDispatcher(instruments=('<RootLogger root (WARNING)>',)))
 """

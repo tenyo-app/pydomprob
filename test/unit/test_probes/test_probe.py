@@ -7,7 +7,7 @@ import pytest
 
 from domprob.announcement.meth import AnnouncementMethod
 from domprob.announcement.dec import announce
-from domprob.probe.probe import get_probe, Probe
+from domprob.probes.probe import get_probe, Probe
 
 
 @pytest.fixture
@@ -170,9 +170,9 @@ class TestProbe:
 
 def test_probe_with_instruments(mock_instrument_cls, mocker):
     # Arrange
-    mock_consumer = mocker.patch("domprob.probe.probe.BasicConsumer")
-    mock_dispatcher = mocker.patch("domprob.probe.probe.BasicDispatcher")
-    mock_probe = mocker.patch("domprob.probe.probe.Probe")
+    mock_consumer = mocker.patch("domprob.probes.probe.BasicConsumer")
+    mock_dispatcher = mocker.patch("domprob.probes.probe.BasicDispatcher")
+    mock_probe = mocker.patch("domprob.probes.probe.Probe")
     mock_instrument = mock_instrument_cls()
     # Act
     result = get_probe(mock_instrument)
@@ -187,9 +187,9 @@ def test_probe_with_instruments(mock_instrument_cls, mocker):
 
 def test_probe_with_no_instruments(mocker):
     # Arrange
-    mock_consumer = mocker.patch("domprob.probe.probe.BasicConsumer")
-    mock_dispatcher = mocker.patch("domprob.probe.probe.BasicDispatcher")
-    mock_probe = mocker.patch("domprob.probe.probe.Probe")
+    mock_consumer = mocker.patch("domprob.probes.probe.BasicConsumer")
+    mock_dispatcher = mocker.patch("domprob.probes.probe.BasicDispatcher")
+    mock_probe = mocker.patch("domprob.probes.probe.Probe")
     # Act
     result = get_probe()
     # Assert

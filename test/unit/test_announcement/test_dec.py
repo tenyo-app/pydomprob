@@ -31,7 +31,7 @@ class TestAnnouncement:
     def test_initialisation(self):
         """Test that Announcement is initialised correctly."""
         ann = _Announce(MockInstrument, True)
-        assert ann.instrument is MockInstrument
+        assert ann.with_instrum is MockInstrument
         assert ann.required is True
 
     def test_repr(self):

@@ -226,5 +226,5 @@ class TestMissingInstrument:
             instance.method()
         # Assert
         assert str(exc_info.value).endswith(
-            "missing 1 required positional argument: 'instrument'"
+            "missing 1 required positional argument: 'with_instrum'"
         )
