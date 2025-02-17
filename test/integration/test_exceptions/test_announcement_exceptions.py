@@ -103,7 +103,7 @@ class TestAnnouncementChainValidationExceptionImports:
         from domprob.exceptions import (
             InvalidLinkException as AliasInvalidLinkException,
         )
-        from domprob.announcements.validate.chain_validation import (
+        from domprob.announcements.validate.chain_val import (
             InvalidLinkException,
         )
 
@@ -116,7 +116,7 @@ class TestAnnouncementChainValidationExceptionImports:
         from domprob.exceptions import (
             LinkExistsException as AliasLinkExistsException,
         )
-        from domprob.announcements.validate.chain_validation import (
+        from domprob.announcements.validate.chain_val import (
             LinkExistsException,
         )
 
@@ -129,7 +129,7 @@ class TestAnnouncementChainValidationExceptionImports:
         from domprob.exceptions import (
             ValidationChainException as AliasValidationChainException,
         )
-        from domprob.announcements.validate.chain_validation import (
+        from domprob.announcements.validate.chain_val import (
             ValidationChainException,
         )
 

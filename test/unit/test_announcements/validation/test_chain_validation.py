@@ -10,7 +10,7 @@ from domprob.announcements.validate.chain import (
     LinkValidatorContext,
     ValidationChain,
 )
-from domprob.announcements.validate.chain_validation import (
+from domprob.announcements.validate.chain_val import (
     InvalidLinkException,
     LinkExistsException,
     LinkTypeValidator,

@@ -5,7 +5,7 @@ from operator import index as to_index
 from typing import Any, Generic, SupportsIndex, TypeVar, overload
 
 from domprob.announcements.validate.base_val import BaseValidator
-from domprob.announcements.validate.chain_validation import (
+from domprob.announcements.validate.chain_val import (
     ABCLinkValidator,
     ABCLinkValidatorContext,
     EmptyChainException,

@@ -9,7 +9,7 @@ from domprob.announcements.validate.chain import (
     EmptyChainException,
     ValidationChain,
 )
-from domprob.announcements.validate.chain_validation import (
+from domprob.announcements.validate.chain_val import (
     InvalidLinkException,
     LinkExistsException,
     ValidationChainException,

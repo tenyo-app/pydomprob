@@ -276,7 +276,7 @@ class LinkTypeValidator(ABCLinkValidator):
             associated with.
 
     Examples:
-        >>> from domprob.announcements.validate.chain_validation import LinkTypeValidator
+        >>> from domprob.announcements.validate.chain_val import LinkTypeValidator
         >>> from domprob.announcements.validate.chain import ValidationChain
         >>> from domprob.announcements.validate.base_val import BaseValidator
         >>>
@@ -304,7 +304,7 @@ class LinkTypeValidator(ABCLinkValidator):
             InvalidLinkException: If the link is not of the expected type.
 
         Examples:
-            >>> from domprob.announcements.validate.chain_validation import LinkTypeValidator
+            >>> from domprob.announcements.validate.chain_val import LinkTypeValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.validate.base_val import BaseValidator
             >>>
@@ -336,7 +336,7 @@ class UniqueLinkValidator(ABCLinkValidator):
             associated with.
 
     Examples:
-        >>> from domprob.announcements.validate.chain_validation import LinkTypeValidator
+        >>> from domprob.announcements.validate.chain_val import LinkTypeValidator
         >>> from domprob.announcements.validate.chain import ValidationChain
         >>> from domprob.announcements.validate.base_val import BaseValidator
         >>>
@@ -375,7 +375,7 @@ class UniqueLinkValidator(ABCLinkValidator):
             LinkExistsException: If the link already exists in the validation chain.
 
         Examples:
-            >>> from domprob.announcements.validate.chain_validation import LinkTypeValidator
+            >>> from domprob.announcements.validate.chain_val import LinkTypeValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.validate.base_val import BaseValidator
             >>>
@@ -583,7 +583,7 @@ class LinkValidatorContext(ABCLinkValidatorContext):
         >>> from domprob.announcements.validate.chain import (
         ...     ABCLinkValidatorContext, ValidationChain
         ... )
-        >>> from domprob.announcements.validate.chain_validation import InvalidLinkException
+        >>> from domprob.announcements.validate.chain_val import InvalidLinkException
         >>>
         >>> class ExampleLink:
         ...     pass
@@ -653,7 +653,7 @@ class LinkValidatorContext(ABCLinkValidatorContext):
             >>> from domprob.announcements.validate.chain import (
             ...     ABCLinkValidatorContext, ValidationChain
             ... )
-            >>> from domprob.announcements.validate.chain_validation import InvalidLinkException
+            >>> from domprob.announcements.validate.chain_val import InvalidLinkException
             >>>
             >>> class ExampleLink:
             ...     pass
