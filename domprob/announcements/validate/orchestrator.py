@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from domprob.announcements.validate.base_validator import BaseValidator
+from domprob.announcements.validate.base_val import BaseValidator
 from domprob.announcements.validate.chain import ValidationChain
 from domprob.announcements.validate.validators import (
     InstrumentParamExistsValidator,

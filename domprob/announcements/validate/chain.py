@@ -4,7 +4,7 @@ from collections.abc import Generator, Iterable, MutableSequence
 from operator import index as to_index
 from typing import Any, Generic, SupportsIndex, TypeVar, overload
 
-from domprob.announcements.validate.base_validator import BaseValidator
+from domprob.announcements.validate.base_val import BaseValidator
 from domprob.announcements.validate.chain_validation import (
     ABCLinkValidator,
     ABCLinkValidatorContext,
@@ -38,7 +38,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             The context in which the validators are validated.
 
     Examples:
-        >>> from domprob.announcements.validate.base_validator import BaseValidator
+        >>> from domprob.announcements.validate.base_val import BaseValidator
         >>> from domprob.announcements.validate.chain import (
         ...     ABCLinkValidatorContext, ValidationChain
         ... )
@@ -70,7 +70,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             bool: `True` if the chain has validators, `False` otherwise.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import (
             ...     ABCLinkValidatorContext, ValidationChain
             ... )
@@ -101,7 +101,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             bool: `True` if the validator is in the chain, `False` otherwise.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -136,7 +136,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             IndexError: If the index is out of range.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -174,7 +174,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             bool: `True` if the chains are equal, `False` otherwise.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -225,7 +225,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             IndexError: If the index is out of range.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -252,7 +252,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
                 validators.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -282,7 +282,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             int: The number of validators in the chain.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -333,7 +333,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
                 `self.base`.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -418,7 +418,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
                 `self.base`.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -437,7 +437,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         """Removes all validators from the validation chain.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -472,7 +472,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
                 instances of `self.base`.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -511,7 +511,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
                 `self.base`.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -540,7 +540,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         exception if any validator is invalid.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -564,7 +564,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             str: A string representation of the `ValidationChain`.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>
@@ -583,7 +583,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
                 `ValidationChain`.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.validate.chain import ValidationChain
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>>

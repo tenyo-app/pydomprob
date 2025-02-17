@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from domprob.announcements.validate.base_validator import BaseValidator
+from domprob.announcements.validate.base_val import BaseValidator
 from domprob.announcements.validate.chain import ValidationChain
 from domprob.announcements.validate.orchestrator import (
     AnnouncementValidationOrchestrator,

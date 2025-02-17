@@ -43,7 +43,7 @@ class BaseValidator(ABC):
             validator.
 
     Examples:
-        >>> from domprob.announcements.validate.base_validator import BaseValidator
+        >>> from domprob.announcements.validate.base_val import BaseValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class ExampleValidator(BaseValidator):
@@ -96,7 +96,7 @@ class BaseValidator(ABC):
             Exception: If an unexpected error occurs during validation.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.meth import AnnouncementMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
@@ -134,7 +134,7 @@ class BaseValidator(ABC):
             str: A string representation of the validator.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> from domprob.announcements.meth import BoundAnnouncementMethod
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
@@ -157,7 +157,7 @@ class BaseValidator(ABC):
             str: The class name of the validator.
 
         Examples:
-            >>> from domprob.announcements.validate.base_validator import BaseValidator
+            >>> from domprob.announcements.validate.base_val import BaseValidator
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth):
             ...         pass

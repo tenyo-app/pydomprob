@@ -29,7 +29,7 @@ Announcements
 Validation
 ----------
 
-.. automodule:: domprob.announcements.validate.base_validator
+.. automodule:: domprob.announcements.validate.base_val
     :members:
     :undoc-members:
     :show-inheritance:

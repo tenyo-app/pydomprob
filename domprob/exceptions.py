@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from domprob.announcements.exc import AnnouncementException
 from domprob.announcements.meth import PartialBindException
-from domprob.announcements.validate.base_validator import ValidatorException
+from domprob.announcements.validate.base_val import ValidatorException
 from domprob.announcements.validate.chain import EmptyChainException
 from domprob.announcements.validate.chain_validation import (
     InvalidLinkException,

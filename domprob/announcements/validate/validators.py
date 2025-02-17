@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-from domprob.announcements.validate.base_validator import (
+from domprob.announcements.validate.base_val import (
     BaseValidator,
     ValidatorException,
 )
