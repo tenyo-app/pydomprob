@@ -4,7 +4,7 @@ import pytest
 
 from domprob.announcements.validate.base_val import BaseValidator
 from domprob.announcements.validate.chain import ValidationChain
-from domprob.announcements.validate.orchestrator import (
+from domprob.announcements.validate.orch import (
     AnnouncementValidationOrchestrator,
 )
 from domprob.announcements.validate.validators import (

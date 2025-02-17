@@ -39,12 +39,12 @@ Validation
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.chain_validation
+.. automodule:: domprob.announcements.validate.chain_val
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.orchestrator
+.. automodule:: domprob.announcements.validate.orch
     :members:
     :undoc-members:
     :show-inheritance:

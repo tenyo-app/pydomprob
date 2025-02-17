@@ -40,7 +40,7 @@ class AnnouncementValidationOrchestrator:
             is created with `DEFAULT_VALIDATORS`.
 
     Examples:
-        >>> from domprob.announcements.validate.orchestrator import AnnouncementValidationOrchestrator
+        >>> from domprob.announcements.validate.orch import AnnouncementValidationOrchestrator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
@@ -84,7 +84,7 @@ class AnnouncementValidationOrchestrator:
                 added to the chain.
 
         Examples:
-            >>> from domprob.announcements.validate.orchestrator import AnnouncementValidationOrchestrator
+            >>> from domprob.announcements.validate.orch import AnnouncementValidationOrchestrator
             >>> from domprob.announcements.validate.validators import InstrumentTypeValidator
             >>>
             >>> orchestrator = AnnouncementValidationOrchestrator()
@@ -111,7 +111,7 @@ class AnnouncementValidationOrchestrator:
                 fails.
 
         Examples:
-            >>> from domprob.announcements.validate.orchestrator import AnnouncementValidationOrchestrator
+            >>> from domprob.announcements.validate.orch import AnnouncementValidationOrchestrator
             >>> from domprob.announcements.meth import AnnouncementMethod
             >>>
             >>> class SomeInstrument:
