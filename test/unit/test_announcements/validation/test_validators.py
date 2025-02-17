@@ -4,7 +4,7 @@ from collections import OrderedDict
 import pytest
 
 from domprob.announcements.instruments import Instruments
-from domprob.announcements.metadata import AnnouncementMetadata
+from domprob.announcements.meth_meta import AnnouncementMetadata
 from domprob.announcements.meth import (
     BoundAnnouncementMethod,
     AnnouncementMethod,

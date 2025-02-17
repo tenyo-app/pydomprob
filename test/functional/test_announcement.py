@@ -3,7 +3,7 @@ from collections.abc import Callable
 import pytest
 
 from domprob import announcement, exceptions
-from domprob.announcements.metadata import (
+from domprob.announcements.meth_meta import (
     AnnouncementMetadata,
     AnnouncementMetadataEntry,
 )

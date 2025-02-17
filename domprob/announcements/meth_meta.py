@@ -25,8 +25,8 @@ class AnnouncementMetadataEntry:
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> from domprob.announcements import metadata
-        >>> entry = metadata.AnnouncementMetadataEntry(SomeInstrument, required=False)
+        >>> from domprob.announcements import meth_meta
+        >>> entry = meth_meta.AnnouncementMetadataEntry(SomeInstrument, required=False)
         >>> entry
         AnnouncementMetadataEntry(instrument_cls=<class '...SomeInstrument'>, required=False)
         >>> entry.instrument_cls
@@ -53,8 +53,8 @@ class AnnouncementMetadata:
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> from domprob.announcements import metadata
-        >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+        >>> from domprob.announcements import meth_meta
+        >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
         >>>
         >>> meta
         AnnouncementMetadata(method=<function Foo.bar at 0x...>)
@@ -83,8 +83,8 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import metadata
-            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+            >>> from domprob.announcements import meth_meta
+            >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>>
             >>> len(meta)
             0
@@ -113,8 +113,8 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import metadata
-            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+            >>> from domprob.announcements import meth_meta
+            >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>>
             >>> # Define an instrument
             >>> class SomeInstrument:
@@ -152,11 +152,11 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import metadata
-            >>> meta_1 = metadata.AnnouncementMetadata(Foo.bar)
+            >>> from domprob.announcements import meth_meta
+            >>> meta_1 = meth_meta.AnnouncementMetadata(Foo.bar)
             >>> meta_1 == "string"
             False
-            >>> meta_2 = metadata.AnnouncementMetadata(Foo.bar)
+            >>> meta_2 = meth_meta.AnnouncementMetadata(Foo.bar)
             >>> meta_1 == meta_2
             True
             >>>
@@ -191,8 +191,8 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import metadata
-            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+            >>> from domprob.announcements import meth_meta
+            >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>>
             >>> len(meta)
             0
@@ -224,8 +224,8 @@ class AnnouncementMetadata:
             ...         pass
             ...
             >>> # Create metadata for the method
-            >>> from domprob.announcements import metadata
-            >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+            >>> from domprob.announcements import meth_meta
+            >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
             >>> repr(meta)
             'AnnouncementMetadata(method=<function Foo.bar at 0x...>)'
         """

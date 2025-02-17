@@ -2,7 +2,7 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from typing import Any, TypeVar, Generic
 
-from domprob.announcements.metadata import AnnouncementMetadata
+from domprob.announcements.meth_meta import AnnouncementMetadata
 
 # Typing helpers
 _InstruCls = TypeVar("_InstruCls", bound=type[Any])
@@ -25,8 +25,8 @@ class Instruments(Generic[_InstruCls]):
         ...         pass
         ...
         >>> # Create metadata for the method
-        >>> from domprob.announcements import metadata
-        >>> meta = metadata.AnnouncementMetadata(Foo.bar)
+        >>> from domprob.announcements import meth_meta
+        >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
         >>>
         >>> # Access metadata instruments
         >>> from domprob.announcements.instruments import Instruments

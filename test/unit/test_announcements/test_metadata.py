@@ -3,7 +3,7 @@ import random
 
 import pytest
 
-from domprob.announcements.metadata import (
+from domprob.announcements.meth_meta import (
     AnnouncementMetadata,
     AnnouncementMetadataEntry,
 )
