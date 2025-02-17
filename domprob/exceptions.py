@@ -2,14 +2,14 @@ from collections.abc import Sequence
 
 from domprob.announcements.exc import AnnouncementException
 from domprob.announcements.meth import PartialBindException
-from domprob.announcements.validation.base_validator import ValidatorException
-from domprob.announcements.validation.chain import EmptyChainException
-from domprob.announcements.validation.chain_validation import (
+from domprob.announcements.validate.base_validator import ValidatorException
+from domprob.announcements.validate.chain import EmptyChainException
+from domprob.announcements.validate.chain_validation import (
     InvalidLinkException,
     LinkExistsException,
     ValidationChainException,
 )
-from domprob.announcements.validation.validators import (
+from domprob.announcements.validate.validators import (
     InstrumTypeException,
     MissingInstrumException,
     NoSupportedInstrumsException,

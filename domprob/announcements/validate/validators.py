@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-from domprob.announcements.validation.base_validator import (
+from domprob.announcements.validate.base_validator import (
     BaseValidator,
     ValidatorException,
 )
@@ -26,7 +26,7 @@ class MissingInstrumException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import MissingInstrumException
+        >>> from domprob.announcements.validate.validators import MissingInstrumException
         >>> class Example:
         ...     def method(self):
         ...         pass
@@ -72,7 +72,7 @@ class InstrumentParamExistsValidator(BaseValidator):
     `instrument` parameter is `None`.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import InstrumentParamExistsValidator
+        >>> from domprob.announcements.validate.validators import InstrumentParamExistsValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
@@ -180,7 +180,7 @@ class InstrumentTypeValidator(BaseValidator):
     types.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import InstrumentTypeValidator
+        >>> from domprob.announcements.validate.validators import InstrumentTypeValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>> class MockInstrument:
         ...     pass
@@ -237,7 +237,7 @@ class NoSupportedInstrumsException(ValidatorException):
             exception.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import NoSupportedInstrumsException
+        >>> from domprob.announcements.validate.validators import NoSupportedInstrumsException
         >>> class Example:
         ...     def method(self):
         ...         pass
@@ -286,7 +286,7 @@ class SupportedInstrumentsExistValidator(BaseValidator):
     method's metadata does not include any supported instrument types.
 
     Examples:
-        >>> from domprob.announcements.validation.validators import SupportedInstrumentsExistValidator
+        >>> from domprob.announcements.validate.validators import SupportedInstrumentsExistValidator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>> class Example:
         ...     def method(self, instrument: Any) -> None:

@@ -2,12 +2,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from domprob.announcements.validation.base_validator import BaseValidator
-from domprob.announcements.validation.chain import ValidationChain
-from domprob.announcements.validation.orchestrator import (
+from domprob.announcements.validate.base_validator import BaseValidator
+from domprob.announcements.validate.chain import ValidationChain
+from domprob.announcements.validate.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
-from domprob.announcements.validation.validators import (
+from domprob.announcements.validate.validators import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,

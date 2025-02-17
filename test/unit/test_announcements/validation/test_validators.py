@@ -9,7 +9,7 @@ from domprob.announcements.meth import (
     BoundAnnouncementMethod,
     AnnouncementMethod,
 )
-from domprob.announcements.validation.validators import (
+from domprob.announcements.validate.validators import (
     InstrumentParamExistsValidator,
     InstrumTypeException,
     InstrumentTypeValidator,

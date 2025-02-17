@@ -3,7 +3,7 @@ import functools
 import pytest
 
 from domprob.announcements.dec import _Announcement, announcement
-from domprob.announcements.validation.validators import InstrumTypeException
+from domprob.announcements.validate.validators import InstrumTypeException
 
 
 class MockInstrument:

@@ -16,7 +16,7 @@ from typing import (
 
 from domprob.announcements.exc import AnnouncementException
 from domprob.announcements.instrums import Instruments
-from domprob.announcements.validation.orchestrator import (
+from domprob.announcements.validate.orchestrator import (
     AnnouncementValidationOrchestrator,
 )
 

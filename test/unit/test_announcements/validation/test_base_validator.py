@@ -8,7 +8,7 @@ from domprob.announcements.meth import (
     BoundAnnouncementMethod,
     AnnouncementMethod,
 )
-from domprob.announcements.validation.base_validator import (
+from domprob.announcements.validate.base_validator import (
     BaseValidator,
     ValidatorException,
 )

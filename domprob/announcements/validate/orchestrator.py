@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from domprob.announcements.validation.base_validator import BaseValidator
-from domprob.announcements.validation.chain import ValidationChain
-from domprob.announcements.validation.validators import (
+from domprob.announcements.validate.base_validator import BaseValidator
+from domprob.announcements.validate.chain import ValidationChain
+from domprob.announcements.validate.validators import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,
@@ -40,7 +40,7 @@ class AnnouncementValidationOrchestrator:
             is created with `DEFAULT_VALIDATORS`.
 
     Examples:
-        >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
+        >>> from domprob.announcements.validate.orchestrator import AnnouncementValidationOrchestrator
         >>> from domprob.announcements.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
@@ -84,8 +84,8 @@ class AnnouncementValidationOrchestrator:
                 added to the chain.
 
         Examples:
-            >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
-            >>> from domprob.announcements.validation.validators import InstrumentTypeValidator
+            >>> from domprob.announcements.validate.orchestrator import AnnouncementValidationOrchestrator
+            >>> from domprob.announcements.validate.validators import InstrumentTypeValidator
             >>>
             >>> orchestrator = AnnouncementValidationOrchestrator()
             >>> orchestrator.register(InstrumentTypeValidator)
@@ -111,7 +111,7 @@ class AnnouncementValidationOrchestrator:
                 fails.
 
         Examples:
-            >>> from domprob.announcements.validation.orchestrator import AnnouncementValidationOrchestrator
+            >>> from domprob.announcements.validate.orchestrator import AnnouncementValidationOrchestrator
             >>> from domprob.announcements.meth import AnnouncementMethod
             >>>
             >>> class SomeInstrument:

@@ -1,7 +1,7 @@
 Announcements
 =============
 
-.. automodule:: domprob.announcements.decorators
+.. automodule:: domprob.announcements.dec
     :members:
     :undoc-members:
     :show-inheritance:
@@ -29,27 +29,27 @@ Announcements
 Validation
 ----------
 
-.. automodule:: domprob.announcements.validation.base_validator
+.. automodule:: domprob.announcements.validate.base_validator
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validation.chain
+.. automodule:: domprob.announcements.validate.chain
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validation.chain_validation
+.. automodule:: domprob.announcements.validate.chain_validation
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validation.orchestrator
+.. automodule:: domprob.announcements.validate.orchestrator
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validation.validators
+.. automodule:: domprob.announcements.validate.validators
     :members:
     :undoc-members:
     :show-inheritance:
