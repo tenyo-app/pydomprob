@@ -800,8 +800,8 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
 
     def __repr__(self) -> str:
         # pylint: disable=line-too-long
-        """Returns a string representation of the
-        `InstrumentBoundAnnoMethod` instance.
+        """Returns a string representation of the `BoundSensorMethod`
+        instance.
 
         Returns:
             str: The string representation.

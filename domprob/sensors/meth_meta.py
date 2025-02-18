@@ -103,7 +103,7 @@ class SensorMetadata:
         """Iterates over all metadata entries recorded for the method.
 
         Yields:
-            AnnoMetadataItem: Metadata items associated with the
+            SensorMetadataEntry: Metadata items associated with the
                 method.
 
         Examples:

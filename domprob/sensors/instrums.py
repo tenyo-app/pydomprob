@@ -156,7 +156,7 @@ class Instruments(Generic[_InstruCls]):
 
         Provides a convenient way to initialise an `Instruments`
         object directly from a method without explicitly creating an
-        `AnnoMetadata` instance.
+        `SensorMetadata` instance.
 
         Args:
             method (`Callable[..., Any]`): The method for which the
