@@ -7,12 +7,12 @@ import pytest
 
 from domprob import sensor
 from domprob.sensors.instrums import Instruments
-from domprob.sensors.meth_meta import AnnouncementMetadata
+from domprob.sensors.meth_meta import SensorMetadata
 from domprob.sensors.meth import (
-    AnnouncementMethod,
-    BoundAnnouncementMethod,
+    SensorMethod,
+    BoundSensorMethod,
     PartialBindException,
-    AnnouncementMethodBinder,
+    SensorMethodBinder,
 )
 
 
@@ -44,47 +44,47 @@ def mock_method(mock_cls):
 
 @pytest.fixture
 def mock_instruments(mock_method):
-    mock_metadata = AnnouncementMetadata(mock_method)
+    mock_metadata = SensorMetadata(mock_method)
     return Instruments(mock_metadata)
 
 
 class TestPartialBindException:
     def test_exception(self, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
+        sensor_method = SensorMethod(mock_method)
         exception = TypeError("Some binding error")
         # Act
-        result = PartialBindException(announcement_method, exception)
+        result = PartialBindException(sensor_method, exception)
         # Assert
         assert isinstance(result, PartialBindException)
         assert "Failed to bind parameters" in str(result)
 
     def test_exception_repr(self, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
+        sensor_method = SensorMethod(mock_method)
         exception = TypeError("Some binding error")
         # Act
-        result = repr(PartialBindException(announcement_method, exception))
+        result = repr(PartialBindException(sensor_method, exception))
         # Assert
         assert (
-            result == f"PartialBindException(meth={announcement_method!r}, "
+            result == f"PartialBindException(meth={sensor_method!r}, "
             f"e={exception!r})"
         )
 
 
-class TestAnnouncementMethodBinder:
+class TestSensorMethodBinder:
     def test_initialisation(self, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
+        sensor_method = SensorMethod(mock_method)
         # Act
-        binder = AnnouncementMethodBinder(announcement_method)
+        binder = SensorMethodBinder(sensor_method)
         # Assert
-        assert binder.announce_meth == announcement_method
+        assert binder.sensor_meth == sensor_method
 
     def test_get_signature_instrument_defined(self, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(mock_method)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -96,8 +96,8 @@ class TestAnnouncementMethodBinder:
             def meth(self, foo: str, instrument: MockInstrument) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -111,8 +111,8 @@ class TestAnnouncementMethodBinder:
             def meth(self, mock_var_name: MockInstrument) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -131,8 +131,8 @@ class TestAnnouncementMethodBinder:
             def meth(self, mock_var_name: "MockInstrument") -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -149,8 +149,8 @@ class TestAnnouncementMethodBinder:
             def meth(self, mock_var_name: MockInstrument) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -168,8 +168,8 @@ class TestAnnouncementMethodBinder:
             def meth(self, mock_var_name) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -187,8 +187,8 @@ class TestAnnouncementMethodBinder:
             def meth(mock_var_name) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -207,15 +207,16 @@ class TestAnnouncementMethodBinder:
     ):
         # Arrange
         class Cls:
-            def meth(uhoh, mock_var_name) -> None:
+            # noinspection PyMethodParameters
+            def meth(uh_oh, mock_var_name) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
-        assert "uhoh" in signature.parameters.keys()
+        assert "uh_oh" in signature.parameters.keys()
         assert "instrument" in signature.parameters.keys()
         assert (
             signature.parameters.get("instrument").annotation
@@ -232,8 +233,8 @@ class TestAnnouncementMethodBinder:
             def meth() -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -248,8 +249,8 @@ class TestAnnouncementMethodBinder:
             def meth(self) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.meth)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.meth)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         signature = binder.get_signature()
         # Assert
@@ -258,37 +259,37 @@ class TestAnnouncementMethodBinder:
 
     def test_bind_self(self, mock_cls, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(mock_method)
+        binder = SensorMethodBinder(sensor_method)
         cls_instance = mock_cls()
         # Act
         bound_method = binder.bind(cls_instance)
         # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_instance,)
 
     def test_bind_self_and_instrument(self, mock_cls, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(mock_method)
+        binder = SensorMethodBinder(sensor_method)
         cls_instance = mock_cls()
         instrument = MockInstrument()
         # Act
         bound_method = binder.bind(cls_instance, instrument)
         # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_instance, instrument)
 
     def test_bind_self_and_kw_instrument(self, mock_cls, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(mock_method)
+        binder = SensorMethodBinder(sensor_method)
         cls_instance = mock_cls()
         instrument = MockInstrument()
         # Act
         bound_method = binder.bind(cls_instance, instrument=instrument)
         # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_instance, instrument)
 
     def test_bind_applies_defaults(self):
@@ -297,13 +298,13 @@ class TestAnnouncementMethodBinder:
             def method(self, x: int = 10) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.method)
+        binder = SensorMethodBinder(sensor_method)
         cls_instance = Cls()
         # Act
         bound_method = binder.bind(cls_instance)
         # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_instance, 10)
 
     def test_bind_does_not_override_explicit_arg_with_default(self):
@@ -312,13 +313,13 @@ class TestAnnouncementMethodBinder:
             def method(self, x: int = 10) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.method)
+        binder = SensorMethodBinder(sensor_method)
         cls_instance = Cls()
         # Act
         bound_method = binder.bind(cls_instance, 5)
         # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_instance, 5)
 
     def test_bind_fails_unexpected_arg(self):
@@ -327,8 +328,8 @@ class TestAnnouncementMethodBinder:
             def method(self, x: int = 10) -> None:
                 pass
 
-        announcement_method = AnnouncementMethod(Cls.method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(Cls.method)
+        binder = SensorMethodBinder(sensor_method)
         cls_instance = Cls()
         # Act
         with pytest.raises(PartialBindException) as exc:
@@ -341,59 +342,57 @@ class TestAnnouncementMethodBinder:
 
     def test_repr(self, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
-        binder = AnnouncementMethodBinder(announcement_method)
+        sensor_method = SensorMethod(mock_method)
+        binder = SensorMethodBinder(sensor_method)
         # Act
         binder_repr = repr(binder)
         # Assert
-        expected = (
-            f"AnnouncementMethodBinder(announce_meth={announcement_method!r})"
-        )
+        expected = f"SensorMethodBinder(sensor_meth={sensor_method!r})"
         assert binder_repr == expected
 
 
-class TestAnnouncementMethod:
+class TestSensorsMethod:
     def test_initialisation(self, mock_method, mock_instruments):
         # Arrange
         # Act
-        announcement_method = AnnouncementMethod(mock_method)
+        sensor_method = SensorMethod(mock_method)
         # Assert
-        assert announcement_method.meth == mock_method
-        assert announcement_method.supp_instrums == mock_instruments
+        assert sensor_method.meth == mock_method
+        assert sensor_method.supp_instrums == mock_instruments
 
     def test_repr(self, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
+        sensor_method = SensorMethod(mock_method)
         # Act
-        meth_repr = repr(announcement_method)
+        meth_repr = repr(sensor_method)
         # Assert
-        assert meth_repr == f"AnnouncementMethod(meth={mock_method!r})"
+        assert meth_repr == f"SensorMethod(meth={mock_method!r})"
 
     def test_bind(self, mock_cls, mock_method):
         # Arrange
-        announcement_method = AnnouncementMethod(mock_method)
+        sensor_method = SensorMethod(mock_method)
         mock_instrument = MockInstrument()
         cls_ = mock_cls()
         # Act
-        bound_method = announcement_method.bind(cls_, mock_instrument)
+        bound_method = sensor_method.bind(cls_, mock_instrument)
         _ = bound_method.instrument
         # Assert
-        assert isinstance(bound_method, BoundAnnouncementMethod)
+        assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_, mock_instrument)
         assert bound_method.params.kwargs == {}
 
 
-class TestBoundAnnouncementMethod:
+class TestBoundSensorMethod:
     @staticmethod
     def _create_b_meth(meth, *args, **kwargs):
-        announce_meth = AnnouncementMethod(meth)
+        sensor_method = SensorMethod(meth)
         sig = inspect.signature(meth)
         b_params = BoundArguments(sig, OrderedDict())
         # Bind the arguments correctly
         bound = sig.bind_partial(*args, **kwargs)
         # Assign the correct args and kwargs
         b_params.arguments = bound.arguments
-        return BoundAnnouncementMethod(announce_meth, b_params)
+        return BoundSensorMethod(sensor_method, b_params)
 
     def test_initialisation_arg(self, mock_cls):
         # Arrange
@@ -446,7 +445,7 @@ class TestBoundAnnouncementMethod:
         meth_repr = repr(b_meth)
         # Assert
         expected_repr = (
-            f"BoundAnnouncementMethod(announce_meth={b_meth._announce_meth!r},"
+            f"BoundSensorMethod(sensor_meth={b_meth._sensor_meth!r},"
             f" bound_params={b_meth.params!r})"
         )
         assert meth_repr == expected_repr

@@ -1,9 +1,9 @@
 class TestDecoratorImports:
-    def test_announcement_decorator(self):
+    def test_sensor_decorator(self):
         # Arrange
-        from domprob import sensor as alias_announcement
+        from domprob import sensor as alias_sensor
         from domprob.sensors.dec import sensor
 
         # Act
         # Assert
-        assert alias_announcement is sensor
+        assert alias_sensor is sensor

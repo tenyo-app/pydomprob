@@ -2,7 +2,7 @@ from typing import Any, Iterable
 
 import pytest
 
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 from domprob.consumers.consumer import ConsumerProtocol
 from domprob import BasicDispatcher
 from domprob.observations.observation import ObservationProtocol
@@ -28,7 +28,7 @@ def mock_consumer():
 
 class MockObservation(ObservationProtocol):
     @classmethod
-    def announcements(cls) -> Iterable[AnnouncementMethod]:
+    def sensors(cls) -> Iterable[SensorMethod]:
         pass
 
 

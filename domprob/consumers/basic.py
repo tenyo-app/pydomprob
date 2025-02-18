@@ -2,7 +2,7 @@ from collections.abc import Iterator, Collection, Generator
 from typing import Any, TypeVar, ParamSpec, Generic
 
 from domprob.consumers.consumer import ConsumerProtocol
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 from domprob.consumers.consumer import ConsumerException
 from domprob.observations.observation import ObservationProtocol
 
@@ -253,7 +253,7 @@ class ReqInstrumException(ConsumerException):
     Args:
         observation (_Obs): The observation instance where the missing
             instrument was required.
-        announcement (_Ann): The sensors method that failed due to
+        sensor (SensorMethod): The sensors method that failed due to
             the missing instrument.
         req_supp_instr (type[_Instrument]): The instrument type that
             was expected but not found.
@@ -264,12 +264,12 @@ class ReqInstrumException(ConsumerException):
     def __init__(
         self,
         observation: ObservationProtocol,
-        announcement: AnnouncementMethod,
+        sensor: SensorMethod,
         req_supp_instrum: type[Any],
         *instrum_imps: Any,
     ) -> None:
         self.observation = observation
-        self.announcement = announcement
+        self.sensor = sensor
         self.req_supp_instr = req_supp_instrum
         self.instrum_imps = instrum_imps
         super().__init__(self.msg)
@@ -284,7 +284,7 @@ class ReqInstrumException(ConsumerException):
                 available instrument implementations.
         """
         req_name = self.req_supp_instr.__name__
-        meth_name = self.announcement.meth.__name__
+        meth_name = self.sensor.meth.__name__
         obs_meth = f"{self.observation.__class__.__name__}.{meth_name}(...)"
         imps_str = ", ".join([f"`{repr(i)}`" for i in self.instrum_imps])
         return (
@@ -294,6 +294,7 @@ class ReqInstrumException(ConsumerException):
 
 
 class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
+    # noinspection PyMethodMayBeStatic
     """A consumer that processes observations by applying instrument
     implementations.
 
@@ -313,14 +314,14 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         ...
         >>> class SomeObservation(BaseObservation):
         ...     @sensor(LoggerInstrument)
-        ...     def announce_event(self, instrument: LoggerInstrument):
-        ...         instrument.log("Event announced!")
+        ...     def sense_event(self, instrument: LoggerInstrument):
+        ...         instrument.log("Event sensed!")
         ...
         >>> logger = LoggerInstrument()
         >>> consumer = BasicConsumer(logger)
         >>>
         >>> consumer.consume(SomeObservation())
-        LOG: Event announced!
+        LOG: Event sensed!
     """
 
     def __init__(self, *instruments: _Instrument) -> None:
@@ -345,7 +346,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
             observation (ObservationProtocol): The observation to
                 process.
         """
-        for ann in observation.announcements():
+        for ann in observation.sensors():
             for instrum_imp in self.instrum_imps(observation, ann):
                 if instrum_imp is not None:
                     ann.meth(observation, instrum_imp)  # Executes sensors
@@ -353,16 +354,16 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
     def instrum_imps(
         self,
         observation: ObservationProtocol,
-        announcement: AnnouncementMethod,
+        sensor: SensorMethod,
     ) -> Generator[_Instrument | None, None, None]:
         # noinspection PyCallingNonCallable
-        """Retrieves instrument implementations required for an
-        sensors.
+        # noinspection PyMethodMayBeStatic
+        """Retrieves instrument implementations required for sensors.
 
         Args:
             observation (ObservationProtocol): The observation being
                 processed.
-            announcement (AnnouncementMethod): The sensors to
+            sensor (SensorMethod): The sensors to
                 handle.
 
         Yields:
@@ -375,7 +376,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
 
         Example:
             >>> from domprob import sensor, BaseObservation
-            >>> from domprob.sensors.meth import AnnouncementMethod
+            >>> from domprob.sensors.meth import SensorMethod
             >>>
             >>> class LoggerInstrument:
             ...     def log(self, message: str):
@@ -383,22 +384,22 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
             ...
             >>> class SomeObservation(BaseObservation):
             ...     @sensor(LoggerInstrument)
-            ...     def announce_event(self, instrument: LoggerInstrument):
-            ...         instrument.log("Event announced!")
+            ...     def sense_observation(self, instrument: LoggerInstrument):
+            ...         instrument.log("Event sensed!")
             ...
             >>> logger = LoggerInstrument()
             >>> consumer = BasicConsumer(logger)
-            >>> announce_meth = AnnouncementMethod(SomeObservation.announce_event)
+            >>> sensor_meth = SensorMethod(SomeObservation.sense_observation)
             >>>
-            >>> list(consumer.instrum_imps(SomeObservation(), announce_meth))
+            >>> list(consumer.instrum_imps(SomeObservation(), sensor_meth))
             [<domprob.consumers.basic.LoggerInstrument object at 0x...>]
         """
-        for supp_instrum, req in announcement.supp_instrums:
+        for supp_instrum, req in sensor.supp_instrums:
             try:
                 instrum_imp = self.instrums.get(supp_instrum, req)
             except KeyError as e:
                 raise ReqInstrumException(
-                    observation, announcement, supp_instrum, *self.instrums
+                    observation, sensor, supp_instrum, *self.instrums
                 ) from e
             yield instrum_imp
 

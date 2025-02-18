@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.exc import SensorException
 from domprob.sensors.validate.base_val import BaseValidator
 
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 _ChainLink = TypeVar("_ChainLink", bound=BaseValidator)
 
 
-class ValidationChainException(AnnouncementException):
+class ValidationChainException(SensorException):
     """Base exception class for errors related to validate chains.
 
     This exception serves as the root for all validate chain-related

@@ -14,14 +14,12 @@ from typing import (
     get_type_hints,
 )
 
-from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.exc import SensorException
 from domprob.sensors.instrums import Instruments
-from domprob.sensors.validate.orch import (
-    AnnouncementValidationOrchestrator,
-)
+from domprob.sensors.validate.orch import SensorValidationOrchestrator
 
 
-class PartialBindException(AnnouncementException):
+class PartialBindException(SensorException):
     # pylint: disable=line-too-long
     """Exception raised when binding arguments to a method's signature
     fails.
@@ -30,13 +28,13 @@ class PartialBindException(AnnouncementException):
     argument binding, including missing required parameters.
 
     Attributes:
-        meth (AnnouncementMethod): The method whose arguments failed
+        meth (SensorMethod): The method whose arguments failed
             to bind.
         e (Exception): The original exception that caused the
             failure.
     """
 
-    def __init__(self, meth: AnnouncementMethod, e: Exception) -> None:
+    def __init__(self, meth: SensorMethod, e: Exception) -> None:
         self.meth = meth
         self.e = e
         super().__init__(self.msg)
@@ -66,45 +64,45 @@ class PartialBindException(AnnouncementException):
         return f"{self.__class__.__name__}(meth={self.meth!r}, e={self.e!r})"
 
 
-_AnnounceMeth: TypeAlias = "AnnouncementMethod[_PMeth, _RMeth]"
+_SensorMeth: TypeAlias = "SensorMethod[_PMeth, _RMeth]"
 
 
-class AnnouncementMethodBinder:
-    """Handles argument binding for an `AnnouncementMethod`.
+class SensorMethodBinder:
+    """Handles argument binding for an `SensorMethod`.
 
     This class provides utilities for binding arguments to the method
-    signature of an `AnnouncementMethod`, both partially and fully. It
+    signature of an `SensorMethod`, both partially and fully. It
     ensures that the provided arguments match the method signature and
     raises an exception if binding fails.
 
     Attributes:
-        announce_meth (AnnouncementMethod): The method wrapper
+        sensor_meth (SensorMethod): The method wrapper
             instance for which arguments will be bound.
 
     Args:
-        announce_meth (AnnouncementMethod): The method wrapper
+        sensor_meth (SensorMethod): The method wrapper
             instance for which arguments will be bound.
 
     Examples:
         >>> from collections import OrderedDict
         >>> from domprob.sensors.meth import (
-        ...     AnnouncementMethod, AnnouncementMethodBinder
+        ...     SensorMethod, SensorMethodBinder
         ... )
         >>>
         >>> class Foo:
         ...     def bar(self, x: int = 5) -> None:
         ...         pass
         >>>
-        >>> meth = AnnouncementMethod(Foo.bar)
-        >>> binder = AnnouncementMethodBinder(meth)
+        >>> meth = SensorMethod(Foo.bar)
+        >>> binder = SensorMethodBinder(meth)
         >>> binder
-        AnnouncementMethodBinder(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>))
+        SensorMethodBinder(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>))
     """
 
     _instr: str = "instrument"
 
-    def __init__(self, announce_meth: _AnnounceMeth) -> None:
-        self.announce_meth = announce_meth
+    def __init__(self, sensor_meth: _SensorMeth) -> None:
+        self.sensor_meth = sensor_meth
 
     @staticmethod
     def _apply_defaults(b_params: BoundArguments) -> BoundArguments:
@@ -125,15 +123,15 @@ class AnnouncementMethodBinder:
         Examples:
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import (
-            ...     AnnouncementMethod, AnnouncementMethodBinder
+            ...     SensorMethod, SensorMethodBinder
             ... )
             >>>
             >>> class Foo:
             ...     def bar(self, x: int = 5) -> None:
             ...         pass
             >>>
-            >>> meth = AnnouncementMethod(Foo.bar)
-            >>> binder = AnnouncementMethodBinder(meth)
+            >>> meth = SensorMethod(Foo.bar)
+            >>> binder = SensorMethodBinder(meth)
             >>>
             >>> signature = inspect.signature(Foo.bar)
             >>> b_arguments = BoundArguments(signature, OrderedDict())
@@ -166,15 +164,15 @@ class AnnouncementMethodBinder:
         Examples:
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import (
-            ...     AnnouncementMethod, AnnouncementMethodBinder
+            ...     SensorMethod, SensorMethodBinder
             ... )
             >>>
             >>> class Foo:
             ...     def bar(self, x: int, bool_: bool = True) -> None:
             ...         pass
             >>>
-            >>> meth = AnnouncementMethod(Foo.bar)
-            >>> binder = AnnouncementMethodBinder(meth)
+            >>> meth = SensorMethod(Foo.bar)
+            >>> binder = SensorMethodBinder(meth)
             >>>
             >>> b_arguments = binder._bind_partial(5, bool_=False)
             >>> b_arguments
@@ -191,18 +189,18 @@ class AnnouncementMethodBinder:
         try:
             return sig.bind_partial(*args, **kwargs)
         except TypeError as e:
-            raise PartialBindException(self.announce_meth, e) from e
+            raise PartialBindException(self.sensor_meth, e) from e
 
     def bind(
         self, *args: Any, **kwargs: Any
-    ) -> BoundAnnouncementMethod[_PMeth, _RMeth]:
+    ) -> BoundSensorMethod[_PMeth, _RMeth]:
         # pylint: disable=line-too-long
         """Fully binds arguments to the method signature and returns a
         bound method.
 
         This method ensures that all required arguments for the method
         are bound. It applies default values where applicable and
-        returns a `BoundAnnouncementMethod` instance representing the
+        returns a `BoundSensorMethod` instance representing the
         method with its bound parameters.
 
         Args:
@@ -210,7 +208,7 @@ class AnnouncementMethodBinder:
             **kwargs (Any): Keyword arguments to bind.
 
         Returns:
-            BoundAnnouncementMethod: A wrapper around the method with
+            BoundSensorMethod: A wrapper around the method with
                 bound arguments.
 
         Raises:
@@ -220,19 +218,19 @@ class AnnouncementMethodBinder:
         Examples:
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import (
-            ...     AnnouncementMethod, AnnouncementMethodBinder
+            ...     SensorMethod, SensorMethodBinder
             ... )
             >>>
             >>> class Foo:
             ...     def bar(self, x: int, bool_: bool = True) -> None:
             ...         pass
             >>>
-            >>> meth = AnnouncementMethod(Foo.bar)
-            >>> binder = AnnouncementMethodBinder(meth)
+            >>> meth = SensorMethod(Foo.bar)
+            >>> binder = SensorMethodBinder(meth)
             >>>
             >>> bound_meth = binder.bind(5)
             >>> bound_meth
-            BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=5, bool_=True)>)
+            BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=5, bool_=True)>)
 
             >>> try:
             ...     _ = binder._bind_partial(5, y=10)
@@ -243,7 +241,7 @@ class AnnouncementMethodBinder:
         """
         b_params = self._bind_partial(*args, **kwargs)
         b_params = self._apply_defaults(b_params)
-        return BoundAnnouncementMethod(self.announce_meth, b_params)
+        return BoundSensorMethod(self.sensor_meth, b_params)
 
     def _rn(self, param: inspect.Parameter) -> inspect.Parameter:
         return param.replace(name=self._instr)
@@ -251,8 +249,8 @@ class AnnouncementMethodBinder:
     def _infer_ann_params(
         self, params: ValuesView[inspect.Parameter]
     ) -> Generator[Parameter, Any, None] | None:
-        instrums = (i for i, _ in self.announce_meth.supp_instrums)
-        type_hints = get_type_hints(self.announce_meth.meth)
+        instrums = (i for i, _ in self.sensor_meth.supp_instrums)
+        type_hints = get_type_hints(self.sensor_meth.meth)
         for param in params:
             obj = param.annotation
             if obj is inspect.Parameter.empty:  # No annotation defined
@@ -289,11 +287,11 @@ class AnnouncementMethodBinder:
 
     def get_signature(self) -> inspect.Signature:
         """Retrieves the method signature of the wrapped
-        `AnnouncementMethod`.
+        `SensorMethod`.
 
         If an 'instrument' argument is not defined, manipulation
         occurs before binding to enable instrument access on the
-        `BoundAnnouncementMethod` wrapper class. The parameters in the
+        `BoundSensorMethod` wrapper class. The parameters in the
         method signature will change so that a parameter is renamed to
         'instrument'. In priority order, an attempt is made to
         manipulate the parameters in the following ways:
@@ -320,12 +318,12 @@ class AnnouncementMethodBinder:
             >>> def example_method(x: int, y: str) -> None:
             ...     pass
             ...
-            >>> method = AnnouncementMethod(example_method)
-            >>> binder = AnnouncementMethodBinder(method)
+            >>> method = SensorMethod(example_method)
+            >>> binder = SensorMethodBinder(method)
             >>> binder.get_signature()
             <Signature (instrument: 'int', y: 'str') -> 'None'>
         """
-        sig = inspect.signature(self.announce_meth.meth)
+        sig = inspect.signature(self.sensor_meth.meth)
         if self._instr in sig.parameters.keys():
             return sig
         inf_params = self._infer_ann_params(sig.parameters.values())
@@ -336,7 +334,7 @@ class AnnouncementMethodBinder:
     def __repr__(self) -> str:
         # pylint: disable=line-too-long
         """Returns a string representation of the
-        `AnnouncementMethodBinder` instance.
+        `SensorMethodBinder` instance.
 
         Returns:
             str: A string representation of the instance.
@@ -345,14 +343,12 @@ class AnnouncementMethodBinder:
             >>> def example_method():
             ...     pass
             ...
-            >>> method = AnnouncementMethod(example_method)
-            >>> binder = AnnouncementMethodBinder(method)
+            >>> method = SensorMethod(example_method)
+            >>> binder = SensorMethodBinder(method)
             >>> repr(binder)
-            'AnnouncementMethodBinder(announce_meth=AnnouncementMethod(meth=<function example_method at 0x...>))'
+            'SensorMethodBinder(sensor_meth=SensorMethod(meth=<function example_method at 0x...>))'
         """
-        return (
-            f"{self.__class__.__name__}(announce_meth={self.announce_meth!r})"
-        )
+        return f"{self.__class__.__name__}(sensor_meth={self.sensor_meth!r})"
 
 
 # Typing helpers: Describes the wrapped method signature for wrapper
@@ -360,15 +356,15 @@ _PMeth = ParamSpec("_PMeth")
 _RMeth = TypeVar("_RMeth")
 
 
-class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
+class BaseSensorMethod(Generic[_PMeth, _RMeth]):
     """Base class for sensors-related methods.
 
     This class provides shared functionality for both
-    `AnnouncementMethod` and `BoundAnnouncementMethod`, including
+    `SensorMethod` and `BoundSensorMethod`, including
     caching and retrieval of supported instruments.
 
     Args:
-        meth (Callable): The method associated with this sensors.
+        meth (Callable): The method associated with these sensors.
     """
 
     def __init__(
@@ -387,16 +383,16 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
         the sensors.
 
         Returns:
-            Callable[_PMeth, _RMeth]: The method associated with this
+            Callable[_PMeth, _RMeth]: The method associated with these
                 sensors.
 
         Examples:
-            >>> from domprob.sensors.meth import BaseAnnouncementMethod
+            >>> from domprob.sensors.meth import BaseSensorMethod
             >>>
             >>> def example_method():
             ...     pass
             ...
-            >>> base = BaseAnnouncementMethod(example_method)
+            >>> base = BaseSensorMethod(example_method)
             >>> base.meth
             <function example_method at 0x...>
         """
@@ -414,7 +410,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
                 about the method’s supported instruments.
 
         Examples:
-            >>> from domprob.sensors.meth import BaseAnnouncementMethod
+            >>> from domprob.sensors.meth import BaseSensorMethod
             >>>
             >>> class SomeInstrument:
             ...     pass
@@ -422,14 +418,14 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
             >>> def example_method(instrument: SomeInstrument) -> None:
             ...     pass
             ...
-            >>> base = BaseAnnouncementMethod(example_method)
+            >>> base = BaseSensorMethod(example_method)
             >>> base.supp_instrums
-            Instruments(metadata=AnnouncementMetadata(method=<function example_method at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function example_method at 0x...>))
         """
         return self._supp_instrums or Instruments.from_method(self.meth)
 
     def __repr__(self) -> str:
-        """Returns a string representation of the `BaseAnnouncement`
+        """Returns a string representation of the `BaseSensor`
         instance.
 
         Returns:
@@ -447,16 +443,16 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> # Create an AnnouncementMethod instance
-            >>> bar_method = BaseAnnouncementMethod(Foo.bar)
+            >>> # Create an SensorMethod instance
+            >>> bar_method = BaseSensorMethod(Foo.bar)
             >>>
             >>> repr(bar_method)
-            'BaseAnnouncementMethod(meth=<function Foo.bar at 0x...>)'
+            'BaseSensorMethod(meth=<function Foo.bar at 0x...>)'
         """
         return f"{self.__class__.__name__}(meth={self.meth!r})"
 
 
-class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
+class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
     """Represents a decorated method with associated metadata.
 
     This class acts as a wrapper and provides an interface to interact
@@ -480,11 +476,11 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         ...     def bar(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> # Create an AnnouncementMethod instance
-        >>> bar_method = AnnouncementMethod(Foo.bar)
+        >>> # Create an SensorMethod instance
+        >>> bar_method = SensorMethod(Foo.bar)
         >>>
         >>> bar_method
-        AnnouncementMethod(meth=<function Foo.bar at 0x...>)
+        SensorMethod(meth=<function Foo.bar at 0x...>)
     """
 
     __slots__: list[str] = ["_meth", "_supp_instrums", "_binder"]
@@ -495,27 +491,27 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         supp_instrums: Instruments[Any] | None = None,
     ) -> None:
         super().__init__(meth, supp_instrums)
-        self._binder = AnnouncementMethodBinder(self)
+        self._binder = SensorMethodBinder(self)
 
     @classmethod
     def from_callable(
         cls, meth: Callable[_PMeth, _RMeth]
-    ) -> _AnnounceMeth | None:
-        """Creates an `AnnouncementMethod` instance from a callable if
+    ) -> _SensorMeth | None:
+        """Creates an `SensorMethod` instance from a callable if
         it supports instruments.
 
         This class method checks if the provided callable (`meth`) has
         associated metadata for supported instruments. If it does, an
-        `AnnouncementMethod` instance is created and returned.
+        `SensorMethod` instance is created and returned.
         Otherwise, `None` is returned.
 
         Args:
             meth (Callable[_PMeth, _RMeth]): The method or function to
-                be wrapped as an `AnnouncementMethod`.
+                be wrapped as an `SensorMethod`.
 
         Returns:
-            AnnouncementMethod[_PMeth, _RMeth] | None:
-                - An instance of `AnnouncementMethod` if the callable
+            SensorMethod[_PMeth, _RMeth] | None:
+                - An instance of `SensorMethod` if the callable
                   has associated metadata.
                 - `None` if the callable does not support instruments.
 
@@ -530,31 +526,31 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         print(f"Instrument: {instrument}")
             ...
-            >>> # Create an AnnouncementMethod instance from a method
-            >>> announce_meth = AnnouncementMethod.from_callable(Foo.bar)
-            >>> assert isinstance(announce_meth, AnnouncementMethod)
-            >>> print(announce_meth)
-            AnnouncementMethod(meth=<function Foo.bar at 0x...>)
+            >>> # Create an SensorMethod instance from a method
+            >>> sensor_meth = SensorMethod.from_callable(Foo.bar)
+            >>> assert isinstance(sensor_meth, SensorMethod)
+            >>> print(sensor_meth)
+            SensorMethod(meth=<function Foo.bar at 0x...>)
 
-            >>> # Attempt to create an AnnouncementMethod from a method without metadata
-            >>> def no_announcement_method():
+            >>> # Attempt to create an SensorMethod from a method without metadata
+            >>> def no_sensor_method():
             ...     pass
             ...
-            >>> assert AnnouncementMethod.from_callable(no_announcement_method) is None
+            >>> assert SensorMethod.from_callable(no_sensor_method) is None
         """
         supp_instrums = Instruments.from_method(meth)
         return cls(meth, supp_instrums) if supp_instrums else None
 
     def bind(
         self, cls_instance: Any, *args: _PMeth.args, **kwargs: _PMeth.kwargs
-    ) -> BoundAnnouncementMethod[Concatenate[Any, _PMeth], _RMeth]:
+    ) -> BoundSensorMethod[Concatenate[Any, _PMeth], _RMeth]:
         # noinspection PyShadowingNames
         # pylint: disable=line-too-long
         """Binds passed parameters to the method, returning a
         partially bound version.
 
         This method partially binds the provided runtime arguments. It
-        returns a `BoundAnnouncementMethod` object that represents the
+        returns a `BoundSensorMethod` object that represents the
         partially bound method, which can later be executed with
         additional arguments if needed.
 
@@ -567,7 +563,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
                 to the method.
 
         Returns:
-            BoundAnnouncementMethod: A new wrapper representing a
+            BoundSensorMethod: A new wrapper representing a
                 partially bound method.
 
         Examples:
@@ -582,8 +578,8 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> # Create an AnnouncementMethod instance
-            >>> bar_method = AnnouncementMethod(Foo.bar)
+            >>> # Create an SensorMethod instance
+            >>> bar_method = SensorMethod(Foo.bar)
             >>>
             >>> # Create an instance of the class and instrument
             >>> instrument_instance = SomeInstrument()
@@ -593,12 +589,12 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> args = (foo, instrument_instance)
             >>> bound_method = bar_method.bind(*args)
             >>> bound_method
-            BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
+            BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
         """
         return self._binder.bind(cls_instance, *args, **kwargs)
 
 
-class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
+class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
     # pylint: disable=line-too-long
     """Represents a partially bound method with associated metadata.
 
@@ -608,7 +604,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
     parameters before the method is executed.
 
     Args:
-        announce_meth (AnnouncementMethod): Original method wrapper
+        sensor_meth (SensorMethod): Original method wrapper
             that's had parameters bound.
         bound_params (inspect.BoundArguments): Parameters that are
             bound to a method.
@@ -625,29 +621,29 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         ...     def bar(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> # Create an BoundAnnouncementMethod instance
+        >>> # Create an BoundSensorMethod instance
         >>> from collections import OrderedDict
-        >>> announce_meth = AnnouncementMethod(Foo.bar)
+        >>> sensor_meth = SensorMethod(Foo.bar)
         >>> sig = inspect.signature(Foo.bar)
         >>> b_args = BoundArguments(sig, OrderedDict())
         >>> # Bind the arguments correctly
         >>> bound = sig.bind_partial(Foo(), SomeInstrument())
         >>> b_args.arguments = bound.arguments
-        >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
+        >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
         >>>
         >>> bound_method
-        BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
+        BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
     """
 
     def __init__(
         self,
-        announce_meth: AnnouncementMethod[_PMeth, _RMeth],
+        sensor_meth: SensorMethod[_PMeth, _RMeth],
         bound_params: inspect.BoundArguments,
     ) -> None:
-        super().__init__(announce_meth.meth)
-        self._announce_meth = announce_meth
+        super().__init__(sensor_meth.meth)
+        self._sensor_meth = sensor_meth
         self._params = bound_params
-        self._validator = AnnouncementValidationOrchestrator()
+        self._validator = SensorValidationOrchestrator()
 
     @property
     def params(self) -> inspect.BoundArguments:
@@ -669,20 +665,20 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> # Create an BoundAnnouncementMethod instance
+            >>> # Create an BoundSensorMethod instance
             >>> import inspect
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import (
-            ...     AnnouncementMethod, BoundAnnouncementMethod
+            ...     SensorMethod, BoundSensorMethod
             ... )
             >>>
-            >>> announce_meth = AnnouncementMethod(Foo.bar)
+            >>> sensor_meth = SensorMethod(Foo.bar)
             >>> sig = inspect.signature(Foo.bar)
             >>> b_args = BoundArguments(sig, OrderedDict())
             >>> # Bind the arguments correctly
             >>> bound = sig.bind_partial(Foo(), SomeInstrument())
             >>> b_args.arguments = bound.arguments
-            >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
+            >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
             >>> bound_method.instrument
             <....SomeInstrument object at 0x...>
@@ -709,20 +705,20 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> # Create an BoundAnnouncementMethod instance
+            >>> # Create an BoundSensorMethod instance
             >>> import inspect
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import (
-            ...     AnnouncementMethod, BoundAnnouncementMethod
+            ...     SensorMethod, BoundSensorMethod
             ... )
             >>>
-            >>> announce_meth = AnnouncementMethod(Foo.bar)
+            >>> sensor_meth = SensorMethod(Foo.bar)
             >>> sig = inspect.signature(Foo.bar)
             >>> b_args = BoundArguments(sig, OrderedDict())
             >>> # Bind the arguments correctly
             >>> bound = sig.bind_partial(Foo(), SomeInstrument())
             >>> b_args.arguments = bound.arguments
-            >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
+            >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
             >>> bound_method.instrument
             <....SomeInstrument object at 0x...>
@@ -747,15 +743,15 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> str:
             ...         return "Executed"
             ...
-            >>> # Create an BoundAnnouncementMethod instance
+            >>> # Create an BoundSensorMethod instance
             >>> from collections import OrderedDict
-            >>> announce_meth = AnnouncementMethod(Foo.bar)
+            >>> sensor_meth = SensorMethod(Foo.bar)
             >>> sig = inspect.signature(Foo.bar)
             >>> b_args = BoundArguments(sig, OrderedDict())
             >>> # Bind the arguments correctly
             >>> bound = sig.bind_partial(Foo(), SomeInstrument())
             >>> b_args.arguments = bound.arguments
-            >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
+            >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
             >>> bound_method.execute()
             'Executed'
@@ -772,7 +768,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         raised.
 
         Raises:
-            AnnouncementValidationException: If any validate rule
+            SensorValidationException: If any validate rule
                 fails.
 
         Examples:
@@ -787,15 +783,15 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> # Create an BoundAnnouncementMethod instance
+            >>> # Create an BoundSensorMethod instance
             >>> from collections import OrderedDict
-            >>> announce_meth = AnnouncementMethod(Foo.bar)
+            >>> sensor_meth = SensorMethod(Foo.bar)
             >>> sig = inspect.signature(Foo.bar)
             >>> b_args = BoundArguments(sig, OrderedDict())
             >>> # Bind the arguments correctly
             >>> bound = sig.bind_partial(Foo(), SomeInstrument())
             >>> b_args.arguments = bound.arguments
-            >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
+            >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
             >>> # Validate the bound method
             >>> bound_method.validate()
@@ -822,22 +818,22 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     def bar(self, instrument: SomeInstrument) -> str:
             ...         return "Executed"
             ...
-            >>> # Create an BoundAnnouncementMethod instance
+            >>> # Create an BoundSensorMethod instance
             >>> from collections import OrderedDict
-            >>> announce_meth = AnnouncementMethod(Foo.bar)
+            >>> sensor_meth = SensorMethod(Foo.bar)
             >>> sig = inspect.signature(Foo.bar)
             >>> b_args = BoundArguments(sig, OrderedDict())
             >>> # Bind the arguments correctly
             >>> bound = sig.bind_partial(Foo(), SomeInstrument())
             >>> b_args.arguments = bound.arguments
-            >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
+            >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
             >>> repr(bound_method)
-            'BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)'
+            'BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)'
 
         """
         params = (
-            f"announce_meth={self._announce_meth!r}, "
+            f"sensor_meth={self._sensor_meth!r}, "
             f"bound_params={self.params!r}"
         )
         return f"{self.__class__.__name__}({params})"

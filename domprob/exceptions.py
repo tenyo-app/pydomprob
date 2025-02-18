@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.exc import SensorException
 from domprob.sensors.meth import PartialBindException
 from domprob.sensors.validate.base_val import ValidatorException
 from domprob.sensors.validate.chain import EmptyChainException
@@ -21,7 +21,7 @@ from domprob.consumers.consumer import ConsumerException
 
 __all__: Sequence[str] = [
     "DomprobException",
-    "AnnouncementException",
+    "SensorException",
     "PartialBindException",
     "ValidatorException",
     "InstrumTypeException",

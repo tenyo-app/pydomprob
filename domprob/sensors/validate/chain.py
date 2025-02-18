@@ -74,7 +74,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
             >>> from domprob.sensors.validate.chain import (
             ...     ABCLinkValidatorContext, ValidationChain
             ... )
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> chain = ValidationChain(BaseValidator)
             >>> bool(chain)
@@ -103,10 +103,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -138,10 +138,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -176,10 +176,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain_1 = ValidationChain(BaseValidator)
@@ -227,10 +227,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -254,10 +254,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -284,10 +284,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -335,10 +335,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -420,10 +420,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -439,10 +439,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -474,10 +474,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -513,10 +513,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)
@@ -542,7 +542,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> chain = ValidationChain(BaseValidator)
             >>> try:
@@ -566,7 +566,7 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> chain = ValidationChain(BaseValidator)
             >>> repr(chain)
@@ -585,10 +585,10 @@ class ValidationChain(Generic[_ChainLink], MutableSequence[_ChainLink]):
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> from domprob.sensors.validate.chain import ValidationChain
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, method: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> chain = ValidationChain(BaseValidator)

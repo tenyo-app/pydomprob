@@ -1,8 +1,8 @@
 import pytest
 
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 from domprob import sensor
-from domprob.observations.base import BaseObservation, AnnouncementSet
+from domprob.observations.base import BaseObservation, SensorSet
 from domprob.observations.observation import ObservationProtocol
 
 
@@ -12,7 +12,7 @@ class MockObservation(BaseObservation):
         self.called = False
 
     @sensor("mock_instrument")  # type: ignore
-    def sample_announcement(self, _: str):
+    def sample_sensor(self, _: str):
         self.called = True
         return "Hello, Observer!"
 
@@ -22,60 +22,60 @@ def observation_cls():
     return MockObservation
 
 
-class TestAnnouncementSet:
+class TestSensorSet:
 
     def test_init(self, observation_cls):
         # Arrange
-        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        meth = SensorMethod(observation_cls.sample_sensor)
         # Act
-        announcements = AnnouncementSet(meth, meth)
+        sensors = SensorSet(meth, meth)
         # Assert
-        assert len(announcements._announcement_methods) == 1
-        assert announcements._announcement_methods == {meth}
+        assert len(sensors._sensor_methods) == 1
+        assert sensors._sensor_methods == {meth}
 
     def test_from_observation_cls_method(self, observation_cls):
         # Arrange
         # Act
-        announcements = AnnouncementSet.from_observation(observation_cls)
+        sensors = SensorSet.from_observation(observation_cls)
         # Assert
-        assert len(announcements._announcement_methods) == 1
-        (meth,) = announcements._announcement_methods
-        assert meth.meth == observation_cls.sample_announcement
+        assert len(sensors._sensor_methods) == 1
+        (meth,) = sensors._sensor_methods
+        assert meth.meth == observation_cls.sample_sensor
 
     def test_contains(self, observation_cls):
         # Arrange
-        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        meth = SensorMethod(observation_cls.sample_sensor)
         # Act
-        announcements = AnnouncementSet(meth, meth)
+        sensors = SensorSet(meth, meth)
         # Assert
-        assert meth in announcements
-        assert "" not in announcements
-        assert AnnouncementMethod(lambda: ...) not in announcements
+        assert meth in sensors
+        assert "" not in sensors
+        assert SensorMethod(lambda: ...) not in sensors
 
     def test_iter(self, observation_cls):
         # Arrange
-        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        meth = SensorMethod(observation_cls.sample_sensor)
         # Act
-        announcement_set = AnnouncementSet(meth, meth)
+        sensor_set = SensorSet(meth, meth)
         # Assert
-        assert set(iter(announcement_set)) == {meth, meth}
+        assert set(iter(sensor_set)) == {meth, meth}
 
     def test_len(self, observation_cls):
         # Arrange
-        meth = AnnouncementMethod(observation_cls.sample_announcement)
+        meth = SensorMethod(observation_cls.sample_sensor)
         # Act
-        announcements = AnnouncementSet(meth, meth)
+        sensors = SensorSet(meth, meth)
         # Assert
-        assert len(announcements) == 1
+        assert len(sensors) == 1
 
     def test_repr(self, observation_cls):
         # Arrange
-        meth = AnnouncementMethod(observation_cls.sample_announcement)
-        announcements = AnnouncementSet(meth, meth)
+        meth = SensorMethod(observation_cls.sample_sensor)
+        sensors = SensorSet(meth, meth)
         # Act
-        announcements_repr = repr(announcements)
+        sensors_repr = repr(sensors)
         # Assert
-        assert announcements_repr == "AnnouncementSet(num_announcements=1)"
+        assert sensors_repr == "SensorSet(num_sensors=1)"
 
 
 class TestBaseObservation:
@@ -88,35 +88,35 @@ class TestBaseObservation:
         assert isinstance(observation, BaseObservation)
         assert isinstance(observation, ObservationProtocol)
 
-    def test_announcements_generator(self, observation_cls):
+    def test_sensors_generator(self, observation_cls):
         # Arrange
         # Act
-        announcements = list(observation_cls.announcements())
+        sensors = list(observation_cls.sensors())
         # Assert
-        assert len(announcements) == 1
-        assert isinstance(announcements[0], AnnouncementMethod)
-        assert announcements[0].meth == observation_cls.sample_announcement
+        assert len(sensors) == 1
+        assert isinstance(sensors[0], SensorMethod)
+        assert sensors[0].meth == observation_cls.sample_sensor
 
-    def test_announcements_caching(self, observation_cls):
+    def test_sensors_caching(self, observation_cls):
         # Arrange
-        old_announcement = list(observation_cls.announcements())[0]
+        old_sensor = list(observation_cls.sensors())[0]
 
         # Act
-        def new_announcement():
+        def new_sensor():
             return "New sensors"
 
-        observation_cls.new_announcement = new_announcement
-        cached_announcements = list(observation_cls.announcements())
+        observation_cls.new_sensor = new_sensor
+        cached_sensors = list(observation_cls.sensors())
         # Assert
-        assert len(cached_announcements) == 1
-        assert cached_announcements[0] == old_announcement
+        assert len(cached_sensors) == 1
+        assert cached_sensors[0] == old_sensor
 
     def test_len_method(self, observation_cls):
         # Arrange
         # Act
-        num_announcements = len(observation_cls())
+        num_sensors = len(observation_cls())
         # Assert
-        assert num_announcements == 1
+        assert num_sensors == 1
 
     def test_repr_method(self, observation_cls):
         # Arrange

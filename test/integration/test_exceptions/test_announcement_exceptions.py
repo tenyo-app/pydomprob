@@ -1,17 +1,17 @@
-class TestAnnouncementExceptionImport:
-    def test_announcement_exception(self):
+class TestSensorExceptionImport:
+    def test_sensor_exception(self):
         # Arrange
         from domprob.exceptions import (
-            AnnouncementException as AliasAnnouncementException,
+            SensorException as AliasSensorException,
         )
-        from domprob.sensors.exc import AnnouncementException
+        from domprob.sensors.exc import SensorException
 
         # Act
         # Assert
-        assert AliasAnnouncementException is AnnouncementException
+        assert AliasSensorException is SensorException
 
 
-class TestAnnouncementMethodExceptionImport:
+class TestSensorMethodExceptionImport:
 
     def test_partial_bind_exception(self):
         # Arrange
@@ -25,7 +25,7 @@ class TestAnnouncementMethodExceptionImport:
         assert AliasPartialBindException is PartialBindException
 
 
-class TestAnnouncementValidationExceptionImports:
+class TestSensorValidationExceptionImports:
 
     def test_validater_exception(self):
         # Arrange
@@ -82,7 +82,7 @@ class TestAnnouncementValidationExceptionImports:
         )
 
 
-class TestAnnouncementChainExceptionImport:
+class TestSensorChainExceptionImport:
 
     def test_empty_chain_exception(self):
         # Arrange
@@ -96,7 +96,7 @@ class TestAnnouncementChainExceptionImport:
         assert AliasEmptyChainException is EmptyChainException
 
 
-class TestAnnouncementChainValidationExceptionImports:
+class TestSensorChainValidationExceptionImports:
 
     def test_invalid_link_exception(self):
         # Arrange

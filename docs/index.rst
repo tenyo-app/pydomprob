@@ -12,8 +12,8 @@
    :maxdepth: 1
    :caption: Components
 
-   components/announcement
    components/consumers
    components/dispatchers
    components/observations
    components/probe
+   components/sensors

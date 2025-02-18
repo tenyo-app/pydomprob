@@ -4,10 +4,10 @@ from collections import OrderedDict
 import pytest
 
 from domprob.sensors.instrums import Instruments
-from domprob.sensors.meth_meta import AnnouncementMetadata
+from domprob.sensors.meth_meta import SensorMetadata
 from domprob.sensors.meth import (
-    BoundAnnouncementMethod,
-    AnnouncementMethod,
+    BoundSensorMethod,
+    SensorMethod,
 )
 from domprob.sensors.validate.vals import (
     InstrumentParamExistsValidator,
@@ -32,14 +32,14 @@ def _create_b_meth(*args, **kwargs):
         def method(self, instrument: MockInstrument) -> None:
             pass
 
-    announce_meth = AnnouncementMethod(Cls.method)
+    sensor_meth = SensorMethod(Cls.method)
     sig = inspect.signature(Cls.method)
     b_params = inspect.BoundArguments(sig, OrderedDict())
     # Bind the arguments correctly
     bound = sig.bind_partial(Cls(), *args, **kwargs)
     # Assign the correct args and kwargs
     b_params.arguments = bound.arguments
-    return BoundAnnouncementMethod(announce_meth, b_params)
+    return BoundSensorMethod(sensor_meth, b_params)
 
 
 class TestInstrumentParamExistsValidator:
@@ -82,7 +82,7 @@ class TestInstrumentTypeValidator:
     def test_validate_passes_for_valid_instrument(self, type_validator):
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
-        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
+        instruments = Instruments(SensorMetadata(b_mock_meth.meth))
         instruments.record(MockInstrument, True)
         # Act
         type_validator.validate(b_mock_meth)
@@ -92,7 +92,7 @@ class TestInstrumentTypeValidator:
     def test_validate_raises_for_invalid_instrument(self, type_validator):
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
-        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
+        instruments = Instruments(SensorMetadata(b_mock_meth.meth))
         instruments.record(AnotherInstrument, True)
         # Act
         with pytest.raises(InstrumTypeException) as exc_info:
@@ -123,7 +123,7 @@ class TestInstrumentTypeValidator:
     def test_validate_raises_for_none_instrument(self, type_validator):
         # Arrange
         b_mock_meth = _create_b_meth(None)
-        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
+        instruments = Instruments(SensorMetadata(b_mock_meth.meth))
         instruments.record(AnotherInstrument, True)
         # Act
         with pytest.raises(InstrumTypeException) as exc_info:
@@ -139,7 +139,7 @@ class TestInstrumentTypeValidator:
     def test_validate_with_multiple_valid_instruments(self, type_validator):
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
-        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
+        instruments = Instruments(SensorMetadata(b_mock_meth.meth))
         instruments.record(MockInstrument, True)
         instruments.record(AnotherInstrument, True)
         # Act
@@ -160,7 +160,7 @@ class TestSupportedInstrumentsExistValidator:
     ):
         # Arrange
         b_mock_meth = _create_b_meth(MockInstrument())
-        instruments = Instruments(AnnouncementMetadata(b_mock_meth.meth))
+        instruments = Instruments(SensorMetadata(b_mock_meth.meth))
         instruments.record(MockInstrument, True)
         # Act
         supported_instruments_validator.validate(b_mock_meth)

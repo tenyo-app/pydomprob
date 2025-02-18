@@ -29,27 +29,27 @@ Announcement
 Validate
 ----------
 
-.. automodule:: domprob.announcement.validate.base_val
+.. automodule:: domprob.sensors.validate.base_val
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.validate.chain
+.. automodule:: domprob.sensors.validate.chain
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.validate.chain_val
+.. automodule:: domprob.sensors.validate.chain_val
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.validate.orch
+.. automodule:: domprob.sensors.validate.orch
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcements.validate.vals
+.. automodule:: domprob.sensors.validate.vals
     :members:
     :undoc-members:
     :show-inheritance:

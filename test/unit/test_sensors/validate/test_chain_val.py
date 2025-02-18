@@ -1,7 +1,7 @@
 import pytest
 
-from domprob.sensors.exc import AnnouncementException
-from domprob.sensors.meth import BoundAnnouncementMethod
+from domprob.sensors.exc import SensorException
+from domprob.sensors.meth import BoundSensorMethod
 from domprob.sensors.validate.base_val import BaseValidator
 from domprob.sensors.validate.chain import (
     ABCLinkValidator,
@@ -24,7 +24,7 @@ def mock_good_link():
     class GoodChainLink(BaseValidator):
         next_ = None  # Define the required next_ attribute
 
-        def validate(self, method: BoundAnnouncementMethod):
+        def validate(self, method: BoundSensorMethod):
             super().validate(method)
 
     return GoodChainLink
@@ -38,7 +38,7 @@ def mock_good_chain_links(mock_good_link):
 @pytest.fixture
 def mock_bad_link():
     class BadChainLink:
-        def validate(self, method: BoundAnnouncementMethod):
+        def validate(self, method: BoundSensorMethod):
             pass
 
     return BadChainLink
@@ -58,10 +58,10 @@ class TestValidationChainException:
         # Assert
         assert str(exc_info.value) == "Text exception"
 
-    def test_inherits_from_announcement_exception(self):
+    def test_inherits_from_sensor_exception(self):
         # Arrange
         # Act + Assert
-        with pytest.raises(AnnouncementException):
+        with pytest.raises(SensorException):
             raise ValidationChainException("Text exception")
 
 
@@ -167,6 +167,7 @@ class TestLinkExistsException:
 class TestABCLinkValidator:
     def test_abstract_method(self, mock_validator_chain):
         # Arrange
+        # noinspection PyAbstractClass
         class TestValidator(ABCLinkValidator):
             pass
 
@@ -177,8 +178,8 @@ class TestABCLinkValidator:
     def test_validate_invoked(self, mock_validator_chain, mock_good_link):
         # Arrange
         class TestValidator(ABCLinkValidator):
-            def validate(self, link):
-                assert isinstance(link, mock_good_link)
+            def validate(self, link_):
+                assert isinstance(link_, mock_good_link)
 
         validator = TestValidator(mock_validator_chain)
         link = mock_good_link()
@@ -254,6 +255,7 @@ class TestUniqueLinkValidator:
 class TestABCLinkValidatorContext:
     def test_abstract_methods(self, mock_validator_chain):
         # Arrange
+        # noinspection PyAbstractClass
         class TestContext(ABCLinkValidatorContext):
             pass
 
@@ -270,7 +272,7 @@ class TestABCLinkValidatorContext:
             def add_validators(self, *validators):
                 self.validator_num += len(validators)
 
-            def validate(self, link):
+            def validate(self, link_):
                 self.validated = True
 
         context = TestContext(mock_validator_chain)
@@ -311,8 +313,8 @@ class TestLinkValidatorContext:
     def test_custom_validators(self, mock_validator_chain, mock_good_link):
         # Arrange
         class CustomValidator(ABCLinkValidator):
-            def validate(self, link):
-                assert isinstance(link, mock_good_link)
+            def validate(self, link_):
+                assert isinstance(link_, mock_good_link)
 
         context = LinkValidatorContext(mock_validator_chain, CustomValidator)
         link = mock_good_link()

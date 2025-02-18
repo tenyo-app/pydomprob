@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.sensors.meth import BoundAnnouncementMethod
+from domprob.sensors.meth import BoundSensorMethod
 from domprob.sensors.validate.base_val import BaseValidator
 from domprob.sensors.validate.chain import (
     EmptyChainException,
@@ -21,7 +21,7 @@ def mock_good_link():
     class GoodChainLink(BaseValidator):
         next_ = None  # Define the required next_ attribute
 
-        def validate(self, method: BoundAnnouncementMethod):
+        def validate(self, method: BoundSensorMethod):
             super().validate(method)
 
     return GoodChainLink
@@ -35,7 +35,7 @@ def mock_good_chain_links(mock_good_link):
 @pytest.fixture
 def mock_bad_link():
     class BadChainLink:
-        def validate(self, method: BoundAnnouncementMethod):
+        def validate(self, method: BoundSensorMethod):
             pass
 
     return BadChainLink
@@ -299,7 +299,7 @@ class TestValidationChain:
         with pytest.raises(IndexError):
             del mock_validator_chain[5]  # Out of range index
         with pytest.raises(TypeError):
-            del mock_validator_chain["invalid"]
+            del mock_validator_chain["invalid"]  # type: ignore
 
     def test_remove_slice_items(
         self, mock_validator_chain, mock_good_chain_links
@@ -345,7 +345,7 @@ class TestValidationChain:
     def test_validate_chain(self, mock_validator_chain, mock_good_chain_links):
         # Arrange
         mock_validator_chain.extend(mock_good_chain_links)
-        mock_method = MagicMock(spec=BoundAnnouncementMethod)  # Mock method
+        mock_method = MagicMock(spec=BoundSensorMethod)  # Mock method
         # Act
         try:
             mock_validator_chain.validate_chain(mock_method)
@@ -356,7 +356,7 @@ class TestValidationChain:
     def test_contains(self, mock_validator_chain, mock_good_chain_links):
         # Arrange
         class ConcreteValidator(BaseValidator):
-            def validate(self, method: BoundAnnouncementMethod):
+            def validate(self, method: BoundSensorMethod):
                 pass
 
         mock_validator_chain.extend(mock_good_chain_links)

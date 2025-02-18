@@ -7,56 +7,56 @@ class MockObservationOne(BaseObservation):
 
 class MockObservationTwo(BaseObservation):
     @sensor(...)
-    def mock_announcement_one(self): ...
+    def mock_sensor_one(self): ...
 
     @sensor(...)
-    def mock_announcement_two(self): ...
+    def mock_sensor_two(self): ...
 
 
 class MockObservationThree(BaseObservation):
     @sensor(...)
     @sensor(...)
     @sensor(...)
-    def mock_announcement_one(self): ...
+    def mock_sensor_one(self): ...
 
     @sensor(...)
-    def mock_announcement_two(self): ...
+    def mock_sensor_two(self): ...
 
 
 class TestBaseObservation:
 
-    def test_no_announcements(self):
+    def test_no_sensors(self):
         # Arrange
         obs = MockObservationOne()
         # Act
-        inst_announcements = list(obs.announcements())
-        cls_announcements = list(MockObservationOne.announcements())
+        inst_sensors = list(obs.sensors())
+        cls_sensors = list(MockObservationOne.sensors())
         # Assert
-        assert len(inst_announcements) == 0
-        assert len(cls_announcements) == 0
-        assert inst_announcements == cls_announcements
+        assert len(inst_sensors) == 0
+        assert len(cls_sensors) == 0
+        assert inst_sensors == cls_sensors
         assert len(obs) == 0
 
-    def test_simple_announcements(self):
+    def test_simple_sensors(self):
         # Arrange
         obs = MockObservationTwo()
         # Act
-        inst_announcements = list(obs.announcements())
-        cls_announcements = list(MockObservationTwo.announcements())
+        inst_sensors = list(obs.sensors())
+        cls_sensors = list(MockObservationTwo.sensors())
         # Assert
-        assert len(inst_announcements) == 2
-        assert len(cls_announcements) == 2
-        assert inst_announcements == cls_announcements
+        assert len(inst_sensors) == 2
+        assert len(cls_sensors) == 2
+        assert inst_sensors == cls_sensors
         assert len(obs) == 2
 
-    def test_stacked_announcements(self):
+    def test_stacked_sensors(self):
         # Arrange
         obs = MockObservationThree()
         # Act
-        inst_announcements = list(obs.announcements())
-        cls_announcements = list(MockObservationThree.announcements())
+        inst_sensors = list(obs.sensors())
+        cls_sensors = list(MockObservationThree.sensors())
         # Assert
-        assert len(inst_announcements) == 2
-        assert len(cls_announcements) == 2
-        assert inst_announcements == cls_announcements
+        assert len(inst_sensors) == 2
+        assert len(cls_sensors) == 2
+        assert inst_sensors == cls_sensors
         assert len(obs) == 2

@@ -12,19 +12,19 @@ from domprob.sensors.validate.vals import (
 
 if TYPE_CHECKING:
     from domprob.sensors.meth import (  # pragma: no cover
-        BoundAnnouncementMethod,
+        BoundSensorMethod,
     )
 
 
-class AnnouncementValidationOrchestrator:
+class SensorValidationOrchestrator:
     # pylint: disable=line-too-long
-    """Orchestrates the validate of `BoundAnnouncementMethod`
-    instances using a chain of validators.
+    """Orchestrates validation of `BoundSensorMethod` instances using a
+    chain of validators.
 
     The orchestrator is initialised with a `ValidationChain`, which can
     either be customised or use the default set of validators.
     Validators are applied sequentially to ensure that the
-    `BoundAnnouncementMethod` adheres to defined rules and constraints.
+    `BoundSensorMethod` adheres to defined rules and constraints.
 
     Attributes:
         DEFAULT_VALIDATORS (tuple[type[BaseValidator], ...]):
@@ -40,8 +40,8 @@ class AnnouncementValidationOrchestrator:
             is created with `DEFAULT_VALIDATORS`.
 
     Examples:
-        >>> from domprob.sensors.validate.orch import AnnouncementValidationOrchestrator
-        >>> from domprob.sensors.meth import AnnouncementMethod
+        >>> from domprob.sensors.validate.orch import SensorValidationOrchestrator
+        >>> from domprob.sensors.meth import SensorMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -50,13 +50,13 @@ class AnnouncementValidationOrchestrator:
         ...     def method(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> method = AnnouncementMethod(Example.method)
+        >>> method = SensorMethod(Example.method)
         >>> method.supp_instrums.record(SomeInstrument, required=True)
-        Instruments(metadata=AnnouncementMetadata(method=<function Example.method at 0x...>))
+        Instruments(metadata=SensorMetadata(method=<function Example.method at 0x...>))
         >>>
         >>> bound_method = method.bind(Example(), SomeInstrument())
         >>>
-        >>> orchestrator = AnnouncementValidationOrchestrator()
+        >>> orchestrator = SensorValidationOrchestrator()
         >>> orchestrator.validate(bound_method)
     """
 
@@ -72,7 +72,7 @@ class AnnouncementValidationOrchestrator:
 
     def register(
         self, *validators: type[BaseValidator]
-    ) -> AnnouncementValidationOrchestrator:
+    ) -> SensorValidationOrchestrator:
         # pylint: disable=line-too-long
         """Registers additional validators to the validate chain.
 
@@ -84,26 +84,26 @@ class AnnouncementValidationOrchestrator:
                 added to the chain.
 
         Examples:
-            >>> from domprob.sensors.validate.orch import AnnouncementValidationOrchestrator
+            >>> from domprob.sensors.validate.orch import SensorValidationOrchestrator
             >>> from domprob.sensors.validate.vals import InstrumentTypeValidator
             >>>
-            >>> orchestrator = AnnouncementValidationOrchestrator()
+            >>> orchestrator = SensorValidationOrchestrator()
             >>> orchestrator.register(InstrumentTypeValidator)
-            AnnouncementValidationOrchestrator(ValidationChain(base='BaseValidator'))
+            SensorValidationOrchestrator(ValidationChain(base='BaseValidator'))
         """
         self._chain.extend((v() for v in validators))
         return self
 
-    def validate(self, method: BoundAnnouncementMethod):
+    def validate(self, method: BoundSensorMethod):
         # pylint: disable=line-too-long
-        """Executes the validate chain on a `BoundAnnouncementMethod`
+        """Executes the validate chain on a `BoundSensorMethod`
         instance.
 
         This method ensures that all registered validators are applied
         sequentially to the method.
 
         Args:
-            method (BoundAnnouncementMethod): The method instance to
+            method (BoundSensorMethod): The method instance to
                 validate.
 
         Raises:
@@ -111,8 +111,8 @@ class AnnouncementValidationOrchestrator:
                 fails.
 
         Examples:
-            >>> from domprob.sensors.validate.orch import AnnouncementValidationOrchestrator
-            >>> from domprob.sensors.meth import AnnouncementMethod
+            >>> from domprob.sensors.validate.orch import SensorValidationOrchestrator
+            >>> from domprob.sensors.meth import SensorMethod
             >>>
             >>> class SomeInstrument:
             ...     pass
@@ -121,12 +121,12 @@ class AnnouncementValidationOrchestrator:
             ...     def method(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> meth = AnnouncementMethod(Example.method)
+            >>> meth = SensorMethod(Example.method)
             >>> bound_meth = meth.bind(Example(), SomeInstrument())
             >>> bound_meth.supp_instrums.record(SomeInstrument, required=True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Example.method at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Example.method at 0x...>))
             >>>
-            >>> orchestrator = AnnouncementValidationOrchestrator()
+            >>> orchestrator = SensorValidationOrchestrator()
             >>> orchestrator.validate(bound_meth)
         """
         self._chain.validate_chain(method)
@@ -141,8 +141,8 @@ class AnnouncementValidationOrchestrator:
             str: A string representation of the orchestrator.
 
         Examples:
-            >>> orchestrator = AnnouncementValidationOrchestrator()
+            >>> orchestrator = SensorValidationOrchestrator()
             >>> repr(orchestrator)
-            "AnnouncementValidationOrchestrator(ValidationChain(base='BaseValidator'))"
+            "SensorValidationOrchestrator(ValidationChain(base='BaseValidator'))"
         """
         return f"{self.__class__.__name__}({self._chain!r})"

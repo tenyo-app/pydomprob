@@ -25,15 +25,13 @@ def mock_observation_cls(mock_instrument_cls) -> type[_Obs]:
     class MockObservation(BaseObservation):
 
         @sensor(mock_instrument_cls)
-        def mock_announcement(self, mock_instrum: mock_instrument_cls) -> None:
-            mock_instrum.store("Announcement!")
+        def mock_sensor(self, mock_instrum: mock_instrument_cls) -> None:
+            mock_instrum.store("Sensed!")
 
         @sensor(mock_instrument_cls)
         @sensor(mock_instrument_cls)
-        def mock_announcement_again(
-            self, mock_instrum: mock_instrument_cls
-        ) -> None:
-            mock_instrum.store("Stacked sensors!")
+        def mock_sensor_again(self, mock_instrum: mock_instrument_cls) -> None:
+            mock_instrum.store("Stacked sensed!")
 
     return MockObservation
 
@@ -47,6 +45,6 @@ class TestProbe:
         probe_.observe(mock_observation_cls())
         # Assert
         assert len(instrum.msgs) == 3, "Mock instrument not called"
-        assert "Announcement!" in instrum.msgs
-        assert "Stacked sensors!" in instrum.msgs
-        assert "Stacked sensors!" in instrum.msgs
+        assert "Sensed!" in instrum.msgs
+        assert "Stacked sensed!" in instrum.msgs
+        assert "Stacked sensed!" in instrum.msgs

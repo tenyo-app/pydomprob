@@ -2,6 +2,7 @@ import functools
 
 import pytest
 
+# noinspection PyProtectedMember
 from domprob.sensors.dec import _Sensor, sensor
 from domprob.sensors.validate.vals import InstrumTypeException
 
@@ -15,6 +16,7 @@ def mock_cls():
     """Fixture to provide a mock class for decoration."""
 
     class Cls:
+        # noinspection PyMethodMayBeStatic
         def method(self, instrument: MockInstrument):
             return f"Instrument: {instrument}"
 
@@ -22,29 +24,27 @@ def mock_cls():
 
 
 @pytest.fixture
-def announcement_instance():
-    """Fixture for creating an Announcement instance."""
+def sensor_instance():
+    """Fixture for creating an _Sensor instance."""
     return _Sensor(MockInstrument)
 
 
-class TestAnnouncement:
+class TestSensor:
     def test_initialisation(self):
-        """Test that Announcement is initialised correctly."""
+        """Test that _Sensor is initialised correctly."""
         ann = _Sensor(MockInstrument, True)
         assert ann.instrum is MockInstrument
         assert ann.required is True
 
     def test_repr(self):
-        """Test the string representation of Announcement."""
+        """Test the string representation of _Sensor"""
         ann = _Sensor(MockInstrument)
         expected_repr = f"_Sensor(instrum={MockInstrument!r})"
         assert repr(ann) == expected_repr
 
-    def test_call_method_executes_correctly(
-        self, mock_cls, announcement_instance
-    ):
+    def test_call_method_executes_correctly(self, mock_cls, sensor_instance):
         # Arrange
-        mock_cls.method = announcement_instance(mock_cls.method)  # type: ignore
+        mock_cls.method = sensor_instance(mock_cls.method)  # type: ignore
         instance = mock_cls()
         instrument = MockInstrument()
         # Act
@@ -74,18 +74,18 @@ class TestAnnouncement:
             original_method = getattr(original_method, "__wrapped__")
         # Act
         result = instance.method(instru)
-        metadata = getattr(original_method, "__announcement_metadata__", None)
+        metadata = getattr(original_method, "__sensor_metadata__", None)
         # Assert
         assert result == f"Instrument: {instru!r}"
         assert metadata is not None, "Metadata not applied to the orig method"
         assert metadata[0].instrument_cls == MockInstrument
 
     def test_call_method_raises_exception_on_invalid_instrument(
-        self, mock_cls, announcement_instance
+        self, mock_cls, sensor_instance
     ):
         """Test that the decorated method raises an exception for invalid instrument."""
         # Arrange
-        mock_cls.method = announcement_instance(mock_cls.method)  # type: ignore
+        mock_cls.method = sensor_instance(mock_cls.method)  # type: ignore
         instance = mock_cls()
         # Act
         with pytest.raises(InstrumTypeException) as exc_info:
@@ -99,5 +99,5 @@ class TestAnnouncement:
         )
 
 
-def test_announcement_lower_is_announcement_cls():
+def test_sensor_lower_is_sensor_cls():
     assert sensor == _Sensor

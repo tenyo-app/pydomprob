@@ -3,20 +3,20 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.exc import SensorException
 
 if TYPE_CHECKING:
     from domprob.sensors.meth import (  # pragma: no cover
-        BoundAnnouncementMethod,
+        BoundSensorMethod,
     )
 
 
-class ValidatorException(AnnouncementException):
+class ValidatorException(SensorException):
     """Exception raised when a validate error occurs in a validator.
 
     This exception is used to indicate that validate has failed
     during the execution of a validate chain. It inherits from
-    `AnnouncementException` to ensure consistency in exception handling
+    `SensorException` to ensure consistency in exception handling
     across the package.
     """
 
@@ -44,10 +44,10 @@ class BaseValidator(ABC):
 
     Examples:
         >>> from domprob.sensors.validate.base_val import BaseValidator
-        >>> from domprob.sensors.meth import AnnouncementMethod
+        >>> from domprob.sensors.meth import SensorMethod
         >>>
         >>> class ExampleValidator(BaseValidator):
-        ...     def validate(self, method: BoundAnnouncementMethod) -> None:
+        ...     def validate(self, method: BoundSensorMethod) -> None:
         ...         if not method.instrument:
         ...             raise ValueError("Instrument is required")
         ...         print("Validation successful")
@@ -61,7 +61,7 @@ class BaseValidator(ABC):
         ...     def method(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> meth = AnnouncementMethod(Cls.method)
+        >>> meth = SensorMethod(Cls.method)
         >>> bound_meth = meth.bind(Cls(), SomeInstrument())
         >>> validator = ExampleValidator()
         >>> validator.validate(bound_meth)
@@ -79,8 +79,8 @@ class BaseValidator(ABC):
         self.next_ = next_
 
     @abstractmethod
-    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
-        """Validates a `BoundAnnouncementMethod` instance.
+    def validate(self, b_meth: BoundSensorMethod) -> None:
+        """Validates a `BoundSensorMethod` instance.
 
         This method performs the validate logic for the current
         validator and delegates to the next validator in the chain if
@@ -88,7 +88,7 @@ class BaseValidator(ABC):
         validate logic by overriding this method.
 
         Args:
-            b_meth (BoundAnnouncementMethod): Bound method wrapper to
+            b_meth (BoundSensorMethod): Bound method wrapper to
                 validate.
 
         Raises:
@@ -97,10 +97,10 @@ class BaseValidator(ABC):
 
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
-            >>> from domprob.sensors.meth import AnnouncementMethod
+            >>> from domprob.sensors.meth import SensorMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, meth: BoundSensorMethod) -> None:
             ...         if not meth.instrument:
             ...             raise ValidatorException("Instrument is required")
             ...         print("Validation successful")
@@ -114,7 +114,7 @@ class BaseValidator(ABC):
             ...     def method(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> meth = AnnouncementMethod(Cls.method)
+            >>> meth = SensorMethod(Cls.method)
             >>> bound_meth = meth.bind(Cls(), SomeInstrument())
             >>> validator = ExampleValidator()
             >>> validator.validate(bound_meth)
@@ -135,9 +135,9 @@ class BaseValidator(ABC):
 
         Examples:
             >>> from domprob.sensors.validate.base_val import BaseValidator
-            >>> from domprob.sensors.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.meth import BoundSensorMethod
             >>> class ExampleValidator(BaseValidator):
-            ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
+            ...     def validate(self, meth: BoundSensorMethod) -> None:
             ...         pass
             ...
             >>> validator = ExampleValidator(next_=None)

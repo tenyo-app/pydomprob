@@ -4,9 +4,7 @@ import pytest
 
 from domprob.sensors.validate.base_val import BaseValidator
 from domprob.sensors.validate.chain import ValidationChain
-from domprob.sensors.validate.orch import (
-    AnnouncementValidationOrchestrator,
-)
+from domprob.sensors.validate.orch import SensorValidationOrchestrator
 from domprob.sensors.validate.vals import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
@@ -14,10 +12,10 @@ from domprob.sensors.validate.vals import (
 )
 
 
-class TestAnnouncementValidationOrchestrator:
+class TestSensorValidationOrchestrator:
     @pytest.fixture
     def orchestrator(self):
-        return AnnouncementValidationOrchestrator()
+        return SensorValidationOrchestrator()
 
     def test_default_initialisation(self, orchestrator):
         # Arrange
@@ -33,7 +31,7 @@ class TestAnnouncementValidationOrchestrator:
         # Arrange
         mock_chain = MagicMock(spec=ValidationChain)
         # Act
-        orchestrator = AnnouncementValidationOrchestrator(chain=mock_chain)
+        orchestrator = SensorValidationOrchestrator(chain=mock_chain)
         # Assert
         assert orchestrator._chain == mock_chain
 
@@ -49,11 +47,11 @@ class TestAnnouncementValidationOrchestrator:
         assert len(orchestrator._chain._links) == 4
         assert isinstance(orchestrator._chain._links[3], MockValidator)
 
-    @patch("domprob.sensors.meth.BoundAnnouncementMethod")
+    @patch("domprob.sensors.meth.BoundSensorMethod")
     def test_validate_chain(self, mock_method):
         # Arrange
         mock_chain = MagicMock(spec=ValidationChain)
-        orchestrator = AnnouncementValidationOrchestrator(chain=mock_chain)
+        orchestrator = SensorValidationOrchestrator(chain=mock_chain)
         # Act
         orchestrator.validate(mock_method)
         # Assert
@@ -64,5 +62,5 @@ class TestAnnouncementValidationOrchestrator:
         # Act
         repr_output = repr(orchestrator)
         # Assert
-        assert "AnnouncementValidationOrchestrator" in repr_output
+        assert "SensorValidationOrchestrator" in repr_output
         assert "ValidationChain" in repr_output

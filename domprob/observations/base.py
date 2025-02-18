@@ -4,17 +4,17 @@ from abc import ABC
 from collections.abc import Generator, Set
 from typing import ParamSpec, TypeVar, Any
 
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 from domprob.observations.observation import ObservationProtocol
 
-# Typing helpers: defines an @sensors method signature
+# Typing helpers: defines a @sensor's method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_AnnounceSig = AnnouncementMethod[_P, _R]
+_SensorSig = SensorMethod[_P, _R]
 
 
-class AnnouncementSet(Set[_AnnounceSig]):
-    """A custom set-like collection for storing `AnnouncementMethod`
+class SensorSet(Set[_SensorSig]):
+    """A custom set-like collection for storing `SensorMethod`
     instances.
 
     This class ensures unique sensors methods and provides
@@ -22,7 +22,7 @@ class AnnouncementSet(Set[_AnnounceSig]):
     retrieval.
 
     Args:
-        *announcement_methods (_AnnounceSig): One or more sensors
+        *sensor_methods (_SensorSig): One or more sensors
             method instances.
 
     Example:
@@ -31,37 +31,37 @@ class AnnouncementSet(Set[_AnnounceSig]):
         >>> class MyObservation:
         ...
         ...     @sensor(...)
-        ...     def announce_hello(self, _):
+        ...     def sense_hello(self, _):
         ...         pass
         ...
         ...     def normal_method(self, _):
         ...         pass
         ...
-        >>> meth = AnnouncementMethod(MyObservation.announce_hello)
-        >>> announcement_set = AnnouncementSet(meth, meth)
-        >>> len(announcement_set)
+        >>> meth = SensorMethod(MyObservation.sense_hello)
+        >>> sensor_set = SensorSet(meth, meth)
+        >>> len(sensor_set)
         1
     """
 
-    def __init__(self, *announcement_methods: _AnnounceSig) -> None:
-        self._announcement_methods = set(announcement_methods)
+    def __init__(self, *sensor_methods: _SensorSig) -> None:
+        self._sensor_methods = set(sensor_methods)
 
     @classmethod
-    def from_observation(cls, observation_cls: Any) -> AnnouncementSet:
-        """Creates an AnnouncementSet by extracting sensors
+    def from_observation(cls, observation_cls: Any) -> SensorSet:
+        """Creates an SensorSet by extracting sensors
         methods from a given class.
 
         This method inspects the provided class, identifies methods
         that qualify as sensors methods using
-        `AnnouncementMethod.from_callable`, and includes them in the
-        returned `AnnouncementSet`.
+        `SensorMethod.from_callable`, and includes them in the returned
+        `SensorSet`.
 
         Args:
             observation_cls (Any): The class to inspect for
                 sensors methods.
 
         Returns:
-            AnnouncementSet: A set of extracted sensors methods.
+            SensorSet: A set of extracted sensors methods.
 
         Example:
             >>> from domprob import sensor
@@ -69,21 +69,21 @@ class AnnouncementSet(Set[_AnnounceSig]):
             >>> class MyObservation:
             ...
             ...     @sensor(...)
-            ...     def announce_hello(self, _):
+            ...     def sense_hello(self, _):
             ...         pass
             ...
             ...     def normal_method(self, _):
             ...         pass
             ...
-            >>> announcement_set = AnnouncementSet.from_observation(MyObservation)
-            >>> len(announcement_set)
+            >>> sensor_set = SensorSet.from_observation(MyObservation)
+            >>> len(sensor_set)
             1
         """
         meths = []
         for _, meth in inspect.getmembers(observation_cls, inspect.isfunction):
-            announce_meth = AnnouncementMethod.from_callable(meth)
-            if announce_meth is not None:
-                meths.append(announce_meth)
+            sensor_meth = SensorMethod.from_callable(meth)
+            if sensor_meth is not None:
+                meths.append(sensor_meth)
         return cls(*meths)
 
     def __contains__(self, item: Any) -> bool:
@@ -93,21 +93,21 @@ class AnnouncementSet(Set[_AnnounceSig]):
             item (Any): The item to check.
 
         Returns:
-            bool: True if `item` is an instance of `AnnouncementMethod`
-                and exists in the set, False otherwise.
+            bool: True if `item` is an instance of `SensorMethod` and
+                exists in the set, False otherwise.
         """
-        if not isinstance(item, AnnouncementMethod):
+        if not isinstance(item, SensorMethod):
             return False
-        return item in self._announcement_methods
+        return item in self._sensor_methods
 
-    def __iter__(self) -> Generator[_AnnounceSig, None, None]:
+    def __iter__(self) -> Generator[_SensorSig, None, None]:
         """Returns an iterator over the sensors methods in the
         set.
 
         Yields:
-            _AnnounceSig: Each sensors method stored in the set.
+            _SensorSig: Each sensors method stored in the set.
         """
-        yield from self._announcement_methods
+        yield from self._sensor_methods
 
     def __len__(self) -> int:
         """Returns the number of sensors methods in the set.
@@ -115,16 +115,16 @@ class AnnouncementSet(Set[_AnnounceSig]):
         Returns:
             int: The count of stored sensors methods.
         """
-        return len(self._announcement_methods)
+        return len(self._sensor_methods)
 
     def __repr__(self) -> str:
-        """Returns a string representation of the AnnouncementSet.
+        """Returns a string representation of the SensorSet.
 
         Returns:
             str: A string describing the number of stored
                 sensors.
         """
-        return f"{self.__class__.__name__}(num_announcements={len(self)})"
+        return f"{self.__class__.__name__}(num_sensors={len(self)})"
 
 
 class BaseObservation(ABC, ObservationProtocol):
@@ -151,17 +151,17 @@ class BaseObservation(ABC, ObservationProtocol):
     """
 
     # cached per observation cls imp - avoids recompute for each instance
-    _announcements: AnnouncementSet | None = None
+    _sensors: SensorSet | None = None
 
     @classmethod
-    def announcements(cls) -> AnnouncementSet:
+    def sensors(cls) -> SensorSet:
         """Yield sensors methods defined in the class.
 
         Uses **lazy evaluation** to avoid unnecessary memory
         consumption.
 
         Yields:
-            _AnnounceSig: Announcement method instances.
+            _SensorSig: Sensor method instances.
 
         Example:
             >>> from domprob import sensor, BaseObservation
@@ -174,13 +174,13 @@ class BaseObservation(ABC, ObservationProtocol):
             ...     def event_occurred(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
-            >>> gen = MyObservation.announcements()
+            >>> gen = MyObservation.sensors()
             >>> list(gen)
-            [AnnouncementMethod(meth=<function MyObservation.event_occurred at 0x...>)]
+            [SensorMethod(meth=<function MyObservation.event_occurred at 0x...>)]
         """
-        if cls._announcements is None:
-            cls._announcements = AnnouncementSet.from_observation(cls)
-        return cls._announcements
+        if cls._sensors is None:
+            cls._sensors = SensorSet.from_observation(cls)
+        return cls._sensors
 
     def __len__(self) -> int:
         """Return the number of sensors.
@@ -203,7 +203,7 @@ class BaseObservation(ABC, ObservationProtocol):
             >>> len(observation)
             1
         """
-        return len(list(self.announcements()))
+        return len(list(self.sensors()))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(sensors={len(self)})"

@@ -2,7 +2,7 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from typing import Any, TypeVar, Generic
 
-from domprob.sensors.meth_meta import AnnouncementMetadata
+from domprob.sensors.meth_meta import SensorMetadata
 
 # Typing helpers
 _InstruCls = TypeVar("_InstruCls", bound=type[Any])
@@ -15,7 +15,7 @@ class Instruments(Generic[_InstruCls]):
     decorated method's metadata.
 
     Args:
-        metadata (`AnnouncementMetadata`): The metadata object managing
+        metadata (`SensorMetadata`): The metadata object managing
             the associated method's metadata.
 
     Examples:
@@ -26,17 +26,17 @@ class Instruments(Generic[_InstruCls]):
         ...
         >>> # Create metadata for the method
         >>> from domprob.sensors import meth_meta
-        >>> meta = meth_meta.AnnouncementMetadata(Foo.bar)
+        >>> meta = meth_meta.SensorMetadata(Foo.bar)
         >>>
         >>> # Access metadata instruments
         >>> from domprob.sensors.instrums import Instruments
         >>> instruments = Instruments(meta)
         >>>
         >>> instruments
-        Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+        Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
     """
 
-    def __init__(self, metadata: AnnouncementMetadata) -> None:
+    def __init__(self, metadata: SensorMetadata) -> None:
         self._metadata = metadata
 
     def __iter__(self) -> _InstrumentTupleClsGen:
@@ -61,7 +61,7 @@ class Instruments(Generic[_InstruCls]):
             ...     pass
             ...
             >>> instruments.record(SomeInstrument, True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments)
             [(<class 'domprob.sensors.instrums.SomeInstrument'>, True)]
         """
@@ -95,7 +95,7 @@ class Instruments(Generic[_InstruCls]):
             ...
             >>> # Record the instrument
             >>> instruments.record(SomeInstrument, required=True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> len(instruments)
             1
         """
@@ -109,7 +109,7 @@ class Instruments(Generic[_InstruCls]):
         This method determines whether the provided object is an
         instance of `Instruments` and whether their associated
         metadata are equal. Two `Instruments` instances ar considered
-        equal if they manage the same `AnnouncementMetadata`.
+        equal if they manage the same `SensorMetadata`.
 
         Args:
             other (Any): The object to compare with the current
@@ -176,9 +176,9 @@ class Instruments(Generic[_InstruCls]):
             >>> from domprob.sensors.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> instruments
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
         """
-        return cls(AnnouncementMetadata(method))
+        return cls(SensorMetadata(method))
 
     @property
     def non_req_instrums(self) -> _InstrumentClsGen:
@@ -204,12 +204,12 @@ class Instruments(Generic[_InstruCls]):
             ...
             >>> # Add a required instrument
             >>> instruments.record(SomeInstrument, required=True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>>
             >>> list(instruments.non_req_instrums)
             []
             >>> instruments.record(SomeInstrument, required=False)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments.non_req_instrums)
             [<class '...SomeInstrument'>]
         """
@@ -238,11 +238,11 @@ class Instruments(Generic[_InstruCls]):
             ...     pass
             ...
             >>> instruments.record(SomeInstrument, required=False)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments.req_instrums)
             []
             >>> instruments.record(SomeInstrument, required=True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments.req_instrums)
             [<class '...SomeInstrument'>]
         """
@@ -277,9 +277,9 @@ class Instruments(Generic[_InstruCls]):
             >>> instruments.is_required(SomeInstrument)
             False
             >>> instruments.record(SomeInstrument, False)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> instruments.record(SomeInstrument, True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> instruments.is_required(SomeInstrument)
             True
         """
@@ -315,10 +315,10 @@ class Instruments(Generic[_InstruCls]):
             ...
             >>> # Add a required instrument
             >>> instruments.record(SomeInstrument, required=True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> # Add a non-required instrument
             >>> instruments.record(SomeInstrument, required=False)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
         """
         self._metadata.add(instrument, required)
         return self
@@ -352,7 +352,7 @@ class Instruments(Generic[_InstruCls]):
             ...
             >>> # Add instruments
             >>> instruments.record(SomeInstrument, required=True)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>>
             >>> # Filter instruments based on their requirement status
             >>> list(instruments.supported(True))
@@ -360,7 +360,7 @@ class Instruments(Generic[_InstruCls]):
             >>> list(instruments.supported(False))
             []
             >>> instruments.record(SomeInstrument, required=False)
-            Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))
+            Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))
             >>> list(instruments.supported())
             [<class '...SomeInstrument'>, <class '...SomeInstrument'>]
         """
@@ -387,6 +387,6 @@ class Instruments(Generic[_InstruCls]):
             >>> from domprob.sensors.instrums import Instruments
             >>> instruments = Instruments.from_method(Foo.bar)
             >>> repr(instruments)
-            'Instruments(metadata=AnnouncementMetadata(method=<function Foo.bar at 0x...>))'
+            'Instruments(metadata=SensorMetadata(method=<function Foo.bar at 0x...>))'
         """
         return f"{self.__class__.__name__}(metadata={self._metadata!r})"

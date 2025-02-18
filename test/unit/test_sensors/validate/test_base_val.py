@@ -3,10 +3,10 @@ from collections import OrderedDict
 
 import pytest
 
-from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.exc import SensorException
 from domprob.sensors.meth import (
-    BoundAnnouncementMethod,
-    AnnouncementMethod,
+    BoundSensorMethod,
+    SensorMethod,
 )
 from domprob.sensors.validate.base_val import (
     BaseValidator,
@@ -15,12 +15,12 @@ from domprob.sensors.validate.base_val import (
 
 
 class MockValidationChainLink(BaseValidator):
-    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
+    def validate(self, b_meth: BoundSensorMethod) -> None:
         pass
 
 
-class MockAnnouncementValidator(BaseValidator):
-    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
+class MockSensorValidator(BaseValidator):
+    def validate(self, b_meth: BoundSensorMethod) -> None:
         if hasattr(b_meth, "validated"):
             b_meth.validated = True
         super().__init__()
@@ -36,23 +36,23 @@ def mock_bound_method():
         def mock_method(self, instrument: MockInstrument) -> None:
             pass
 
-    announce_meth = AnnouncementMethod(Cls.mock_method)
+    sensor_meth = SensorMethod(Cls.mock_method)
     sig = inspect.signature(Cls.mock_method)
     b_params = inspect.BoundArguments(sig, OrderedDict())
     # Bind the arguments correctly
     bound = sig.bind_partial(Cls())
     # Assign the correct args and kwargs
     b_params.arguments = bound.arguments
-    b_meth = BoundAnnouncementMethod(announce_meth, b_params)
+    b_meth = BoundSensorMethod(sensor_meth, b_params)
     setattr(b_meth, "validated", False)
     return b_meth
 
 
 class TestValidatorException:
-    def test_inherits_from_announcement_exception(self):
+    def test_inherits_from_sensor_exception(self):
         # Arrange
         # Act + Assert
-        with pytest.raises(AnnouncementException):
+        with pytest.raises(SensorException):
             raise ValidatorException("Validation failed")
 
     def test_matches_message(self):
@@ -64,7 +64,7 @@ class TestValidatorException:
         assert str(exc_info.value) == "Validation failed"
 
 
-class TestBaseAnnouncementValidator:
+class TestBaseSensorValidator:
     def test_is_abstract(self):
         # Arrange
         # Act + Assert
@@ -76,15 +76,15 @@ class TestBaseAnnouncementValidator:
 
     def test_concrete_implementation_without_next(self):
         # Arrange + Act
-        mock_validator = MockAnnouncementValidator()
+        mock_validator = MockSensorValidator()
         # Assert
         assert hasattr(mock_validator, "next_")
         assert mock_validator.next_ is None
 
     def test_concrete_implementation_with_next(self):
         # Arrange
-        next_validator = MockAnnouncementValidator()
-        mock_validator = MockAnnouncementValidator()
+        next_validator = MockSensorValidator()
+        mock_validator = MockSensorValidator()
         # Act
         mock_validator.next_ = next_validator
         # Assert
@@ -93,29 +93,31 @@ class TestBaseAnnouncementValidator:
 
     def test_repr(self):
         # Arrange
-        mock_validator = MockAnnouncementValidator()
-        next_validator = MockAnnouncementValidator()
+        mock_validator = MockSensorValidator()
+        next_validator = MockSensorValidator()
         mock_validator.next_ = next_validator
         # Act + Assert
-        assert repr(next_validator) == "MockAnnouncementValidator(next_=None)"
+        assert repr(next_validator) == "MockSensorValidator(next_=None)"
         assert repr(mock_validator) == (
-            f"MockAnnouncementValidator(next_={next_validator!r})"
+            f"MockSensorValidator(next_={next_validator!r})"
         )
 
     def test_validate_calls_next(self, mock_bound_method):
         # Arrange
-        next_validator = MockAnnouncementValidator()
-        mock_validator = MockAnnouncementValidator()
+        next_validator = MockSensorValidator()
+        mock_validator = MockSensorValidator()
         mock_validator.next_ = next_validator
         # Act
         mock_validator.validate(mock_bound_method)
         # Assert
+        # noinspection PyUnresolvedReferences
         assert mock_bound_method.validated is True
 
     def test_validate_without_next(self, mock_bound_method):
         # Arrange
-        mock_validator = MockAnnouncementValidator()
+        mock_validator = MockSensorValidator()
         # Act
         mock_validator.validate(mock_bound_method)
         # Assert
+        # noinspection PyUnresolvedReferences
         assert mock_bound_method.validated is True

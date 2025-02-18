@@ -4,8 +4,8 @@ import pytest
 
 from domprob import sensor, exceptions
 from domprob.sensors.meth_meta import (
-    AnnouncementMetadata,
-    AnnouncementMetadataEntry,
+    SensorMetadata,
+    SensorMetadataEntry,
 )
 
 
@@ -41,8 +41,8 @@ class TestMetadata:
         method = Cls.no_method
         while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
-        metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
+        metadata: list[SensorMetadataEntry]
+        metadata = getattr(method, SensorMetadata.METADATA_ATTR, None)
         # Act
         # Assert
         assert metadata is None
@@ -57,8 +57,8 @@ class TestMetadata:
         method = Cls.simple_method
         while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
-        metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
+        metadata: list[SensorMetadataEntry]
+        metadata = getattr(method, SensorMetadata.METADATA_ATTR, None)
         # Act
         # Assert
         assert metadata is not None
@@ -77,8 +77,8 @@ class TestMetadata:
         method = Cls.stacked_method
         while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
-        metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
+        metadata: list[SensorMetadataEntry]
+        metadata = getattr(method, SensorMetadata.METADATA_ATTR, None)
         # Act
         # Assert
         assert metadata is not None
@@ -101,8 +101,8 @@ class TestMetadata:
         method = Cls.stacked_differently_method
         while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
-        metadata: list[AnnouncementMetadataEntry]
-        metadata = getattr(method, AnnouncementMetadata.METADATA_ATTR, None)
+        metadata: list[SensorMetadataEntry]
+        metadata = getattr(method, SensorMetadata.METADATA_ATTR, None)
         # Act
         # Assert
         assert metadata is not None

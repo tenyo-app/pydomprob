@@ -224,7 +224,7 @@ class TestBasicConsumer:
         assert len(consumer.instrums) == 2
         assert consumer.instrums.get(MockInstrument) in {instrum1, instrum2}
 
-    def test_consumer_announcement(self):
+    def test_consumer_sensor(self):
         # Arrange
         instrum = MockInstrument()
         consumer = BasicConsumer(instrum)

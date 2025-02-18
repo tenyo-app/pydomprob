@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 from domprob.sensors.dec import sensor
 from domprob.probes.probe import get_probe, Probe
 
@@ -32,7 +32,7 @@ def mock_dispatcher_cls() -> type[_Disp]:
             self.mock_instruments = mock_instruments
 
         def dispatch(self, observation):
-            observation.mock_announcement(self.mock_instruments[0])
+            observation.mock_sensor(self.mock_instruments[0])
 
     return MockDispatcher
 
@@ -47,13 +47,11 @@ def mock_observation_cls(
     class MockObservation:
 
         @sensor(mock_instrument_cls)
-        def mock_announcement(
-            self, mock_instrument: mock_instrument_cls
-        ) -> None:
+        def mock_sensor(self, mock_instrument: mock_instrument_cls) -> None:
             mock_instrument.store("sensors!")
 
-        def announcements(self) -> Generator[AnnouncementMethod, None, None]:
-            yield AnnouncementMethod(self.mock_announcement)
+        def sensors(self) -> Generator[SensorMethod, None, None]:
+            yield SensorMethod(self.mock_sensor)
 
     return MockObservation
 

@@ -4,8 +4,8 @@ import random
 import pytest
 
 from domprob.sensors.meth_meta import (
-    AnnouncementMetadata,
-    AnnouncementMetadataEntry,
+    SensorMetadata,
+    SensorMetadataEntry,
 )
 
 
@@ -24,7 +24,7 @@ def mock_method():
 
 @pytest.fixture
 def mock_metadata(mock_method):
-    return AnnouncementMetadata(mock_method)
+    return SensorMetadata(mock_method)
 
 
 @pytest.fixture
@@ -33,35 +33,35 @@ def another_mock_metadata(mock_method):
         def method(self):
             pass
 
-    return AnnouncementMetadata(AnotherCls.method)
+    return SensorMetadata(AnotherCls.method)
 
 
-class TestAnnouncementMetadataEntry:
+class TestSensorMetadataEntry:
     def test_metadata_item_initialisation(self):
         # Arrange
         # Act
-        entry = AnnouncementMetadataEntry(MockInstrument, required=False)
+        entry = SensorMetadataEntry(MockInstrument, required=False)
         # Assert
         assert entry.instrument_cls is MockInstrument
         assert entry.required is False
 
-        item_default = AnnouncementMetadataEntry(MockInstrument, True)
+        item_default = SensorMetadataEntry(MockInstrument, True)
         assert item_default.required is True
 
     def test_metadata_item_repr(self):
         # Arrange
-        entry = AnnouncementMetadataEntry(MockInstrument, required=False)
+        entry = SensorMetadataEntry(MockInstrument, required=False)
         # Act
         entry_repr = repr(entry)
         # Assert
         assert (
             entry_repr
-            == f"AnnouncementMetadataEntry(instrument_cls={MockInstrument!r}, "
+            == f"SensorMetadataEntry(instrument_cls={MockInstrument!r}, "
             f"required=False)"
         )
 
 
-class TestAnnouncementMetadata:
+class TestSensorMetadata:
     def test_metadata_initialisation(self, mock_method, mock_metadata):
         # Arrange
         # Act
@@ -69,7 +69,7 @@ class TestAnnouncementMetadata:
         metadata_repr = repr(mock_metadata)
         # Assert
         assert metadata_len == 0
-        assert metadata_repr == f"AnnouncementMetadata(method={mock_method!r})"
+        assert metadata_repr == f"SensorMetadata(method={mock_method!r})"
 
     def test_add_metadata(self, mock_metadata):
         # Arrange
@@ -78,7 +78,7 @@ class TestAnnouncementMetadata:
         # Assert
         assert len(mock_metadata) == 1
         entry = next(iter(mock_metadata))
-        assert isinstance(entry, AnnouncementMetadataEntry)
+        assert isinstance(entry, SensorMetadataEntry)
         assert entry.instrument_cls is MockInstrument
         assert entry.required is True
 
@@ -90,9 +90,7 @@ class TestAnnouncementMetadata:
         mock_metadata.add(MockInstrument, required=True)
         # Assert
         assert len(mock_metadata) == 3
-        assert all(
-            [isinstance(e, AnnouncementMetadataEntry) for e in mock_metadata]
-        )
+        assert all([isinstance(e, SensorMetadataEntry) for e in mock_metadata])
         assert all([e.instrument_cls is MockInstrument for e in mock_metadata])
         entry_iter = iter(mock_metadata)
         entry_1 = next(entry_iter)
@@ -110,7 +108,7 @@ class TestAnnouncementMetadata:
         # Assert
         entries = list(mock_metadata)
         assert len(entries) == 2
-        assert isinstance(entries[0], AnnouncementMetadataEntry)
+        assert isinstance(entries[0], SensorMetadataEntry)
         assert entries[0].instrument_cls is MockInstrument
         assert entries[0].required is True
         assert entries[1].required is False
@@ -170,4 +168,4 @@ class TestAnnouncementMetadata:
         # Act
         metadata_repr = repr(mock_metadata)
         # Assert
-        assert metadata_repr == f"AnnouncementMetadata(method={mock_method!r})"
+        assert metadata_repr == f"SensorMetadata(method={mock_method!r})"

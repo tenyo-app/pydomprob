@@ -11,6 +11,7 @@ from domprob.observations.observation import ObservationProtocol
 
 class Probe:
     # noinspection PyShadowingNames
+    # noinspection PyMethodMayBeStatic
     """
     A class representing a probes that facilitates the dispatching of
     observations.
@@ -37,15 +38,15 @@ class Probe:
         >>> class SampleObservation(BaseObservation):
         ...
         ...     @sensor(SomeInstrument)
-        ...     def announce_msg(self, some_instrument: SomeInstrument) -> None:
-        ...         some_instrument.call("Announcement!")
+        ...     def sense_msg(self, some_instrument: SomeInstrument) -> None:
+        ...         some_instrument.call("Sensed!")
         ...
         >>> consumer = BasicConsumer(SomeInstrument())
         >>> dispatcher = BasicDispatcher(consumer)
         >>> probes = Probe(dispatcher)
         >>>
         >>> probes.observe(SampleObservation())
-        Announcement!
+        Sensed!
     """
 
     def __init__(self, dispatcher: DispatcherProtocol) -> None:

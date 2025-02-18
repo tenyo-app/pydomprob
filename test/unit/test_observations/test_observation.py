@@ -2,13 +2,13 @@ from typing import Generator
 
 import pytest
 
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 from domprob.observations.observation import ObservationProtocol
 
 
 class ProtocolImplementation:
     @classmethod
-    def announcements(cls) -> Generator[AnnouncementMethod, None, None]:
+    def sensors(cls) -> Generator[SensorMethod, None, None]:
         pass
 
 

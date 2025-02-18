@@ -9,17 +9,17 @@ from domprob.sensors.validate.base_val import (
 
 if TYPE_CHECKING:
     from domprob.sensors.meth import (  # pragma: no cover
-        BoundAnnouncementMethod,
+        BoundSensorMethod,
     )
 
 
 class MissingInstrumException(ValidatorException):
-    """Exception raised when the `instrument` parameter is missing during
-    a call to a method.
+    """Exception raised when the `instrument` parameter is missing
+    during a call to a method.
 
     Args:
         method (Callable[..., Any]): The method where the missing
-            `instrument` parameter was detected.
+            `instrum` parameter was detected.
 
     Attributes:
         method (Callable[..., Any]): The method that caused the
@@ -66,14 +66,14 @@ class MissingInstrumException(ValidatorException):
 
 # pylint: disable=too-few-public-methods
 class InstrumentParamExistsValidator(BaseValidator):
-    """Validator to check if the `instrument` parameter exists.
+    """Validator to check if the `instrum` parameter exists.
 
-    This validator raises a `MissingInstrumentException` if the
-    `instrument` parameter is `None`.
+    This validator raises a `MissingInstrumException` if the `instrum`
+    parameter is `None`.
 
     Examples:
         >>> from domprob.sensors.validate.vals import InstrumentParamExistsValidator
-        >>> from domprob.sensors.meth import AnnouncementMethod
+        >>> from domprob.sensors.meth import SensorMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -82,7 +82,7 @@ class InstrumentParamExistsValidator(BaseValidator):
         ...     def method(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> meth = AnnouncementMethod(Example.method)
+        >>> meth = SensorMethod(Example.method)
         >>> bound_meth = meth.bind(Example())
         >>>
         >>> validator = InstrumentParamExistsValidator()
@@ -94,17 +94,17 @@ class InstrumentParamExistsValidator(BaseValidator):
         Error: 'instrument' param missing in Example.method(...)
     """
 
-    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
+    def validate(self, b_meth: BoundSensorMethod) -> None:
         """Validates the method to ensure the `instrument` parameter
         exists.
 
         Args:
-            b_meth (BoundAnnouncementMethod): Method with bound
-                params to validate.
+            b_meth (BoundSensorMethod): Method with bound params to
+                validate.
 
         Raises:
-            MissingInstrumentException: If the `instrument` parameter
-                is `None`.
+            MissingInstrumentException: If the `instrum` parameter is
+                `None`.
         """
         if b_meth.instrument is None:
             raise MissingInstrumException(b_meth.meth)
@@ -114,11 +114,11 @@ class InstrumentParamExistsValidator(BaseValidator):
 class InstrumTypeException(ValidatorException):
     # pylint: disable=line-too-long
     """
-    Exception raised when the `instrument` parameter does not match the
+    Exception raised when the `instrum` parameter does not match the
     expected type.
 
     Args:
-        b_meth (`BoundAnnouncementMethod`): Bound method that failed
+        b_meth (`BoundSensorMethod`): Bound method that failed
             validate.
 
     Attributes:
@@ -127,7 +127,7 @@ class InstrumTypeException(ValidatorException):
         supp_instrums (Instruments): The supported instrument types.
 
     Examples:
-        >>> from domprob.sensors.meth import AnnouncementMethod
+        >>> from domprob.sensors.meth import SensorMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -136,9 +136,9 @@ class InstrumTypeException(ValidatorException):
         ...     def method(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
-        >>> meth = AnnouncementMethod(Example.method)
+        >>> meth = SensorMethod(Example.method)
         >>> meth.supp_instrums.record(SomeInstrument, True)
-        Instruments(metadata=AnnouncementMetadata(method=<function Example.method at 0x...))
+        Instruments(metadata=SensorMetadata(method=<function Example.method at 0x...))
         >>> bound_meth = meth.bind(Example(), 'InvalidInstrument')  # type: ignore
         >>>
         >>> try:
@@ -149,7 +149,7 @@ class InstrumTypeException(ValidatorException):
         Error: Example.method(...) expects 'instrument' param to be one of: [SomeInstrument], but got: 'InvalidInstrument'
     """
 
-    def __init__(self, b_meth: BoundAnnouncementMethod) -> None:
+    def __init__(self, b_meth: BoundSensorMethod) -> None:
         self.method = b_meth.meth
         self.instrument = b_meth.instrument
         self.supp_instrums = b_meth.supp_instrums
@@ -173,15 +173,14 @@ class InstrumTypeException(ValidatorException):
 # pylint: disable=too-few-public-methods
 class InstrumentTypeValidator(BaseValidator):
     # pylint: disable=line-too-long
-    """Validator to check if the `instrument` is of a valid type.
+    """Validator to check if the `instrum` is of a valid type.
 
-    This validator raises an `InstrumentTypeException` if the type of
-    the `instrument` parameter is not one of the supported instrument
-    types.
+    This validator raises an `InstrumTypeException` if the type of the
+    `instrum` parameter is not one of the supported instrument types.
 
     Examples:
         >>> from domprob.sensors.validate.vals import InstrumentTypeValidator
-        >>> from domprob.sensors.meth import AnnouncementMethod
+        >>> from domprob.sensors.meth import SensorMethod
         >>> class MockInstrument:
         ...     pass
         ...
@@ -189,7 +188,7 @@ class InstrumentTypeValidator(BaseValidator):
         ...     def method(self, instrument: MockInstrument) -> None:
         ...         pass
         ...
-        >>> meth = AnnouncementMethod(Example.method)
+        >>> meth = SensorMethod(Example.method)
         >>> bound_meth = meth.bind(Example(), 'InvalidInstrument')  # type: ignore
         >>>
         >>> validator = InstrumentTypeValidator()
@@ -201,17 +200,17 @@ class InstrumentTypeValidator(BaseValidator):
         Error: Example.method(...) expects 'instrument' param to be one of: [], but got: 'InvalidInstrument'
     """
 
-    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
+    def validate(self, b_meth: BoundSensorMethod) -> None:
         """Validates the method by checking the type of the
         `instrument` parameter.
 
         Args:
-            b_meth (`InstrumentBoundAnnoMethod`): Method with bound
+            b_meth (`BoundSensorMethod`): Method with bound
                 params to validate.
 
         Raises:
-            AnnoValidationException: If the `instrument` parameter is
-                not an instance of any valid instrument classes.
+            InstrumTypeException: If the `instrum` parameter is not an
+                instance of any specified instrument classes.
         """
         for supp_instrum, _ in b_meth.supp_instrums:
             # pylint: disable=unidiomatic-typecheck
@@ -287,12 +286,12 @@ class SupportedInstrumentsExistValidator(BaseValidator):
 
     Examples:
         >>> from domprob.sensors.validate.vals import SupportedInstrumentsExistValidator
-        >>> from domprob.sensors.meth import AnnouncementMethod
+        >>> from domprob.sensors.meth import SensorMethod
         >>> class Example:
         ...     def method(self, instrument: Any) -> None:
         ...         pass
         ...
-        >>> meth = AnnouncementMethod(Example.method)
+        >>> meth = SensorMethod(Example.method)
         >>> bound_meth = meth.bind(Example())
         >>>
         >>> validator = SupportedInstrumentsExistValidator()
@@ -304,16 +303,16 @@ class SupportedInstrumentsExistValidator(BaseValidator):
         Error: Example.method(...) has no supported instrument types defined
     """
 
-    def validate(self, b_meth: BoundAnnouncementMethod) -> None:
+    def validate(self, b_meth: BoundSensorMethod) -> None:
         """Validates the method by checking the type of the
         `instrument` parameter.
 
         Args:
-            b_meth (`BoundAnnouncementMethod`): Method with bound
+            b_meth (`BoundSensorMethod`): Method with bound
                 params to validate.
 
         Raises:
-            AnnoValidationException: If the `instrument` parameter is
+            NoSupportedInstrumsException: If the `instrum` parameter is
                 not an instance of any valid instrument classes.
         """
         if not b_meth.supp_instrums:

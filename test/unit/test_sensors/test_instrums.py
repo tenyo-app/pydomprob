@@ -3,7 +3,7 @@ import copy
 import pytest
 
 from domprob.sensors.instrums import Instruments
-from domprob.sensors.meth_meta import AnnouncementMetadata
+from domprob.sensors.meth_meta import SensorMetadata
 
 
 class MockInstrument:
@@ -25,7 +25,7 @@ def mock_method():
 
 @pytest.fixture
 def mock_metadata(mock_method):
-    return AnnouncementMetadata(mock_method)
+    return SensorMetadata(mock_method)
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def mock_another_instruments():
         def method(self):
             pass
 
-    metadata = AnnouncementMetadata(AnotherCls.method)
+    metadata = SensorMetadata(AnotherCls.method)
     return Instruments(metadata)
 
 

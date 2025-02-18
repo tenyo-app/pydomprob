@@ -9,7 +9,7 @@ from typing import (
     Concatenate,
 )
 
-from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.meth import SensorMethod
 
 # Typing helper: Describes the class where the method resides
 _MethodCls = TypeVar("_MethodCls", bound=Any)
@@ -40,7 +40,7 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
        implement the same typing protocol.
 
     Args:
-        instrument (type[_Instrument]): The instrument class required
+        instrum (type[_Instrument]): The instrument class required
             by the decorated method.
         required (bool): Whether the instrument is required. Defaults
             to `False`.
@@ -159,7 +159,7 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
             Executing with <...SomeInstrument object at 0x...>
         """
 
-        meth = AnnouncementMethod(method)
+        meth = SensorMethod(method)
         meth.supp_instrums.record(self.instrum, self.required)
 
         @functools.wraps(method)
@@ -178,22 +178,22 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
 
     def __repr__(self) -> str:
         # noinspection PyShadowingNames
-        """Returns a string representation of the `Announcement`
+        """Returns a string representation of the `_Sensor`
         instance.
 
         This method provides a concise, informative string
-        representation of the `Announcement` instance, including its
+        representation of the `_Sensor` instance, including its
         instrument class and requirement status.
 
         Returns:
-            str: A string representation of the `Announcement` instance.
+            str: A string representation of the `_Sensor` instance.
 
         Examples:
             >>> class SomeInstrument:
             ...     pass
             ...
-            >>> announce = _Sensor(SomeInstrument)
-            >>> repr(announce)
+            >>> sensor = _Sensor(SomeInstrument)
+            >>> repr(sensor)
             "_Sensor(instrum=<class '...SomeInstrument'>)"
         """
         return f"{self.__class__.__name__}(instrum={self.instrum!r})"
