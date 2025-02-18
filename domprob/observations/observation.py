@@ -1,9 +1,9 @@
 from collections.abc import Iterable
 from typing import ParamSpec, Protocol, TypeVar, runtime_checkable, Any
 
-from domprob.announcement.meth import AnnouncementMethod
+from domprob.sensors.meth import AnnouncementMethod
 
-# Typing helpers: defines an @announcement method signature
+# Typing helpers: defines an @sensors method signature
 _P = ParamSpec("_P")
 _R_co = TypeVar("_R_co", bound=Any, covariant=True)
 
@@ -12,10 +12,10 @@ _R_co = TypeVar("_R_co", bound=Any, covariant=True)
 @runtime_checkable
 class ObservationProtocol(Protocol):
     """Protocol defining the structure of domain observations that
-    provide announcement.
+    provide sensors.
 
     Classes implementing this protocol must define a `@classmethod`
-    named `announcement` that returns a `Generator` of
+    named `sensors` that returns a `Generator` of
     `AnnouncementMethod` instances.
 
     This protocol is `@runtime_checkable`, meaning
@@ -24,12 +24,12 @@ class ObservationProtocol(Protocol):
 
     Type Parameters:
         _P (ParamSpec): Represents the parameters accepted by the
-            announcement method.
-        _R_co (TypeVar): Represents the return type of the announcement
+            sensors method.
+        _R_co (TypeVar): Represents the return type of the sensors
             method.
 
     Example:
-        >>> from domprob.announcement.meth import AnnouncementMethod
+        >>> from domprob.sensors.meth import AnnouncementMethod
         >>> from domprob.observations.observation import ObservationProtocol
         >>>
         >>> class ConcreteObservation:
@@ -42,7 +42,7 @@ class ObservationProtocol(Protocol):
 
     @classmethod
     def announcements(cls) -> Iterable[AnnouncementMethod]:
-        """Retrieve all announcement methods defined in the class.
+        """Retrieve all sensors methods defined in the class.
 
         Returns:
             Generator[_AnnounceSig, None, None]: A generator yielding

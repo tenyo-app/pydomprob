@@ -9,7 +9,7 @@ from typing import (
     Concatenate,
 )
 
-from domprob.announcement.meth import AnnouncementMethod
+from domprob.sensors.meth import AnnouncementMethod
 
 # Typing helper: Describes the class where the method resides
 _MethodCls = TypeVar("_MethodCls", bound=Any)
@@ -23,7 +23,7 @@ _R = TypeVar("_R")
 _Meth = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
 
 
-class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
+class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
     """Decorator class for associating metadata and validating methods.
 
     This class enables the decoration of methods with metadata
@@ -32,7 +32,7 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
     parameters and that the `instrument` argument satisfies the
     specified requirements.
 
-    The `@announcement` decorator can be stacked.
+    The `@sensors` decorator can be stacked.
 
     .. warning::
        It is strongly recommended that instrument classes defined in
@@ -59,10 +59,10 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
         ...         return f"{self.__class__.__name__}()"
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announce
+        >>> from domprob import sensor
         >>>
         >>> class Foo:
-        ...     @announce(PrintInstrument)
+        ...     @sensor(PrintInstrument)
         ...     def bar(self, instrument: PrintInstrument) -> None:
         ...         instrument.stdout(f"Executing with {instrument!r}")
         ...
@@ -72,7 +72,7 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
         >>> foo.bar(instru)
         Executing with PrintInstrument()
 
-        Supporting the same announcement implementation with multiple
+        Supporting the same sensors implementation with multiple
         instruments:
 
         >>> import logging
@@ -103,11 +103,11 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
         ...         logger.info(f"Observing '{cls_name}' with '{self!r}'\")
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announce
+        >>> from domprob import sensor
         >>>
         >>> class Foo:
-        ...     @announce(PrintInstrument)
-        ...     @announce(LogInstrument)
+        ...     @sensor(PrintInstrument)
+        ...     @sensor(LogInstrument)
         ...     def bar(self, instrument: AbstractStdOutInstrument) -> None:
         ...         instrument.stdout(self.__class__.__name__)
         ...
@@ -118,17 +118,15 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
         Observing 'Foo' with 'PrintInstrument()'
     """
 
-    def __init__(
-        self, with_instrum: type[_Instrument], required: bool = False
-    ) -> None:
-        self.with_instrum = with_instrum
+    def __init__(self, instrum: type[_Instrument], required: bool = False) -> None:
+        self.instrum = instrum
         self.required = required
 
     def __call__(self, method: _Meth) -> Callable[_P, _R]:
         """Wraps a method to associate metadata and enforce runtime
         validate.
 
-        This method is invoked when the `@announcement` decorator is
+        This method is invoked when the `@sensors` decorator is
         used on a method. It attaches metadata, including the
         instrument class and requirement status, to the method and
         enforces validate when the method is called at runtime.
@@ -145,10 +143,10 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         print(f"Executing with {instrument!r}")
             ...
@@ -160,17 +158,17 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
         """
 
         meth = AnnouncementMethod(method)
-        meth.supp_instrums.record(self.with_instrum, self.required)
+        meth.supp_instrums.record(self.instrum, self.required)
 
         @functools.wraps(method)
         def wrapper(
             cls_instance: _MethodCls,
-            with_instrum: _Instrument,
+            instrum: _Instrument,
             /,
             *args: _P.args,
             **kwargs: _P.kwargs,
         ) -> _R:
-            bound_meth = meth.bind(cls_instance, with_instrum, *args, **kwargs)
+            bound_meth = meth.bind(cls_instance, instrum, *args, **kwargs)
             bound_meth.validate()
             return bound_meth.execute()
 
@@ -192,12 +190,12 @@ class _Announce(Generic[_MethodCls, _Instrument, _P, _R]):
             >>> class SomeInstrument:
             ...     pass
             ...
-            >>> announce = _Announce(SomeInstrument)
+            >>> announce = _Sensor(SomeInstrument)
             >>> repr(announce)
-            "_Announce(instrument=<class '...SomeInstrument'>)"
+            "_Sensor(instrum=<class '...SomeInstrument'>)"
         """
-        return f"{self.__class__.__name__}(instrument={self.with_instrum!r})"
+        return f"{self.__class__.__name__}(instrum={self.instrum!r})"
 
 
 # pylint: disable=invalid-name
-announce = _Announce  # Alias to be pythonic
+sensor = _Sensor  # Alias to be pythonic

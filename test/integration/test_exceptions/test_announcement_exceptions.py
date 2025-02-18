@@ -4,7 +4,7 @@ class TestAnnouncementExceptionImport:
         from domprob.exceptions import (
             AnnouncementException as AliasAnnouncementException,
         )
-        from domprob.announcement.exc import AnnouncementException
+        from domprob.sensors.exc import AnnouncementException
 
         # Act
         # Assert
@@ -18,7 +18,7 @@ class TestAnnouncementMethodExceptionImport:
         from domprob.exceptions import (
             PartialBindException as AliasPartialBindException,
         )
-        from domprob.announcement.meth import PartialBindException
+        from domprob.sensors.meth import PartialBindException
 
         # Act
         # Assert
@@ -32,7 +32,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             ValidatorException as AliasValidatorException,
         )
-        from domprob.announcement.validate.vals import (
+        from domprob.sensors.validate.vals import (
             ValidatorException,
         )
 
@@ -45,7 +45,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             InstrumTypeException as AliasInstrumTypeException,
         )
-        from domprob.announcement.validate.vals import (
+        from domprob.sensors.validate.vals import (
             InstrumTypeException,
         )
 
@@ -58,7 +58,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             MissingInstrumException as AliasMissingInstrumException,
         )
-        from domprob.announcement.validate.vals import (
+        from domprob.sensors.validate.vals import (
             MissingInstrumException,
         )
 
@@ -71,7 +71,7 @@ class TestAnnouncementValidationExceptionImports:
         from domprob.exceptions import (
             NoSupportedInstrumsException as AliasNoSupportedInstrumsException,
         )
-        from domprob.announcement.validate.vals import (
+        from domprob.sensors.validate.vals import (
             NoSupportedInstrumsException,
         )
 
@@ -89,7 +89,7 @@ class TestAnnouncementChainExceptionImport:
         from domprob.exceptions import (
             EmptyChainException as AliasEmptyChainException,
         )
-        from domprob.announcement.validate.chain import EmptyChainException
+        from domprob.sensors.validate.chain import EmptyChainException
 
         # Act
         # Assert
@@ -103,7 +103,7 @@ class TestAnnouncementChainValidationExceptionImports:
         from domprob.exceptions import (
             InvalidLinkException as AliasInvalidLinkException,
         )
-        from domprob.announcement.validate.chain_val import (
+        from domprob.sensors.validate.chain_val import (
             InvalidLinkException,
         )
 
@@ -116,7 +116,7 @@ class TestAnnouncementChainValidationExceptionImports:
         from domprob.exceptions import (
             LinkExistsException as AliasLinkExistsException,
         )
-        from domprob.announcement.validate.chain_val import (
+        from domprob.sensors.validate.chain_val import (
             LinkExistsException,
         )
 
@@ -129,7 +129,7 @@ class TestAnnouncementChainValidationExceptionImports:
         from domprob.exceptions import (
             ValidationChainException as AliasValidationChainException,
         )
-        from domprob.announcement.validate.chain_val import (
+        from domprob.sensors.validate.chain_val import (
             ValidationChainException,
         )
 

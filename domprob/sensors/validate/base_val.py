@@ -3,10 +3,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from domprob.announcement.exc import AnnouncementException
+from domprob.sensors.exc import AnnouncementException
 
 if TYPE_CHECKING:
-    from domprob.announcement.meth import (  # pragma: no cover
+    from domprob.sensors.meth import (  # pragma: no cover
         BoundAnnouncementMethod,
     )
 
@@ -43,8 +43,8 @@ class BaseValidator(ABC):
             validator.
 
     Examples:
-        >>> from domprob.announcement.validate.base_val import BaseValidator
-        >>> from domprob.announcement.meth import AnnouncementMethod
+        >>> from domprob.sensors.validate.base_val import BaseValidator
+        >>> from domprob.sensors.meth import AnnouncementMethod
         >>>
         >>> class ExampleValidator(BaseValidator):
         ...     def validate(self, method: BoundAnnouncementMethod) -> None:
@@ -96,8 +96,8 @@ class BaseValidator(ABC):
             Exception: If an unexpected error occurs during validate.
 
         Examples:
-            >>> from domprob.announcement.validate.base_val import BaseValidator
-            >>> from domprob.announcement.meth import AnnouncementMethod
+            >>> from domprob.sensors.validate.base_val import BaseValidator
+            >>> from domprob.sensors.meth import AnnouncementMethod
             >>>
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
@@ -134,8 +134,8 @@ class BaseValidator(ABC):
             str: A string representation of the validator.
 
         Examples:
-            >>> from domprob.announcement.validate.base_val import BaseValidator
-            >>> from domprob.announcement.meth import BoundAnnouncementMethod
+            >>> from domprob.sensors.validate.base_val import BaseValidator
+            >>> from domprob.sensors.meth import BoundAnnouncementMethod
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundAnnouncementMethod) -> None:
             ...         pass
@@ -157,7 +157,7 @@ class BaseValidator(ABC):
             str: The class name of the validator.
 
         Examples:
-            >>> from domprob.announcement.validate.base_val import BaseValidator
+            >>> from domprob.sensors.validate.base_val import BaseValidator
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth):
             ...         pass

@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.announcement.meth import AnnouncementMethod
-from domprob.announcement.dec import announce
+from domprob.sensors.meth import AnnouncementMethod
+from domprob.sensors.dec import sensor
 from domprob.probes.probe import get_probe, Probe
 
 
@@ -46,11 +46,11 @@ def mock_observation_cls(
 ) -> type[_Obs]:
     class MockObservation:
 
-        @announce(mock_instrument_cls)
+        @sensor(mock_instrument_cls)
         def mock_announcement(
             self, mock_instrument: mock_instrument_cls
         ) -> None:
-            mock_instrument.store("announcement!")
+            mock_instrument.store("sensors!")
 
         def announcements(self) -> Generator[AnnouncementMethod, None, None]:
             yield AnnouncementMethod(self.mock_announcement)
@@ -155,7 +155,7 @@ class TestProbe:
         mock_probe.observe(mock_observation_cls())
         # Assert
         assert len(mock_instrum.msgs) == 1, "Mock instrument not called"
-        assert mock_instrum.msgs[0] == "announcement!"
+        assert mock_instrum.msgs[0] == "sensors!"
 
     def test_repr(self, mock_instrument_cls, mock_dispatcher_cls):
         # Arrange

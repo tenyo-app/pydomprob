@@ -2,12 +2,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from domprob.announcement.validate.base_val import BaseValidator
-from domprob.announcement.validate.chain import ValidationChain
-from domprob.announcement.validate.orch import (
+from domprob.sensors.validate.base_val import BaseValidator
+from domprob.sensors.validate.chain import ValidationChain
+from domprob.sensors.validate.orch import (
     AnnouncementValidationOrchestrator,
 )
-from domprob.announcement.validate.vals import (
+from domprob.sensors.validate.vals import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,
@@ -49,7 +49,7 @@ class TestAnnouncementValidationOrchestrator:
         assert len(orchestrator._chain._links) == 4
         assert isinstance(orchestrator._chain._links[3], MockValidator)
 
-    @patch("domprob.announcement.meth.BoundAnnouncementMethod")
+    @patch("domprob.sensors.meth.BoundAnnouncementMethod")
     def test_validate_chain(self, mock_method):
         # Arrange
         mock_chain = MagicMock(spec=ValidationChain)

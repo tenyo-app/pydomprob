@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from domprob.announcement.meth import AnnouncementMethod
+from domprob.sensors.meth import AnnouncementMethod
 from domprob.observations.observation import ObservationProtocol
 
 

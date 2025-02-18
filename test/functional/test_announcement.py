@@ -2,8 +2,8 @@ from collections.abc import Callable
 
 import pytest
 
-from domprob import announce, exceptions
-from domprob.announcement.meth_meta import (
+from domprob import sensor, exceptions
+from domprob.sensors.meth_meta import (
     AnnouncementMetadata,
     AnnouncementMetadataEntry,
 )
@@ -50,7 +50,7 @@ class TestMetadata:
     def test_metadata_set_correctly(self):
         # Arrange
         class Cls:
-            @announce(MockInstrument)
+            @sensor(MockInstrument)
             def simple_method(self, instrument: MockInstrument) -> None:
                 pass
 
@@ -68,9 +68,9 @@ class TestMetadata:
     def test_metadata_set_correctly_stacked_method(self):
         # Arrange
         class Cls:
-            @announce(MockInstrument)
-            @announce(MockInstrument)
-            @announce(MockInstrument)
+            @sensor(MockInstrument)
+            @sensor(MockInstrument)
+            @sensor(MockInstrument)
             def stacked_method(self, instrument: MockInstrument) -> None:
                 pass
 
@@ -90,9 +90,9 @@ class TestMetadata:
     def test_metadata_set_correctly_different_stacked_method(self):
         # Arrange
         class Cls:
-            @announce(MockInstrument)
-            @announce(AnotherMockInstrument)
-            @announce(YetAnotherMockInstrument)
+            @sensor(MockInstrument)
+            @sensor(AnotherMockInstrument)
+            @sensor(YetAnotherMockInstrument)
             def stacked_differently_method(
                 self, instrument: MockInstrument
             ) -> None:
@@ -117,7 +117,7 @@ class TestInstrumentTypes:
     def test_instrument_type_inheritance(self):
         # Arrange
         class Cls:
-            @announce(AnotherMockInstrument)
+            @sensor(AnotherMockInstrument)
             def method(self, instrument: MockInstrument) -> None:
                 instrument.stdout("stdout")
 
@@ -128,7 +128,7 @@ class TestInstrumentTypes:
     def test_instrument_type_inheritance_backwards_raises(self):
         # Arrange
         class Cls:
-            @announce(MockInstrument)
+            @sensor(MockInstrument)
             def method(self, instrument: AnotherMockInstrument) -> None:
                 instrument.stdout("stdout")
 
@@ -141,8 +141,8 @@ class TestInstrumentTypes:
     def test_instrument_type_stacked_multiple_inheritance(self):
         # Arrange
         class Cls:
-            @announce(AnotherMockInstrument)
-            @announce(YetAnotherMockInstrument)
+            @sensor(AnotherMockInstrument)
+            @sensor(YetAnotherMockInstrument)
             def method(self, instrument: MockInstrument) -> None:
                 instrument.stdout("stdout")
 
@@ -154,8 +154,8 @@ class TestInstrumentTypes:
     def test_instrument_type_stacked_multiple_inheritance_raises(self):
         # Arrange
         class Cls:
-            @announce(AnotherMockInstrument)
-            @announce(YetAnotherMockInstrument)
+            @sensor(AnotherMockInstrument)
+            @sensor(YetAnotherMockInstrument)
             def method(self, instrument: MockInstrument) -> None:
                 instrument.stdout("stdout")
 
@@ -175,7 +175,7 @@ class TestInstrumentTypes:
     def test_unrelated_instrument_type_raises(self):
         # Arrange
         class Cls:
-            @announce(UnrelatedMockInstrument)
+            @sensor(UnrelatedMockInstrument)
             def method(self, instrument: MockInstrument) -> None:
                 instrument.stdout("stdout")
 
@@ -194,7 +194,7 @@ class TestInstrumentTypes:
     def test_unrelated_instrument_type_backwards_raises(self):
         # Arrange
         class Cls:
-            @announce(MockInstrument)
+            @sensor(MockInstrument)
             def method(self, instrument: UnrelatedMockInstrument) -> None:
                 instrument.stdout("stdout")
 
@@ -216,7 +216,7 @@ class TestMissingInstrument:
     def test_missing_instrument_instance_raises(self):
         # Arrange
         class Cls:
-            @announce(MockInstrument)
+            @sensor(MockInstrument)
             def method(self, instrument: MockInstrument) -> None:
                 pass
 
@@ -226,5 +226,5 @@ class TestMissingInstrument:
             instance.method()
         # Assert
         assert str(exc_info.value).endswith(
-            "missing 1 required positional argument: 'with_instrum'"
+            "missing 1 required positional argument: 'instrum'"
         )

@@ -2,7 +2,7 @@ from typing import Any, Iterable
 
 import pytest
 
-from domprob.announcement.meth import AnnouncementMethod
+from domprob.sensors.meth import AnnouncementMethod
 from domprob.consumers.consumer import ConsumerProtocol
 from domprob import BasicDispatcher
 from domprob.observations.observation import ObservationProtocol

@@ -2,7 +2,7 @@ from typing import TypeVar
 
 import pytest
 
-from domprob import get_probe, announce, BaseObservation
+from domprob import get_probe, sensor, BaseObservation
 
 
 @pytest.fixture
@@ -24,16 +24,16 @@ _Obs = TypeVar("_Obs", bound="ObserverProtocol")
 def mock_observation_cls(mock_instrument_cls) -> type[_Obs]:
     class MockObservation(BaseObservation):
 
-        @announce(mock_instrument_cls)
+        @sensor(mock_instrument_cls)
         def mock_announcement(self, mock_instrum: mock_instrument_cls) -> None:
             mock_instrum.store("Announcement!")
 
-        @announce(mock_instrument_cls)
-        @announce(mock_instrument_cls)
+        @sensor(mock_instrument_cls)
+        @sensor(mock_instrument_cls)
         def mock_announcement_again(
             self, mock_instrum: mock_instrument_cls
         ) -> None:
-            mock_instrum.store("Stacked announcement!")
+            mock_instrum.store("Stacked sensors!")
 
     return MockObservation
 
@@ -48,5 +48,5 @@ class TestProbe:
         # Assert
         assert len(instrum.msgs) == 3, "Mock instrument not called"
         assert "Announcement!" in instrum.msgs
-        assert "Stacked announcement!" in instrum.msgs
-        assert "Stacked announcement!" in instrum.msgs
+        assert "Stacked sensors!" in instrum.msgs
+        assert "Stacked sensors!" in instrum.msgs

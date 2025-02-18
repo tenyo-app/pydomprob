@@ -1,4 +1,4 @@
-from domprob import announce, BaseObservation
+from domprob import sensor, BaseObservation
 
 
 class MockObservationOne(BaseObservation):
@@ -6,20 +6,20 @@ class MockObservationOne(BaseObservation):
 
 
 class MockObservationTwo(BaseObservation):
-    @announce(...)
+    @sensor(...)
     def mock_announcement_one(self): ...
 
-    @announce(...)
+    @sensor(...)
     def mock_announcement_two(self): ...
 
 
 class MockObservationThree(BaseObservation):
-    @announce(...)
-    @announce(...)
-    @announce(...)
+    @sensor(...)
+    @sensor(...)
+    @sensor(...)
     def mock_announcement_one(self): ...
 
-    @announce(...)
+    @sensor(...)
     def mock_announcement_two(self): ...
 
 

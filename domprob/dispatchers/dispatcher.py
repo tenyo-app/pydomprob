@@ -51,7 +51,7 @@ class DispatcherProtocol(Protocol):
             `_R`: The result of processing the observation.
 
         Example:
-            >>> from domprob import announce, BaseObservation
+            >>> from domprob import sensor, BaseObservation
             >>> from domprob.dispatchers.dispatcher import DispatcherProtocol
             >>> from domprob.observations.observation import ObservationProtocol
             >>>
@@ -66,7 +66,7 @@ class DispatcherProtocol(Protocol):
             ...     pass
             ...
             >>> class Obs(BaseObservation):
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def foo(self, instrument: SomeInstrument) -> str:
             ...         pass
             ...

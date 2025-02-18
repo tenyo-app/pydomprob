@@ -103,17 +103,17 @@ pip install domprob
 import logging
 from typing import Any
 
-from domprob import announce, BaseObservation
+from domprob import sensor, BaseObservation
 
 
 class CheckoutSuccessful(BaseObservation):
-    
-        def __init__(self, **order_details: Any) -> None:
-            self.order_details = order_details
 
-        @announce(with_instrum=logging.Logger)
-        def log_observation(self, log: logging.Logger) -> None:
-           log.info("Checkout successful!", **self.order_details)
+    def __init__(self, **order_details: Any) -> None:
+        self.order_details = order_details
+
+    @sensor(instrum=logging.Logger)
+    def log_observation(self, log: logging.Logger) -> None:
+        log.info("Checkout successful!", **self.order_details)
 
 ```
 

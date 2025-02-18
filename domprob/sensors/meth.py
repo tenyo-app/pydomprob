@@ -14,9 +14,9 @@ from typing import (
     get_type_hints,
 )
 
-from domprob.announcement.exc import AnnouncementException
-from domprob.announcement.instrums import Instruments
-from domprob.announcement.validate.orch import (
+from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.instrums import Instruments
+from domprob.sensors.validate.orch import (
     AnnouncementValidationOrchestrator,
 )
 
@@ -87,7 +87,7 @@ class AnnouncementMethodBinder:
 
     Examples:
         >>> from collections import OrderedDict
-        >>> from domprob.announcement.meth import (
+        >>> from domprob.sensors.meth import (
         ...     AnnouncementMethod, AnnouncementMethodBinder
         ... )
         >>>
@@ -124,7 +124,7 @@ class AnnouncementMethodBinder:
 
         Examples:
             >>> from collections import OrderedDict
-            >>> from domprob.announcement.meth import (
+            >>> from domprob.sensors.meth import (
             ...     AnnouncementMethod, AnnouncementMethodBinder
             ... )
             >>>
@@ -165,7 +165,7 @@ class AnnouncementMethodBinder:
 
         Examples:
             >>> from collections import OrderedDict
-            >>> from domprob.announcement.meth import (
+            >>> from domprob.sensors.meth import (
             ...     AnnouncementMethod, AnnouncementMethodBinder
             ... )
             >>>
@@ -219,7 +219,7 @@ class AnnouncementMethodBinder:
 
         Examples:
             >>> from collections import OrderedDict
-            >>> from domprob.announcement.meth import (
+            >>> from domprob.sensors.meth import (
             ...     AnnouncementMethod, AnnouncementMethodBinder
             ... )
             >>>
@@ -301,7 +301,7 @@ class AnnouncementMethodBinder:
         1. The parameters type hint annotations will be inspected. It
            will check if the type hint of an argument defined in the
            method signature is the same typemor a parent type of that
-           defined in all announcement decorators that wrap the
+           defined in all sensors decorators that wrap the
            associated method.
 
            .. Warning:: If multiple parameters exist that match the
@@ -361,14 +361,14 @@ _RMeth = TypeVar("_RMeth")
 
 
 class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
-    """Base class for announcement-related methods.
+    """Base class for sensors-related methods.
 
     This class provides shared functionality for both
     `AnnouncementMethod` and `BoundAnnouncementMethod`, including
     caching and retrieval of supported instruments.
 
     Args:
-        meth (Callable): The method associated with this announcement.
+        meth (Callable): The method associated with this sensors.
     """
 
     def __init__(
@@ -384,14 +384,14 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
         """Returns the decorated method.
 
         This method represents the underlying method associated with
-        the announcement.
+        the sensors.
 
         Returns:
             Callable[_PMeth, _RMeth]: The method associated with this
-                announcement.
+                sensors.
 
         Examples:
-            >>> from domprob.announcement.meth import BaseAnnouncementMethod
+            >>> from domprob.sensors.meth import BaseAnnouncementMethod
             >>>
             >>> def example_method():
             ...     pass
@@ -414,7 +414,7 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
                 about the method’s supported instruments.
 
         Examples:
-            >>> from domprob.announcement.meth import BaseAnnouncementMethod
+            >>> from domprob.sensors.meth import BaseAnnouncementMethod
             >>>
             >>> class SomeInstrument:
             ...     pass
@@ -440,10 +440,10 @@ class BaseAnnouncementMethod(Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -461,7 +461,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
 
     This class acts as a wrapper and provides an interface to interact
     with the supported instruments of a method decorated with
-    `@announcement`. It also facilitates partially binding runtime
+    `@sensors`. It also facilitates partially binding runtime
     arguments to the method before method execution.
 
     Args:
@@ -473,10 +473,10 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         ...     pass
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announce
+        >>> from domprob import sensor
         >>>
         >>> class Foo:
-        ...     @announce(SomeInstrument)
+        ...     @sensor(SomeInstrument)
         ...     def bar(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
@@ -520,13 +520,13 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
                 - `None` if the callable does not support instruments.
 
         Example:
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class SomeInstrument:
             ...     pass
             ...
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         print(f"Instrument: {instrument}")
             ...
@@ -575,10 +575,10 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -593,7 +593,7 @@ class AnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> args = (foo, instrument_instance)
             >>> bound_method = bar_method.bind(*args)
             >>> bound_method
-            BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcement.meth.Foo object at 0x...>, instrument=<domprob.announcement.meth.SomeInstrument object at 0x...>)>)
+            BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
         """
         return self._binder.bind(cls_instance, *args, **kwargs)
 
@@ -618,10 +618,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         ...     pass
         ...
         >>> # Define a class with a decorated method
-        >>> from domprob import announce
+        >>> from domprob import sensor
         >>>
         >>> class Foo:
-        ...     @announce(SomeInstrument)
+        ...     @sensor(SomeInstrument)
         ...     def bar(self, instrument: SomeInstrument) -> None:
         ...         pass
         ...
@@ -636,7 +636,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
         >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
         >>>
         >>> bound_method
-        BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcement.meth.Foo object at 0x...>, instrument=<domprob.announcement.meth.SomeInstrument object at 0x...>)>)
+        BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
     """
 
     def __init__(
@@ -662,17 +662,17 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
             >>> # Create an BoundAnnouncementMethod instance
             >>> import inspect
             >>> from collections import OrderedDict
-            >>> from domprob.announcement.meth import (
+            >>> from domprob.sensors.meth import (
             ...     AnnouncementMethod, BoundAnnouncementMethod
             ... )
             >>>
@@ -702,17 +702,17 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
             >>> # Create an BoundAnnouncementMethod instance
             >>> import inspect
             >>> from collections import OrderedDict
-            >>> from domprob.announcement.meth import (
+            >>> from domprob.sensors.meth import (
             ...     AnnouncementMethod, BoundAnnouncementMethod
             ... )
             >>>
@@ -740,10 +740,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> str:
             ...         return "Executed"
             ...
@@ -780,10 +780,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> None:
             ...         pass
             ...
@@ -815,10 +815,10 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             ...     pass
             ...
             >>> # Define a class with a decorated method
-            >>> from domprob import announce
+            >>> from domprob import sensor
             >>>
             >>> class Foo:
-            ...     @announce(SomeInstrument)
+            ...     @sensor(SomeInstrument)
             ...     def bar(self, instrument: SomeInstrument) -> str:
             ...         return "Executed"
             ...
@@ -833,7 +833,7 @@ class BoundAnnouncementMethod(BaseAnnouncementMethod, Generic[_PMeth, _RMeth]):
             >>> bound_method = BoundAnnouncementMethod(announce_meth, b_args)
             >>>
             >>> repr(bound_method)
-            'BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.announcement.meth.Foo object at 0x...>, instrument=<domprob.announcement.meth.SomeInstrument object at 0x...>)>)'
+            'BoundAnnouncementMethod(announce_meth=AnnouncementMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)'
 
         """
         params = (

@@ -2,7 +2,7 @@ from collections.abc import Iterator, Collection, Generator
 from typing import Any, TypeVar, ParamSpec, Generic
 
 from domprob.consumers.consumer import ConsumerProtocol
-from domprob.announcement.meth import AnnouncementMethod
+from domprob.sensors.meth import AnnouncementMethod
 from domprob.consumers.consumer import ConsumerException
 from domprob.observations.observation import ObservationProtocol
 
@@ -236,16 +236,16 @@ _R = TypeVar("_R", bound=Any)
 
 class ReqInstrumException(ConsumerException):
     """Exception raised when a required instrument is missing an
-    implementation of the same type for an observation announcement.
+    implementation of the same type for an observation sensors.
 
     An instrument is marked as required with the `required`
-    flag in the `@announcement` decorator:
+    flag in the `@sensors` decorator:
 
-    >>> from domprob import announce, BaseObservation
+    >>> from domprob import sensor, BaseObservation
     >>>
     >>> class SomeObservation(BaseObservation):
     ...
-    ...     @announce(..., required=True)
+    ...     @sensor(..., required=True)
     ...     def some_method(self, instrument: ...) -> None:
     ...         ...
     ...
@@ -253,7 +253,7 @@ class ReqInstrumException(ConsumerException):
     Args:
         observation (_Obs): The observation instance where the missing
             instrument was required.
-        announcement (_Ann): The announcement method that failed due to
+        announcement (_Ann): The sensors method that failed due to
             the missing instrument.
         req_supp_instr (type[_Instrument]): The instrument type that
             was expected but not found.
@@ -299,20 +299,20 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
 
     This class acts as a consumer that takes in instrument
     implementations and processes observations by executing their
-    associated announcement methods with the relevant instrument.
+    associated sensors methods with the relevant instrument.
 
     Args:
         *instruments (_Instrument): One or more instrument instances.
 
     Example:
-        >>> from domprob import announce, BaseObservation
+        >>> from domprob import sensor, BaseObservation
         >>>
         >>> class LoggerInstrument:
         ...     def log(self, message: str):
         ...         print(f"LOG: {message}")
         ...
         >>> class SomeObservation(BaseObservation):
-        ...     @announce(LoggerInstrument)
+        ...     @sensor(LoggerInstrument)
         ...     def announce_event(self, instrument: LoggerInstrument):
         ...         instrument.log("Event announced!")
         ...
@@ -338,7 +338,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         """Processes an observation by invoking the relevant instrument
         methods.
 
-        The method iterates through the observation’s announcement and
+        The method iterates through the observation’s sensors and
         applies the required instrument implementations.
 
         Args:
@@ -348,7 +348,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         for ann in observation.announcements():
             for instrum_imp in self.instrum_imps(observation, ann):
                 if instrum_imp is not None:
-                    ann.meth(observation, instrum_imp)  # Executes announcement
+                    ann.meth(observation, instrum_imp)  # Executes sensors
 
     def instrum_imps(
         self,
@@ -357,12 +357,12 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
     ) -> Generator[_Instrument | None, None, None]:
         # noinspection PyCallingNonCallable
         """Retrieves instrument implementations required for an
-        announcement.
+        sensors.
 
         Args:
             observation (ObservationProtocol): The observation being
                 processed.
-            announcement (AnnouncementMethod): The announcement to
+            announcement (AnnouncementMethod): The sensors to
                 handle.
 
         Yields:
@@ -374,15 +374,15 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
             ReqInstrumException: If a required instrument is missing.
 
         Example:
-            >>> from domprob import announce, BaseObservation
-            >>> from domprob.announcement.meth import AnnouncementMethod
+            >>> from domprob import sensor, BaseObservation
+            >>> from domprob.sensors.meth import AnnouncementMethod
             >>>
             >>> class LoggerInstrument:
             ...     def log(self, message: str):
             ...         print(f"LOG: {message}")
             ...
             >>> class SomeObservation(BaseObservation):
-            ...     @announce(LoggerInstrument)
+            ...     @sensor(LoggerInstrument)
             ...     def announce_event(self, instrument: LoggerInstrument):
             ...         instrument.log("Event announced!")
             ...

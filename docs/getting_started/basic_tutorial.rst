@@ -46,7 +46,7 @@ more details.
 
    import logging
 
-   from domprob import announce, BaseObservation
+   from domprob import sensor, BaseObservation
 
 
    class CheckoutSuccessful(BaseObservation):
@@ -54,11 +54,11 @@ more details.
        def __init__(self, **order_details: Any) -> None:
            self.order_details = order_details
 
-       @announce(with_instrum=logging.Logger, required=True)
+       @sensor(instrum=logging.Logger, required=True)
        def log_checkout_successful(self, log: logging.Logger) -> None:
            log.info("Checkout successful!", **self.order_details)
 
-       @announce(with_instrum=MetricsAdapter)
+       @sensor(instrum=MetricsAdapter)
        def increment_successful_checkouts(self, metric_app: MetricsAdapter) -> None:
            metric_app.increment('successful-checkouts', 1)
 

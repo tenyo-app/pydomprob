@@ -2,8 +2,8 @@ import functools
 
 import pytest
 
-from domprob.announcement.dec import _Announce, announce
-from domprob.announcement.validate.vals import InstrumTypeException
+from domprob.sensors.dec import _Sensor, sensor
+from domprob.sensors.validate.vals import InstrumTypeException
 
 
 class MockInstrument:
@@ -24,20 +24,20 @@ def mock_cls():
 @pytest.fixture
 def announcement_instance():
     """Fixture for creating an Announcement instance."""
-    return _Announce(MockInstrument)
+    return _Sensor(MockInstrument)
 
 
 class TestAnnouncement:
     def test_initialisation(self):
         """Test that Announcement is initialised correctly."""
-        ann = _Announce(MockInstrument, True)
-        assert ann.with_instrum is MockInstrument
+        ann = _Sensor(MockInstrument, True)
+        assert ann.instrum is MockInstrument
         assert ann.required is True
 
     def test_repr(self):
         """Test the string representation of Announcement."""
-        ann = _Announce(MockInstrument)
-        expected_repr = f"_Announce(instrument={MockInstrument!r})"
+        ann = _Sensor(MockInstrument)
+        expected_repr = f"_Sensor(instrum={MockInstrument!r})"
         assert repr(ann) == expected_repr
 
     def test_call_method_executes_correctly(
@@ -62,7 +62,7 @@ class TestAnnouncement:
             return wrapper
 
         class Cls:
-            @announce(MockInstrument)
+            @sensor(MockInstrument)
             @some_decorator
             def method(self, instrument: MockInstrument):
                 return f"Instrument: {instrument}"
@@ -100,4 +100,4 @@ class TestAnnouncement:
 
 
 def test_announcement_lower_is_announcement_cls():
-    assert announce == _Announce
+    assert sensor == _Sensor

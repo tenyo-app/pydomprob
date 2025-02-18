@@ -3,13 +3,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.announcement.meth import BoundAnnouncementMethod
-from domprob.announcement.validate.base_val import BaseValidator
-from domprob.announcement.validate.chain import (
+from domprob.sensors.meth import BoundAnnouncementMethod
+from domprob.sensors.validate.base_val import BaseValidator
+from domprob.sensors.validate.chain import (
     EmptyChainException,
     ValidationChain,
 )
-from domprob.announcement.validate.chain_val import (
+from domprob.sensors.validate.chain_val import (
     InvalidLinkException,
     LinkExistsException,
     ValidationChainException,

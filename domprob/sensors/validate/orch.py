@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from domprob.announcement.validate.base_val import BaseValidator
-from domprob.announcement.validate.chain import ValidationChain
-from domprob.announcement.validate.vals import (
+from domprob.sensors.validate.base_val import BaseValidator
+from domprob.sensors.validate.chain import ValidationChain
+from domprob.sensors.validate.vals import (
     InstrumentParamExistsValidator,
     InstrumentTypeValidator,
     SupportedInstrumentsExistValidator,
 )
 
 if TYPE_CHECKING:
-    from domprob.announcement.meth import (  # pragma: no cover
+    from domprob.sensors.meth import (  # pragma: no cover
         BoundAnnouncementMethod,
     )
 
@@ -40,8 +40,8 @@ class AnnouncementValidationOrchestrator:
             is created with `DEFAULT_VALIDATORS`.
 
     Examples:
-        >>> from domprob.announcement.validate.orch import AnnouncementValidationOrchestrator
-        >>> from domprob.announcement.meth import AnnouncementMethod
+        >>> from domprob.sensors.validate.orch import AnnouncementValidationOrchestrator
+        >>> from domprob.sensors.meth import AnnouncementMethod
         >>>
         >>> class SomeInstrument:
         ...     pass
@@ -84,8 +84,8 @@ class AnnouncementValidationOrchestrator:
                 added to the chain.
 
         Examples:
-            >>> from domprob.announcement.validate.orch import AnnouncementValidationOrchestrator
-            >>> from domprob.announcement.validate.vals import InstrumentTypeValidator
+            >>> from domprob.sensors.validate.orch import AnnouncementValidationOrchestrator
+            >>> from domprob.sensors.validate.vals import InstrumentTypeValidator
             >>>
             >>> orchestrator = AnnouncementValidationOrchestrator()
             >>> orchestrator.register(InstrumentTypeValidator)
@@ -111,8 +111,8 @@ class AnnouncementValidationOrchestrator:
                 fails.
 
         Examples:
-            >>> from domprob.announcement.validate.orch import AnnouncementValidationOrchestrator
-            >>> from domprob.announcement.meth import AnnouncementMethod
+            >>> from domprob.sensors.validate.orch import AnnouncementValidationOrchestrator
+            >>> from domprob.sensors.meth import AnnouncementMethod
             >>>
             >>> class SomeInstrument:
             ...     pass

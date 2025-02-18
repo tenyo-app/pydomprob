@@ -3,13 +3,13 @@ from collections import OrderedDict
 
 import pytest
 
-from domprob.announcement.instrums import Instruments
-from domprob.announcement.meth_meta import AnnouncementMetadata
-from domprob.announcement.meth import (
+from domprob.sensors.instrums import Instruments
+from domprob.sensors.meth_meta import AnnouncementMetadata
+from domprob.sensors.meth import (
     BoundAnnouncementMethod,
     AnnouncementMethod,
 )
-from domprob.announcement.validate.vals import (
+from domprob.sensors.validate.vals import (
     InstrumentParamExistsValidator,
     InstrumTypeException,
     InstrumentTypeValidator,

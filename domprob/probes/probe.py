@@ -21,7 +21,7 @@ class Probe:
 
     Example:
         >>> from domprob import (
-        ...     announce,
+        ...     sensor,
         ...     BaseObservation,
         ...     BasicConsumer,
         ...     BasicDispatcher,
@@ -36,7 +36,7 @@ class Probe:
         >>>
         >>> class SampleObservation(BaseObservation):
         ...
-        ...     @announce(SomeInstrument)
+        ...     @sensor(SomeInstrument)
         ...     def announce_msg(self, some_instrument: SomeInstrument) -> None:
         ...         some_instrument.call("Announcement!")
         ...

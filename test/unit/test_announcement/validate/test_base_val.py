@@ -3,12 +3,12 @@ from collections import OrderedDict
 
 import pytest
 
-from domprob.announcement.exc import AnnouncementException
-from domprob.announcement.meth import (
+from domprob.sensors.exc import AnnouncementException
+from domprob.sensors.meth import (
     BoundAnnouncementMethod,
     AnnouncementMethod,
 )
-from domprob.announcement.validate.base_val import (
+from domprob.sensors.validate.base_val import (
     BaseValidator,
     ValidatorException,
 )

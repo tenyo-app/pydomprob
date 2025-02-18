@@ -1,13 +1,13 @@
 from collections.abc import Sequence
 
-from domprob.announcement.dec import announce
+from domprob.sensors.dec import sensor
 from domprob.consumers.basic import BasicConsumer
 from domprob.dispatchers.basic import BasicDispatcher
 from domprob.observations.base import BaseObservation
 from domprob.probes.probe import get_probe, probe, Probe
 
 __all__: Sequence[str] = [
-    "announce",
+    "sensor",
     "BasicConsumer",
     "BasicDispatcher",
     "BaseObservation",
