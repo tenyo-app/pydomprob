@@ -118,7 +118,9 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
         Observing 'Foo' with 'PrintInstrument()'
     """
 
-    def __init__(self, instrum: type[_Instrument], required: bool = False) -> None:
+    def __init__(
+        self, instrum: type[_Instrument], required: bool = False
+    ) -> None:
         self.instrum = instrum
         self.required = required
 
