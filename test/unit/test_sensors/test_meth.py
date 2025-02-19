@@ -8,9 +8,8 @@ import pytest
 from domprob import sensor
 from domprob.sensors.instrums import Instruments
 from domprob.sensors.meth_meta import SensorMetadata
-from domprob.sensors.meth import (
-    SensorMethod,
-    BoundSensorMethod,
+from domprob.sensors.meth import SensorMethod, BoundSensorMethod
+from domprob.sensors.meth_binder import (
     PartialBindException,
     SensorMethodBinder,
 )

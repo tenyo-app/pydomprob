@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 from domprob.sensors.exc import SensorException
-from domprob.sensors.meth import PartialBindException
+from domprob.sensors.meth_binder import PartialBindException
 from domprob.sensors.validate.base_val import ValidatorException
 from domprob.sensors.validate.chain import EmptyChainException
 from domprob.sensors.validate.chain_val import (

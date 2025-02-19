@@ -18,7 +18,7 @@ class TestSensorMethodExceptionImport:
         from domprob.exceptions import (
             PartialBindException as AliasPartialBindException,
         )
-        from domprob.sensors.meth import PartialBindException
+        from domprob.sensors.meth_binder import PartialBindException
 
         # Act
         # Assert
