@@ -23,7 +23,9 @@ if TYPE_CHECKING:
     from domprob.sensors.meth import SensorMethod  # pragma: no cover
 
     _SensorMeth: TypeAlias = SensorMethod[_PMeth, _RMeth]  # pragma: no cover
-    _BoundSensorMeth: TypeAlias = BoundSensorMethod[_PMeth, _RMeth]
+    _BoundSensorMeth: TypeAlias = BoundSensorMethod[
+        _PMeth, _RMeth
+    ]  # pragma: no cover
 
 
 class PartialBindException(SensorException):
