@@ -1,8 +1,8 @@
 import pytest
 
 from domprob.sensors.instrums import Instruments
+from domprob.sensors.meth import BoundSensorMethod, SensorMethod
 from domprob.sensors.meth_meta import SensorMetadata
-from domprob.sensors.meth import SensorMethod, BoundSensorMethod
 
 
 class MockInstrument:

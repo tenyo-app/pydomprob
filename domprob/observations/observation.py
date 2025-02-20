@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from typing import ParamSpec, Protocol, TypeVar, runtime_checkable, Any
+from typing import Any, ParamSpec, Protocol, TypeVar, runtime_checkable
 
 from domprob.sensors.meth import SensorMethod
 

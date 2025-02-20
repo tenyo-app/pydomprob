@@ -1,18 +1,19 @@
 from __future__ import annotations
+
 import inspect
 from collections.abc import Generator, ValuesView
 from typing import (
-    get_type_hints,
+    TYPE_CHECKING,
     Any,
+    Generic,
     ParamSpec,
     TypeAlias,
     TypeVar,
-    TYPE_CHECKING,
-    Generic,
+    get_type_hints,
 )
 
-from domprob.sensors.exc import SensorException
 from domprob.sensors.bound_meth import BoundSensorMethod
+from domprob.sensors.exc import SensorException
 
 # Typing helpers: Describes the wrapped method signature for wrapper
 _PMeth = ParamSpec("_PMeth")

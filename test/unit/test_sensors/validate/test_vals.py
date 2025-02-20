@@ -4,15 +4,15 @@ from collections import OrderedDict
 import pytest
 
 from domprob.sensors.instrums import Instruments
-from domprob.sensors.meth_meta import SensorMetadata
 from domprob.sensors.meth import (
     BoundSensorMethod,
     SensorMethod,
 )
+from domprob.sensors.meth_meta import SensorMetadata
 from domprob.sensors.validate.vals import (
     InstrumentParamExistsValidator,
-    InstrumTypeException,
     InstrumentTypeValidator,
+    InstrumTypeException,
     MissingInstrumException,
     NoSupportedInstrumsException,
     SupportedInstrumentsExistValidator,

@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.sensors.meth import SensorMethod
+from domprob.probes.probe import Probe, get_probe
 from domprob.sensors.dec import sensor
-from domprob.probes.probe import get_probe, Probe
+from domprob.sensors.meth import SensorMethod
 
 
 @pytest.fixture

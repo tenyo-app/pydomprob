@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import pytest
 
-from domprob import sensor, exceptions
+from domprob import exceptions, sensor
 from domprob.sensors.meth_meta import (
     SensorMetadata,
     SensorMetadataEntry,

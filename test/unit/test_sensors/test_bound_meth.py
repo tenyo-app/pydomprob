@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domprob.sensors.meth import SensorMethod, BoundSensorMethod
+from domprob.sensors.meth import BoundSensorMethod, SensorMethod
 
 
 class MockInstrument:

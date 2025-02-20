@@ -4,8 +4,8 @@ import logging
 from typing import Any
 
 from domprob.consumers.basic import BasicConsumer
-from domprob.dispatchers.dispatcher import DispatcherProtocol
 from domprob.dispatchers.basic import BasicDispatcher
+from domprob.dispatchers.dispatcher import DispatcherProtocol
 from domprob.observations.observation import ObservationProtocol
 
 

@@ -1,9 +1,7 @@
 class TestSensorExceptionImport:
     def test_sensor_exception(self):
         # Arrange
-        from domprob.exceptions import (
-            SensorException as AliasSensorException,
-        )
+        from domprob.exceptions import SensorException as AliasSensorException
         from domprob.sensors.exc import SensorException
 
         # Act

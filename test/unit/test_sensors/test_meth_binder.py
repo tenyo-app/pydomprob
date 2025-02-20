@@ -3,7 +3,7 @@ import inspect
 import pytest
 
 from domprob import sensor
-from domprob.sensors.meth import SensorMethod, BoundSensorMethod
+from domprob.sensors.meth import BoundSensorMethod, SensorMethod
 from domprob.sensors.meth_binder import (
     PartialBindException,
     SensorMethodBinder,

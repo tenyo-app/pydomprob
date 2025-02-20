@@ -2,8 +2,8 @@ from typing import Generator
 
 import pytest
 
-from domprob.sensors.meth import SensorMethod
 from domprob.observations.observation import ObservationProtocol
+from domprob.sensors.meth import SensorMethod
 
 
 class ProtocolImplementation:

@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 import inspect
 from abc import ABC
 from collections.abc import Generator, Set
-from typing import ParamSpec, TypeVar, Any
+from typing import Any, ParamSpec, TypeVar
 
-from domprob.sensors.meth import SensorMethod
 from domprob.observations.observation import ObservationProtocol
+from domprob.sensors.meth import SensorMethod
 
 # Typing helpers: defines a @sensor's method signature
 _P = ParamSpec("_P")

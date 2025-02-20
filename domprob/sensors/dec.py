@@ -2,11 +2,11 @@ import functools
 from collections.abc import Callable
 from typing import (
     Any,
+    Concatenate,
     Generic,
     ParamSpec,
     TypeVar,
     cast,
-    Concatenate,
 )
 
 from domprob.sensors.meth import SensorMethod
@@ -14,16 +14,16 @@ from domprob.sensors.meth import SensorMethod
 # Typing helper: Describes the class where the method resides
 _MethodCls = TypeVar("_MethodCls", bound=Any)
 
-# Typing helper: Describes the instrument parameters
-_Instrument = TypeVar("_Instrument", bound=Any)
+# Typing helper: Describes the instrument parameter
+_Instrum = TypeVar("_Instrum", bound=Any)
 
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_Meth = Callable[Concatenate[_MethodCls, _Instrument, _P], _R]
+_Meth = Callable[Concatenate[_MethodCls, _Instrum, _P], _R]
 
 
-class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
+class _Sensor(Generic[_MethodCls, _Instrum, _P, _R]):
     """Decorator class for associating metadata and validating methods.
 
     This class enables the decoration of methods with metadata
@@ -40,7 +40,7 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
        implement the same typing protocol.
 
     Args:
-        instrum (type[_Instrument]): The instrument class required
+        instrum (type[_Instrum]): The instrument class required
             by the decorated method.
         required (bool): Whether the instrument is required. Defaults
             to `False`.
@@ -119,7 +119,7 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
     """
 
     def __init__(
-        self, instrum: type[_Instrument], required: bool = False
+        self, instrum: type[_Instrum], required: bool = False
     ) -> None:
         self.instrum = instrum
         self.required = required
@@ -165,7 +165,7 @@ class _Sensor(Generic[_MethodCls, _Instrument, _P, _R]):
         @functools.wraps(method)
         def wrapper(
             cls_instance: _MethodCls,
-            instrum: _Instrument,
+            instrum: _Instrum,
             /,
             *args: _P.args,
             **kwargs: _P.kwargs,

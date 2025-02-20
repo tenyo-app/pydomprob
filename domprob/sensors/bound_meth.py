@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 import inspect
-from typing import Generic, Any, ParamSpec, TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generic, ParamSpec, TypeVar
 
 from domprob.sensors.base_meth import BaseSensorMethod
 from domprob.sensors.validate.orch import SensorValidationOrchestrator

@@ -1,9 +1,9 @@
 import pytest
 
-from domprob.sensors.meth import SensorMethod
 from domprob import sensor
 from domprob.observations.base import BaseObservation, SensorSet
 from domprob.observations.observation import ObservationProtocol
+from domprob.sensors.meth import SensorMethod
 
 
 class MockObservation(BaseObservation):

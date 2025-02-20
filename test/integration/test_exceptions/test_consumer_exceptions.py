@@ -1,10 +1,10 @@
 class TestConsumerExceptionImports:
     def test_base_consumer_exception(self):
         # Arrange
+        from domprob.consumers.consumer import ConsumerException
         from domprob.exceptions import (
             ConsumerException as AliasConsumerException,
         )
-        from domprob.consumers.consumer import ConsumerException
 
         # Act
         # Assert
@@ -12,10 +12,10 @@ class TestConsumerExceptionImports:
 
     def test_req_instrum_exception(self):
         # Arrange
+        from domprob.consumers.basic import ReqInstrumException
         from domprob.exceptions import (
             ReqInstrumException as AliasReqInstrumException,
         )
-        from domprob.consumers.basic import ReqInstrumException
 
         # Act
         # Assert

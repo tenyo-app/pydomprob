@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from functools import cached_property
-from typing import ParamSpec, TypeVar, Generic
+from typing import Generic, ParamSpec, TypeVar
 
 from domprob.sensors.instrums import Instruments
 
@@ -23,6 +23,7 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
     def __init__(
         self,
         meth: Callable[_PMeth, _RMeth],
+        *,
         supp_instrums: Instruments | None = None,
     ) -> None:
         self._meth = meth

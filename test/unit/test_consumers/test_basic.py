@@ -2,10 +2,10 @@ import copy
 
 import pytest
 
-from domprob import sensor, BaseObservation
+from domprob import BaseObservation, sensor
 from domprob.consumers.basic import (
-    InstrumentImpRegistry,
     BasicConsumer,
+    InstrumentImpRegistry,
     ReqInstrumException,
 )
 

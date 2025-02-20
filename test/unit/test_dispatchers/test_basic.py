@@ -2,10 +2,10 @@ from typing import Any, Iterable
 
 import pytest
 
-from domprob.sensors.meth import SensorMethod
-from domprob.consumers.consumer import ConsumerProtocol
 from domprob import BasicDispatcher
+from domprob.consumers.consumer import ConsumerProtocol
 from domprob.observations.observation import ObservationProtocol
+from domprob.sensors.meth import SensorMethod
 
 
 class MockConsumer(ConsumerProtocol):

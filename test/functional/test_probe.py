@@ -2,7 +2,7 @@ from typing import TypeVar
 
 import pytest
 
-from domprob import get_probe, sensor, BaseObservation
+from domprob import BaseObservation, get_probe, sensor
 
 
 @pytest.fixture

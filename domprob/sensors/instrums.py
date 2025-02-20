@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 from collections.abc import Callable, Generator
-from typing import Any, TypeVar, Generic
+from typing import Any, Generic, TypeVar
 
 from domprob.sensors.meth_meta import SensorMetadata
 

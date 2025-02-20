@@ -1,17 +1,18 @@
 from __future__ import annotations
+
 from collections.abc import Callable
 from typing import (
     Any,
+    Concatenate,
     Generic,
     ParamSpec,
     TypeVar,
-    Concatenate,
 )
 
-from domprob.sensors.instrums import Instruments
-from domprob.sensors.meth_binder import SensorMethodBinder
 from domprob.sensors.base_meth import BaseSensorMethod
 from domprob.sensors.bound_meth import BoundSensorMethod
+from domprob.sensors.instrums import Instruments
+from domprob.sensors.meth_binder import SensorMethodBinder
 
 # Typing helpers: Describes the wrapped method signature for wrapper
 _PMeth = ParamSpec("_PMeth")
@@ -56,9 +57,10 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
     def __init__(
         self,
         meth: Callable[_PMeth, _RMeth],
+        *,
         supp_instrums: Instruments[Any] | None = None,
     ) -> None:
-        super().__init__(meth, supp_instrums)
+        super().__init__(meth, supp_instrums=supp_instrums)
         self._binder = SensorMethodBinder(self)
 
     @classmethod
@@ -106,8 +108,8 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             ...
             >>> assert SensorMethod.from_callable(no_sensor_method) is None
         """
-        supp_instrums = Instruments.from_method(meth)
-        return cls(meth, supp_instrums) if supp_instrums else None
+        instrums = Instruments.from_method(meth)
+        return cls(meth, supp_instrums=instrums) if instrums else None
 
     def bind(
         self, cls_instance: Any, *args: _PMeth.args, **kwargs: _PMeth.kwargs

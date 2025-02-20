@@ -25,7 +25,7 @@ autodocs:
 	uv run sphinx-autobuild docs/ docs/_build/
 
 mypy:
-	uv run mypy domprob/ --check-untyped-defs
+	uv run mypy domprob/ --check-untyped-defs --show-error-context
 
 pylint:
 	uv run pylint domprob/
@@ -36,7 +36,13 @@ black:
 black-check:
 	uv run black domprob/ test/ --line-length=79 --check
 
-lint: black-check mypy pylint
+isort:
+	uv run isort domprob/ test/
+
+isort-check:
+	uv run isort domprob/ test/ --check
+
+lint: black-check isort-check mypy pylint
 
 lock:
 	uv lock --upgrade

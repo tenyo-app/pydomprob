@@ -1,5 +1,9 @@
 from collections.abc import Sequence
 
+from domprob.base_exc import DomprobException
+from domprob.consumers.basic import ReqInstrumException
+from domprob.consumers.consumer import ConsumerException
+from domprob.dispatchers.dispatcher import DispatcherException
 from domprob.sensors.exc import SensorException
 from domprob.sensors.meth_binder import PartialBindException
 from domprob.sensors.validate.base_val import ValidatorException
@@ -14,10 +18,6 @@ from domprob.sensors.validate.vals import (
     MissingInstrumException,
     NoSupportedInstrumsException,
 )
-from domprob.base_exc import DomprobException
-from domprob.dispatchers.dispatcher import DispatcherException
-from domprob.consumers.basic import ReqInstrumException
-from domprob.consumers.consumer import ConsumerException
 
 __all__: Sequence[str] = [
     "DomprobException",

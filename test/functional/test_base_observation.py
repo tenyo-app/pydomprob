@@ -1,4 +1,4 @@
-from domprob import sensor, BaseObservation
+from domprob import BaseObservation, sensor
 
 
 class MockObservationOne(BaseObservation):

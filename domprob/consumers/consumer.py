@@ -1,4 +1,4 @@
-from typing import Protocol, runtime_checkable, Any
+from typing import Any, Protocol, runtime_checkable
 
 from domprob.base_exc import DomprobException
 from domprob.observations.observation import ObservationProtocol

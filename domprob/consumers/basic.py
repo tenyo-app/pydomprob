@@ -1,11 +1,9 @@
-from collections.abc import Iterator, Collection, Generator
-from typing import Any, TypeVar, ParamSpec, Generic
+from collections.abc import Collection, Generator, Iterator
+from typing import Any, Generic, ParamSpec, TypeVar
 
-from domprob.consumers.consumer import ConsumerProtocol
-from domprob.sensors.meth import SensorMethod
-from domprob.consumers.consumer import ConsumerException
+from domprob.consumers.consumer import ConsumerException, ConsumerProtocol
 from domprob.observations.observation import ObservationProtocol
-
+from domprob.sensors.meth import SensorMethod
 
 _Instrument = TypeVar("_Instrument", bound=Any)
 
@@ -22,7 +20,7 @@ class InstrumentImpRegistry(Collection[_Instrument]):
       optimization.
 
     Args:
-        *instruments (`_Instrument`): Variable number of instrument
+        *instruments (`_Instrum`): Variable number of instrument
             instances to store.
 
     Example:
@@ -90,7 +88,7 @@ class InstrumentImpRegistry(Collection[_Instrument]):
         """Iterate over stored instruments.
 
         Returns:
-            Iterator[_Instrument]: An iterator over the instruments.
+            Iterator[_Instrum]: An iterator over the instruments.
 
         Example:
             >>> class LoggerInstrument:
@@ -175,7 +173,7 @@ class InstrumentImpRegistry(Collection[_Instrument]):
                 is not found. If `False`, returns `None`.
 
         Returns:
-            _Instrument | None: The retrieved instrument instance or
+            _Instrum | None: The retrieved instrument instance or
                 `None` if not found.
 
         Raises:
@@ -255,9 +253,9 @@ class ReqInstrumException(ConsumerException):
             instrument was required.
         sensor (SensorMethod): The sensors method that failed due to
             the missing instrument.
-        req_supp_instr (type[_Instrument]): The instrument type that
+        req_supp_instr (type[_Instrum]): The instrument type that
             was expected but not found.
-        *instrum_imps (_Instrument): The available instrument instances
+        *instrum_imps (_Instrum): The available instrument instances
             at the time of the failure.
     """
 
@@ -303,7 +301,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
     associated sensors methods with the relevant instrument.
 
     Args:
-        *instruments (_Instrument): One or more instrument instances.
+        *instruments (_Instrum): One or more instrument instances.
 
     Example:
         >>> from domprob import sensor, BaseObservation
@@ -367,7 +365,7 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
                 handle.
 
         Yields:
-            _Instrument | None: The appropriate instrument
+            _Instrum | None: The appropriate instrument
                 implementation or `None` if non-required instrument
                 implementations are missing.
 
