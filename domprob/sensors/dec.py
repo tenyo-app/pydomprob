@@ -5,8 +5,9 @@ from typing import (
     Concatenate,
     Generic,
     ParamSpec,
+    TypeAlias,
     TypeVar,
-    cast,
+    overload,
 )
 
 from domprob.sensors.meth import SensorMethod
@@ -20,7 +21,10 @@ _Instrum = TypeVar("_Instrum", bound=Any)
 # Typing helpers: Describes the method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_Meth = Callable[Concatenate[_MethodCls, _Instrum, _P], _R]
+
+_InstanceMeth: TypeAlias = Callable[Concatenate[_MethodCls, _Instrum, _P], _R]
+_StaticMeth: TypeAlias = Callable[Concatenate[_Instrum, _P], _R]
+_Meth: TypeAlias = _InstanceMeth | _StaticMeth
 
 
 class _Sensor(Generic[_MethodCls, _Instrum, _P, _R]):
@@ -124,7 +128,13 @@ class _Sensor(Generic[_MethodCls, _Instrum, _P, _R]):
         self.instrum = instrum
         self.required = required
 
-    def __call__(self, method: _Meth) -> Callable[_P, _R]:
+    @overload
+    def __call__(self, method: _StaticMeth) -> _StaticMeth: ...
+
+    @overload
+    def __call__(self, method: _InstanceMeth) -> _InstanceMeth: ...
+
+    def __call__(self, method: _Meth) -> _Meth:
         """Wraps a method to associate metadata and enforce runtime
         validate.
 
@@ -174,7 +184,7 @@ class _Sensor(Generic[_MethodCls, _Instrum, _P, _R]):
             bound_meth.validate()
             return bound_meth.execute()
 
-        return cast(Callable[_P, _R], wrapper)
+        return wrapper
 
     def __repr__(self) -> str:
         # noinspection PyShadowingNames

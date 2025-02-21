@@ -11,10 +11,10 @@ from domprob.sensors.meth import SensorMethod
 # Typing helpers: defines a @sensor's method signature
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
-_SensorSig = SensorMethod[_P, _R]
+_Sensor = SensorMethod[_P, _R]
 
 
-class SensorSet(Set[_SensorSig]):
+class SensorSet(Set[_Sensor]):
     """A custom set-like collection for storing `SensorMethod`
     instances.
 
@@ -44,7 +44,7 @@ class SensorSet(Set[_SensorSig]):
         1
     """
 
-    def __init__(self, *sensor_methods: _SensorSig) -> None:
+    def __init__(self, *sensor_methods: _Sensor) -> None:
         self._sensor_methods = set(sensor_methods)
 
     @classmethod
@@ -101,7 +101,7 @@ class SensorSet(Set[_SensorSig]):
             return False
         return item in self._sensor_methods
 
-    def __iter__(self) -> Generator[_SensorSig, None, None]:
+    def __iter__(self) -> Generator[_Sensor, None, None]:
         """Returns an iterator over the sensors methods in the
         set.
 

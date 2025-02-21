@@ -21,6 +21,11 @@ Announcement
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: domprob.announcement.meth_sig
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: domprob.announcement.exc
     :members:
     :undoc-members:

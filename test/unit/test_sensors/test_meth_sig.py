@@ -360,12 +360,11 @@ class TestInferSigInstrumByAnnotation:
             "instrum",
         )
 
-    @pytest.mark.xfail(reason="Need to implement static meth checking")
     def test_infer_multiple_annotations_with_static_meth(self):
         # Arrange
         class MockObservation:
-            @sensor(int)
             @staticmethod
+            @sensor(int)
             def meth(param_1: int, param_2: int):
                 pass
 
@@ -400,8 +399,8 @@ class TestInferSigInstrumByAnnotation:
     def test_infer_annotation_with_static_meth(self):
         # Arrange
         class MockObservation:
-            @sensor(int)
             @staticmethod
+            @sensor(int)
             def meth(param_1, param_2: int):
                 pass
 
@@ -432,7 +431,6 @@ class TestInferSigInstrumByPosition:
         assert inferred is not None, "Cannot infer from param position"
         assert tuple(inferred.keys) == ("self", "instrum")
 
-    @pytest.mark.xfail(reason="Need to implement static meth checking")
     def test_infer_with_static_meth(self):
         # Arrange
         class MockObservation:
@@ -591,8 +589,8 @@ class TestSensorMethodSignature:
     def test_infer_with_name_with_static_meth(self):
         # Arrange
         class MockObservation:
-            @sensor(int)
             @staticmethod
+            @sensor(int)
             def meth(param_1: int, instrument):
                 pass
 
@@ -622,8 +620,8 @@ class TestSensorMethodSignature:
     def test_infer_with_annotations_with_static_meth(self):
         # Arrange
         class MockObservation:
-            @sensor(int)
             @staticmethod
+            @sensor(int)
             def meth(param_1, param_2: int):
                 pass
 
@@ -650,12 +648,11 @@ class TestSensorMethodSignature:
         # Assert
         assert inferred_sig.keys == ("self", "instrum", "param_2")
 
-    @pytest.mark.xfail(reason="Static method check not yet implemented")
     def test_infer_with_position_with_static_meth(self):
         # Arrange
         class MockObservation:
-            @sensor(int)
             @staticmethod
+            @sensor(int)
             def meth(param_1, param_2):
                 pass
 
@@ -719,9 +716,9 @@ class TestSensorMethodSignature:
         sig = SensorMethodSignature(params)
         sig.sensor = SensorMethod(meth)
         # Act
-        renamed_sig = sig.rn_param('instrum', 'new_instrum')
+        renamed_sig = sig.rn_param("instrum", "new_instrum")
         # Assert
-        assert 'new_instrum' in renamed_sig.keys
+        assert "new_instrum" in renamed_sig.keys
 
     def test_rn_param_parameter(self, meth):
         # Arrange
@@ -730,9 +727,9 @@ class TestSensorMethodSignature:
         sig.sensor = SensorMethod(meth)
         param = sig.values[1]
         # Act
-        renamed_sig = sig.rn_param(param, 'new_instrum')
+        renamed_sig = sig.rn_param(param, "new_instrum")
         # Assert
-        assert 'new_instrum' in renamed_sig.keys
+        assert "new_instrum" in renamed_sig.keys
 
     def test_rn_param_not_exists(self, meth):
         # Arrange
@@ -741,9 +738,11 @@ class TestSensorMethodSignature:
         sig.sensor = SensorMethod(meth)
         # Act
         with pytest.raises(ValueError) as exc:
-            _ = sig.rn_param('self', 'instrum')
+            _ = sig.rn_param("self", "instrum")
         # Assert
-        assert str(exc.value) == "Cannot rename param - 'instrum' already exists"
+        assert (
+            str(exc.value) == "Cannot rename param - 'instrum' already exists"
+        )
 
     def test_update_params(self, meth):
         # Arrange
@@ -751,7 +750,7 @@ class TestSensorMethodSignature:
         sig = SensorMethodSignature(params)
         sig.sensor = SensorMethod(meth)
         old_param = sig.values[1]
-        new_param = Parameter('new_instrum', Parameter.POSITIONAL_OR_KEYWORD)
+        new_param = Parameter("new_instrum", Parameter.POSITIONAL_OR_KEYWORD)
         # Act
         renamed_sig = sig.update_param(old=old_param, new=new_param)
         # Assert

@@ -65,10 +65,14 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
         sensor_meth: SensorMethod[_PMeth, _RMeth],
         bound_params: inspect.BoundArguments,
     ) -> None:
-        super().__init__(sensor_meth.meth)
         self._sensor_meth = sensor_meth
         self._params = bound_params
         self._validator = SensorValidationOrchestrator()
+        super().__init__(
+            self._sensor_meth.meth,
+            static=self._sensor_meth.is_static,
+            supp_instrums=self._sensor_meth.supp_instrums,
+        )
 
     @property
     def params(self) -> inspect.BoundArguments:

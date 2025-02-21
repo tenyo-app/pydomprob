@@ -3,9 +3,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
 from inspect import Parameter, Signature, signature
-from typing import Any, Self, get_type_hints, overload
+from typing import Any, Self, get_type_hints, overload, TYPE_CHECKING
 
-from domprob.sensors.meth import SensorMethod
+if TYPE_CHECKING:
+    from domprob.sensors.base_meth import BaseSensorMethod
 
 
 class InferSigInstrumBase(ABC):
@@ -23,6 +24,7 @@ class InferSigInstrumBase(ABC):
         return f"{self.__class__.__name__}(sig={self.sig!r})"
 
 
+# pylint: disable=too-few-public-methods
 class InferSigInstrumByName(InferSigInstrumBase):
 
     def infer(self) -> SensorMethodSignature | None:
@@ -75,22 +77,26 @@ class InferSigInstrumByAnnotation(InferSigInstrumBase):
         return param.annotation
 
     def infer(self) -> SensorMethodSignature | None:
-        params = []
-        vals = self.sig.values if self.sig.is_static else self.sig.values[1:]
-        for param in vals:
+        instrum_params = []
+        if self.sig.sensor.is_static:
+            sig_params = self.sig.values
+        else:
+            sig_params = self.sig.values[1:]
+        for param in sig_params:
             param_type = self.get_type(param)
             instrum_type_exists = self.in_supp_instrums(param_type)
             if instrum_type_exists:
-                params.append(param)
-        if len(params) == 1:
-            return self.sig.rn_param(params[0], "instrum")
+                instrum_params.append(param)
+        if len(instrum_params) == 1:
+            return self.sig.rn_param(instrum_params[0], "instrum")
         return None
 
 
+# pylint: disable=too-few-public-methods
 class InferSigInstrumByPosition(InferSigInstrumBase):
 
     def infer(self) -> SensorMethodSignature | None:
-        start_pos = 0 if self.sig.is_static else 1
+        start_pos = 0 if self.sig.sensor.is_static else 1
         params = tuple(self.sig.parameters)
         try:
             param = params[start_pos]
@@ -101,11 +107,7 @@ class InferSigInstrumByPosition(InferSigInstrumBase):
 
 class SensorMethodSignature(Signature):
 
-    __slots__: tuple[str, ...] = (
-        "_sensor",
-        "_keys",
-        "_params",
-    )
+    __slots__: tuple[str, ...] = ("_sensor", "_keys", "_params")
 
     _INFERERS: tuple[type[InferSigInstrumBase], ...] = (
         InferSigInstrumByName,
@@ -113,7 +115,7 @@ class SensorMethodSignature(Signature):
         InferSigInstrumByPosition,
     )
 
-    _sensor: SensorMethod | None
+    _sensor: BaseSensorMethod | None
     _keys: tuple[str, ...] | None
     _params: tuple[Parameter, ...] | None
 
@@ -139,7 +141,7 @@ class SensorMethodSignature(Signature):
     @classmethod
     def from_sensor(
         cls,
-        sensor: SensorMethod,
+        sensor: BaseSensorMethod,
         *,
         return_annotation: Any = None,
         __validate_parameters__: bool = True,
@@ -154,7 +156,7 @@ class SensorMethodSignature(Signature):
         return instance
 
     @property
-    def sensor(self) -> SensorMethod:
+    def sensor(self) -> BaseSensorMethod:
         if self._sensor is None:
             raise ValueError(
                 f"{type(self).__name__} not initialized correctly - sensor "
@@ -163,16 +165,12 @@ class SensorMethodSignature(Signature):
         return self._sensor
 
     @sensor.setter
-    def sensor(self, sensor: SensorMethod) -> None:
+    def sensor(self, sensor: BaseSensorMethod) -> None:
         self._sensor = sensor
 
     @property
     def meth(self) -> Callable[[Any], Any]:
         return self.sensor.meth
-
-    @property
-    def is_static(self) -> bool:
-        return False
 
     def get_param(self, name: str) -> Parameter:
         try:
@@ -209,7 +207,7 @@ class SensorMethodSignature(Signature):
         sig = super().replace(
             parameters=parameters, return_annotation=return_annotation
         )
-        sig.sensor = self.sensor
+        sig.sensor = self.sensor  # pylint: disable=assigning-non-slot
         return sig
 
     @overload

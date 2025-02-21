@@ -58,9 +58,10 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
         self,
         meth: Callable[_PMeth, _RMeth],
         *,
+        static: bool = False,
         supp_instrums: Instruments[Any] | None = None,
     ) -> None:
-        super().__init__(meth, supp_instrums=supp_instrums)
+        super().__init__(meth, static=static, supp_instrums=supp_instrums)
         self._binder = SensorMethodBinder(self)
 
     @classmethod
@@ -161,4 +162,6 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>> bound_method
             BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
         """
+        if self.is_static:
+            return self._binder.bind(*args, **kwargs)
         return self._binder.bind(cls_instance, *args, **kwargs)

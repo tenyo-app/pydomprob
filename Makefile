@@ -1,5 +1,5 @@
 test-unit:
-	uv run --frozen pytest --cov=domprob/ test/unit --cov-report=html --cov-report=term --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
+	uv run --frozen pytest -s --cov=domprob/ test/unit --cov-report=html --cov-report=term --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
 
 test-functional:
 	uv run --frozen pytest test/functional
@@ -15,7 +15,7 @@ doctest:
 	uv run --frozen pytest domprob/ docs/ --doctest-modules
 
 test-all:
-	uv run --frozen pytest domprob/ docs/ test/ --doctest-modules
+	uv run --frozen pytest -s domprob/ docs/ test/ --doctest-modules
 
 .PHONY: docs
 docs:
