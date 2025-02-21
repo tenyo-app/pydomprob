@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import sys
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
 from inspect import Parameter, Signature, signature
-from typing import Any, Self, get_type_hints, overload, TYPE_CHECKING
+from typing import Any, get_type_hints, overload, TYPE_CHECKING
+
+if sys.version_info >= (3, 11):  # Python 3.11+
+    from typing import Self
+else:  # Python <3.11
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from domprob.sensors.base_meth import BaseSensorMethod

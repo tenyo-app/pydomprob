@@ -1,7 +1,6 @@
 import inspect
 from collections import OrderedDict
 from inspect import BoundArguments
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -15,6 +14,8 @@ class MockInstrument:
 @pytest.fixture
 def mock_cls():
     class Cls:
+        # noinspection PyUnusedLocal
+        # noinspection PyMethodMayBeStatic
         def method(self, instrument: MockInstrument) -> str:
             return "Executed!"
 

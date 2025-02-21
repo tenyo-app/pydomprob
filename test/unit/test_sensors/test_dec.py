@@ -13,8 +13,6 @@ class MockInstrument:
 
 @pytest.fixture
 def mock_cls():
-    """Fixture to provide a mock class for decoration."""
-
     class Cls:
         # noinspection PyMethodMayBeStatic
         def method(self, instrument: MockInstrument):
@@ -25,19 +23,16 @@ def mock_cls():
 
 @pytest.fixture
 def sensor_instance():
-    """Fixture for creating an _Sensor instance."""
     return _Sensor(MockInstrument)
 
 
 class TestSensor:
     def test_initialisation(self):
-        """Test that _Sensor is initialised correctly."""
         ann = _Sensor(MockInstrument, True)
         assert ann.instrum is MockInstrument
         assert ann.required is True
 
     def test_repr(self):
-        """Test the string representation of _Sensor"""
         ann = _Sensor(MockInstrument)
         expected_repr = f"_Sensor(instrum={MockInstrument!r})"
         assert repr(ann) == expected_repr
@@ -83,7 +78,6 @@ class TestSensor:
     def test_call_method_raises_exception_on_invalid_instrument(
         self, mock_cls, sensor_instance
     ):
-        """Test that the decorated method raises an exception for invalid instrument."""
         # Arrange
         mock_cls.method = sensor_instance(mock_cls.method)  # type: ignore
         instance = mock_cls()
