@@ -43,7 +43,7 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
         func = self._meth
         mod = getmodule(func)
         if mod is not None:
-            qualname_parts = func.__qualname__.split('.')
+            qualname_parts = func.__qualname__.split(".")
             obj = mod.__dict__.get(qualname_parts[0])
             for part in qualname_parts[1:-1]:
                 if isinstance(obj, dict):

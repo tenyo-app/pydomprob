@@ -15,8 +15,8 @@ class MockInstrument:
 @pytest.fixture
 def mock_cls():
     class Cls:
-        def method(self, instrument: MockInstrument) -> None:
-            pass
+        def method(self, instrument: MockInstrument) -> str:
+            return "Executed!"
 
     return Cls
 
@@ -63,16 +63,14 @@ class TestBoundSensorMethod:
         assert instrument is not None
         assert instrument == mock_instrum
 
-    def test_execute(self):
+    def test_execute(self, mock_cls):
         # Arrange
-        mock_cls = MagicMock()
-        mock_cls.method.return_value = "Executed"
         mock_instrum = MockInstrument()
         b_meth = self._create_b_meth(mock_cls.method, mock_cls(), mock_instrum)
         # Act
         result = b_meth.execute()
         # Assert
-        assert result == "Executed"
+        assert result == "Executed!"
 
     def test_repr(self, mock_cls):
         # Arrange
