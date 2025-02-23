@@ -210,4 +210,4 @@ class _Sensor(Generic[_MethodCls, _Instrum, _P, _R]):
 
 
 # pylint: disable=invalid-name
-sensor = _Sensor[_MethodCls, _Instrum, _P, _R]  # Alias to be pythonic
+sensor = _Sensor  # Alias to be pythonic

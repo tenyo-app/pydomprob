@@ -66,7 +66,6 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
             bool: `True` if the method can be detected as static,
                 otherwise `False`.
         """
-        # TODO: Add unit tests - might be difficult! Maybe break down first?
         cls = None
         func = self._meth
         mod = getmodule(func)
@@ -75,7 +74,7 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
             obj = mod.__dict__.get(qualname_parts[0])
             for part in qualname_parts[1:-1]:
                 if isinstance(obj, dict):
-                    obj = obj.get(part)  # Found `cls` in dict
+                    obj = obj.get(part, obj)  # Found `cls` in dict
                 elif hasattr(obj, part):
                     obj = getattr(obj, part)  # Found `cls` as attr
                 else:
