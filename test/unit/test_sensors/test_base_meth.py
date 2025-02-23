@@ -3,6 +3,7 @@ import pytest
 from domprob.sensors.base_meth import BaseSensorMethod
 from domprob.sensors.instrums import Instruments
 from domprob.sensors.meth_meta import SensorMetadata
+from domprob.sensors.meth_sig import SensorMethodSignature
 
 
 class MockInstrument:
@@ -45,6 +46,15 @@ class TestBaseSensorsMethod:
         # Assert
         assert base._meth == mock_method
         assert base._supp_instrums == mock_instruments
+
+    def test_sig_prop(self, mock_method, mock_instruments):
+        # Arrange
+        base = BaseSensorMethod(mock_method)
+        # Act
+        sig = base.sig
+        # Assert
+        assert isinstance(sig, SensorMethodSignature)
+        assert sig.keys == ("self", "instrument")
 
     def test_meth_prop(self, mock_method, mock_instruments):
         # Arrange

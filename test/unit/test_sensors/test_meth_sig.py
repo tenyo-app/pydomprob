@@ -1,4 +1,4 @@
-from inspect import signature, Parameter
+from inspect import Parameter, signature
 from unittest.mock import Mock, PropertyMock
 
 import pytest
@@ -7,10 +7,10 @@ from domprob import sensor
 from domprob.sensors.meth import SensorMethod
 from domprob.sensors.meth_sig import (
     InferSigInstrumBase,
-    InferSigInstrumByName,
-    SensorMethodSignature,
-    InferSigInstrumByPosition,
     InferSigInstrumByAnnotation,
+    InferSigInstrumByName,
+    InferSigInstrumByPosition,
+    SensorMethodSignature,
 )
 
 

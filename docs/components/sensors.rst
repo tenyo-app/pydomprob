@@ -1,32 +1,32 @@
 Announcement
 ============
 
-.. automodule:: domprob.announcement.dec
+.. automodule:: domprob.sensors.dec
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.instrums
+.. automodule:: domprob.sensors.instrums
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.meth_meta
+.. automodule:: domprob.sensors.meth_meta
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.meth
+.. automodule:: domprob.sensors.meth
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.meth_sig
+.. automodule:: domprob.sensors.meth_sig
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: domprob.announcement.exc
+.. automodule:: domprob.sensors.exc
     :members:
     :undoc-members:
     :show-inheritance:

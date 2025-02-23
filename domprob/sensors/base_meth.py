@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from functools import cached_property
-from inspect import getmodule, getattr_static, currentframe
+from inspect import currentframe, getattr_static, getmodule
 from typing import Generic, ParamSpec, TypeVar
 
 from domprob.sensors.instrums import Instruments
@@ -34,11 +34,39 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
         self._supp_instrums = supp_instrums
 
     @property
-    def sig(self) -> SensorMethodSignature:
-        return SensorMethodSignature.from_sensor(self)
+    def sig(self) -> SensorMethodSignature[_PMeth, _RMeth]:
+        """Generates a `SensorMethodSignature` representation of the
+        method.
+
+        This property extracts the method signature from the current
+        sensor instance.
+
+        Returns:
+            SensorMethodSignature: The signature of the method.
+        """
+        return SensorMethodSignature[_PMeth, _RMeth].from_sensor(self)
 
     @property
     def is_static(self) -> bool:
+        """Determines whether the method is a static method.
+
+        This property inspects the method's module, its qualified name,
+        and dynamically created classes to infer whether it is a static
+        method.
+
+        The method checks:
+        1. The module dictionary to locate the method's enclosing
+           class.
+        2. The local scope (`locals()`) to handle dynamically created
+           classes.
+        3. Uses `getattr_static()` to check if the method is explicitly
+           declared as a `staticmethod`.
+
+        Returns:
+            bool: `True` if the method can be detected as static,
+                otherwise `False`.
+        """
+        # TODO: Add unit tests - might be difficult! Maybe break down first?
         cls = None
         func = self._meth
         mod = getmodule(func)
@@ -47,15 +75,14 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
             obj = mod.__dict__.get(qualname_parts[0])
             for part in qualname_parts[1:-1]:
                 if isinstance(obj, dict):
-                    obj = obj.get(part)
+                    obj = obj.get(part)  # Found `cls` in dict
                 elif hasattr(obj, part):
-                    obj = getattr(obj, part)
+                    obj = getattr(obj, part)  # Found `cls` as attr
                 else:
                     obj = None
             cls = obj if isinstance(obj, type) else None
-
-        # Fallback - look in `locals()`
-        # Required for dynamically created classes
+        # Fallback - look in `locals()` -
+        # Required for dynamically created classes:
         if cls is None:
             frame = currentframe()
             while frame:
@@ -64,7 +91,7 @@ class BaseSensorMethod(Generic[_PMeth, _RMeth]):
                         cls = obj  # Found dynamically created class
                         break
                 frame = frame.f_back
-
+        # Get static status with deduced `cls`:
         if cls:
             _meth = getattr_static(cls, func.__name__, None)
             return isinstance(_meth, staticmethod)
