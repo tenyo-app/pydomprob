@@ -13,8 +13,6 @@ from domprob.sensors.meth_sig import (
     SensorMethodSignature,
 )
 
-# TODO: Add tests for stacked sensor methods
-
 
 class TestInferSigInstrumBase:
 
@@ -588,6 +586,22 @@ class TestSensorMethodSignature:
         # Assert
         assert inferred_sig.keys == ("self", "param_1", "instrum")
 
+    def test_infer_with_name_stacked(self):
+        # Arrange
+        class MockObservation:
+            @sensor(int)
+            @sensor(int)
+            def meth(self, param_1: int, instrument):
+                pass
+
+        params = tuple(signature(MockObservation.meth).parameters.values())
+        sig = SensorMethodSignature(params)
+        sig.sensor = SensorMethod(MockObservation.meth)
+        # Act
+        inferred_sig = sig.infer()
+        # Assert
+        assert inferred_sig.keys == ("self", "param_1", "instrum")
+
     def test_infer_with_name_with_static_meth(self):
         # Arrange
         class MockObservation:
@@ -604,9 +618,42 @@ class TestSensorMethodSignature:
         # Assert
         assert inferred_sig.keys == ("param_1", "instrum")
 
+    def test_infer_with_name_with_static_meth_stacked(self):
+        # Arrange
+        class MockObservation:
+            @staticmethod
+            @sensor(int)
+            @sensor(int)
+            def meth(param_1: int, instrument):
+                pass
+
+        params = tuple(signature(MockObservation.meth).parameters.values())
+        sig = SensorMethodSignature(params)
+        sig.sensor = SensorMethod(MockObservation.meth)
+        # Act
+        inferred_sig = sig.infer()
+        # Assert
+        assert inferred_sig.keys == ("param_1", "instrum")
+
     def test_infer_with_annotations(self):
         # Arrange
         class MockObservation:
+            @sensor(int)
+            def meth(self, param_1, param_2: int):
+                pass
+
+        params = tuple(signature(MockObservation.meth).parameters.values())
+        sig = SensorMethodSignature(params)
+        sig.sensor = SensorMethod(MockObservation.meth)
+        # Act
+        inferred_sig = sig.infer()
+        # Assert
+        assert inferred_sig.keys == ("self", "param_1", "instrum")
+
+    def test_infer_with_annotations_stacked(self):
+        # Arrange
+        class MockObservation:
+            @sensor(int)
             @sensor(int)
             def meth(self, param_1, param_2: int):
                 pass
@@ -635,9 +682,42 @@ class TestSensorMethodSignature:
         # Assert
         assert inferred_sig.keys == ("param_1", "instrum")
 
+    def test_infer_with_annotations_with_static_meth_stacked(self):
+        # Arrange
+        class MockObservation:
+            @staticmethod
+            @sensor(int)
+            @sensor(int)
+            def meth(param_1, param_2: int):
+                pass
+
+        params = tuple(signature(MockObservation.meth).parameters.values())
+        sig = SensorMethodSignature(params)
+        sig.sensor = SensorMethod(MockObservation.meth)
+        # Act
+        inferred_sig = sig.infer()
+        # Assert
+        assert inferred_sig.keys == ("param_1", "instrum")
+
     def test_infer_with_position(self):
         # Arrange
         class MockObservation:
+            @sensor(int)
+            def meth(self, param_1, param_2):
+                pass
+
+        params = tuple(signature(MockObservation.meth).parameters.values())
+        sig = SensorMethodSignature(params)
+        sig.sensor = SensorMethod(MockObservation.meth)
+        # Act
+        inferred_sig = sig.infer()
+        # Assert
+        assert inferred_sig.keys == ("self", "instrum", "param_2")
+
+    def test_infer_with_position_stacked(self):
+        # Arrange
+        class MockObservation:
+            @sensor(int)
             @sensor(int)
             def meth(self, param_1, param_2):
                 pass
@@ -654,6 +734,23 @@ class TestSensorMethodSignature:
         # Arrange
         class MockObservation:
             @staticmethod
+            @sensor(int)
+            def meth(param_1, param_2):
+                pass
+
+        params = tuple(signature(MockObservation.meth).parameters.values())
+        sig = SensorMethodSignature(params)
+        sig.sensor = SensorMethod(MockObservation.meth)
+        # Act
+        inferred_sig = sig.infer()
+        # Assert
+        assert inferred_sig.keys == ("instrum", "param_2")
+
+    def test_infer_with_position_with_static_meth_stacked(self):
+        # Arrange
+        class MockObservation:
+            @staticmethod
+            @sensor(int)
             @sensor(int)
             def meth(param_1, param_2):
                 pass
