@@ -113,7 +113,7 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
         return cls(meth, supp_instrums=instrums) if instrums else None
 
     def bind(
-        self, cls_instance: Any, *args: _PMeth.args, **kwargs: _PMeth.kwargs
+        self, *args: _PMeth.args, **kwargs: _PMeth.kwargs
     ) -> BoundSensorMethod[Concatenate[Any, _PMeth], _RMeth]:
         # noinspection PyShadowingNames
         # pylint: disable=line-too-long
@@ -162,6 +162,4 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>> bound_method
             BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrum=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
         """
-        if self.is_static:
-            return self._binder.bind(*args, **kwargs)
-        return self._binder.bind(cls_instance, *args, **kwargs)
+        return self._binder.bind(*args, **kwargs)

@@ -292,7 +292,6 @@ class ReqInstrumException(ConsumerException):
 
 
 class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
-    # noinspection PyMethodMayBeStatic
     """A consumer that processes observations by applying instrument
     implementations.
 
@@ -307,7 +306,8 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         >>> from domprob import sensor, BaseObservation
         >>>
         >>> class LoggerInstrument:
-        ...     def log(self, message: str):
+        ...     @staticmethod
+        ...     def log(message: str):
         ...         print(f"LOG: {message}")
         ...
         >>> class SomeObservation(BaseObservation):
@@ -347,7 +347,10 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         for ann in observation.sensors():
             for instrum_imp in self.instrum_imps(observation, ann):
                 if instrum_imp is not None:
-                    ann.meth(observation, instrum_imp)  # Executes sensors
+                    if ann.is_static:
+                        ann.meth(instrum_imp)  # Executes sensors
+                    else:
+                        ann.meth(observation, instrum_imp)
 
     def instrum_imps(
         self,
@@ -355,7 +358,6 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
         sensor: SensorMethod,
     ) -> Generator[_Instrument | None, None, None]:
         # noinspection PyCallingNonCallable
-        # noinspection PyMethodMayBeStatic
         """Retrieves instrument implementations required for sensors.
 
         Args:
@@ -377,12 +379,14 @@ class BasicConsumer(ConsumerProtocol, Generic[_Instrument]):
             >>> from domprob.sensors.meth import SensorMethod
             >>>
             >>> class LoggerInstrument:
-            ...     def log(self, message: str):
+            ...     @staticmethod
+            ...     def log(message: str):
             ...         print(f"LOG: {message}")
             ...
             >>> class SomeObservation(BaseObservation):
+            ...     @staticmethod
             ...     @sensor(LoggerInstrument)
-            ...     def sense_observation(self, instrument: LoggerInstrument):
+            ...     def sense_observation(instrument: LoggerInstrument):
             ...         instrument.log("Event sensed!")
             ...
             >>> logger = LoggerInstrument()

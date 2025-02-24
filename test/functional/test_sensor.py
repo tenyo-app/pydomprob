@@ -7,6 +7,7 @@ from domprob.sensors.meth_meta import (
     SensorMetadata,
     SensorMetadataEntry,
 )
+from domprob.sensors.validate.vals import MissingInstrumException
 
 
 class MockInstrument:
@@ -35,7 +36,7 @@ class TestMetadata:
     def test_metadata_not_set_correctly(self):
         # Arrange
         class Cls:
-            def no_method(self, instrument: MockInstrument):
+            def no_method(self, instrum: MockInstrument):
                 pass
 
         method = Cls.no_method
@@ -51,7 +52,7 @@ class TestMetadata:
         # Arrange
         class Cls:
             @sensor(MockInstrument)
-            def simple_method(self, instrument: MockInstrument) -> None:
+            def simple_method(self, instrum: MockInstrument) -> None:
                 pass
 
         method = Cls.simple_method
@@ -71,7 +72,7 @@ class TestMetadata:
             @sensor(MockInstrument)
             @sensor(MockInstrument)
             @sensor(MockInstrument)
-            def stacked_method(self, instrument: MockInstrument) -> None:
+            def stacked_method(self, instrum: MockInstrument) -> None:
                 pass
 
         method = Cls.stacked_method
@@ -93,12 +94,10 @@ class TestMetadata:
             @sensor(MockInstrument)
             @sensor(AnotherMockInstrument)
             @sensor(YetAnotherMockInstrument)
-            def stacked_differently_method(
-                self, instrument: MockInstrument
-            ) -> None:
+            def stacked_diff_method(self, instrum: MockInstrument) -> None:
                 pass
 
-        method = Cls.stacked_differently_method
+        method = Cls.stacked_diff_method
         while hasattr(method, "__wrapped__"):  # Get original non-wrapped
             method = getattr(method, "__wrapped__")
         metadata: list[SensorMetadataEntry]
@@ -118,8 +117,8 @@ class TestInstrumentTypes:
         # Arrange
         class Cls:
             @sensor(AnotherMockInstrument)
-            def method(self, instrument: MockInstrument) -> None:
-                instrument.stdout("stdout")
+            def method(self, instrum: MockInstrument) -> None:
+                instrum.stdout("stdout")
 
         instance = Cls()
         # Act + Assert
@@ -129,8 +128,8 @@ class TestInstrumentTypes:
         # Arrange
         class Cls:
             @sensor(MockInstrument)
-            def method(self, instrument: AnotherMockInstrument) -> None:
-                instrument.stdout("stdout")
+            def method(self, instrum: AnotherMockInstrument) -> None:
+                instrum.stdout("stdout")
 
         instance = Cls()
         # Act
@@ -143,8 +142,8 @@ class TestInstrumentTypes:
         class Cls:
             @sensor(AnotherMockInstrument)
             @sensor(YetAnotherMockInstrument)
-            def method(self, instrument: MockInstrument) -> None:
-                instrument.stdout("stdout")
+            def method(self, instrum: MockInstrument) -> None:
+                instrum.stdout("stdout")
 
         instance = Cls()
         # Act + Assert
@@ -156,8 +155,8 @@ class TestInstrumentTypes:
         class Cls:
             @sensor(AnotherMockInstrument)
             @sensor(YetAnotherMockInstrument)
-            def method(self, instrument: MockInstrument) -> None:
-                instrument.stdout("stdout")
+            def method(self, instrum: MockInstrument) -> None:
+                instrum.stdout("stdout")
 
         instance = Cls()
         instru = MockInstrument(print)
@@ -176,8 +175,8 @@ class TestInstrumentTypes:
         # Arrange
         class Cls:
             @sensor(UnrelatedMockInstrument)
-            def method(self, instrument: MockInstrument) -> None:
-                instrument.stdout("stdout")
+            def method(self, instrum: MockInstrument) -> None:
+                instrum.stdout("stdout")
 
         instance = Cls()
         instru = AnotherMockInstrument(print)
@@ -195,8 +194,8 @@ class TestInstrumentTypes:
         # Arrange
         class Cls:
             @sensor(MockInstrument)
-            def method(self, instrument: UnrelatedMockInstrument) -> None:
-                instrument.stdout("stdout")
+            def method(self, instrum: UnrelatedMockInstrument) -> None:
+                instrum.stdout("stdout")
 
         instance = Cls()
         instru = UnrelatedMockInstrument()
@@ -217,14 +216,14 @@ class TestMissingInstrument:
         # Arrange
         class Cls:
             @sensor(MockInstrument)
-            def method(self, instrument: MockInstrument) -> None:
+            def method(self, instrum: MockInstrument) -> None:
                 pass
 
         instance = Cls()
         # Act
-        with pytest.raises(TypeError) as exc_info:
+        with pytest.raises(MissingInstrumException) as exc_info:
             instance.method()
         # Assert
-        assert str(exc_info.value).endswith(
-            "missing 1 required positional argument: 'instrum'"
+        assert str(exc_info.value) == (
+            "'instrum' param missing in Cls.method(...)"
         )

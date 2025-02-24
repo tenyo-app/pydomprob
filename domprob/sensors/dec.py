@@ -172,15 +172,23 @@ class _Sensor(Generic[_MethodCls, _Instrum, _P, _R]):
         meth = SensorMethod(method)
         meth.supp_instrums.record(self.instrum, self.required)
 
-        @functools.wraps(method)
-        def wrapper(
+        @overload
+        def wrapper(  # noqa - ignore "unused local function" warning
+            instrum: _Instrum, /, *args: _P.args, **kwargs: _P.kwargs
+        ) -> _R: ...
+
+        @overload
+        def wrapper(  # noqa - ignore "unused local function" warning
             cls_instance: _MethodCls,
             instrum: _Instrum,
             /,
             *args: _P.args,
             **kwargs: _P.kwargs,
-        ) -> _R:
-            bound_meth = meth.bind(cls_instance, instrum, *args, **kwargs)
+        ) -> _R: ...
+
+        @functools.wraps(method)
+        def wrapper(*args: Any, **kwargs: Any) -> _R:
+            bound_meth = meth.bind(*args, **kwargs)
             bound_meth.validate()
             return bound_meth.execute()
 

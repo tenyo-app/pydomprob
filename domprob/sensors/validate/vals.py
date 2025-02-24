@@ -83,7 +83,7 @@ class InstrumentParamExistsValidator(BaseValidator):
         ...         pass
         ...
         >>> meth = SensorMethod(Example.method)
-        >>> bound_meth = meth.bind(Example())
+        >>> bound_meth = meth.bind(Example())  # type: ignore
         >>>
         >>> validator = InstrumentParamExistsValidator()
         >>> try:

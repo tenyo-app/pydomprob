@@ -12,6 +12,7 @@ from typing import (
 
 from domprob.sensors.bound_meth import BoundSensorMethod
 from domprob.sensors.exc import SensorException
+from domprob.sensors.meth_sig import SensorMethodSignature
 
 # Typing helpers: Describes the wrapped method signature for wrapper
 _PMeth = ParamSpec("_PMeth")
@@ -109,8 +110,12 @@ class SensorMethodBinder(Generic[_PMeth, _RMeth]):
         self.sensor_meth = sensor_meth
 
     def _bind_partial(
-        self, *args: Any, **kwargs: Any
+        self,
+        sig: SensorMethodSignature[_PMeth, _RMeth],
+        *args: Any,
+        **kwargs: Any,
     ) -> inspect.BoundArguments:
+        # noinspection PyShadowingNames
         """Partially binds arguments to the method signature.
 
         This method allows binding a subset of the arguments required
@@ -132,6 +137,7 @@ class SensorMethodBinder(Generic[_PMeth, _RMeth]):
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import SensorMethod
             >>> from domprob.sensors.meth_binder import SensorMethodBinder
+            >>> from domprob.sensors.meth_sig import SensorMethodSignature
             >>>
             >>> class Foo:
             ...     def bar(self, x: int, bool_: bool = True) -> None:
@@ -139,19 +145,19 @@ class SensorMethodBinder(Generic[_PMeth, _RMeth]):
             >>>
             >>> meth = SensorMethod(Foo.bar)
             >>> binder = SensorMethodBinder(meth)
+            >>> sig = SensorMethodSignature.from_sensor(meth)
             >>>
-            >>> b_arguments = binder._bind_partial(5, bool_=False)
+            >>> b_arguments = binder._bind_partial(sig, 5, bool_=False)
             >>> b_arguments
             <BoundArguments (self=5, bool_=False)>
 
             >>> try:
-            ...     _ = binder._bind_partial(5, y=10, bool_=False)
+            ...     _ = binder._bind_partial(sig, 5, y=10, bool_=False)
             ... except PartialBindException:
             ...     print("Failed partial binding")
             ...
             Failed partial binding
         """
-        sig = self.sensor_meth.sig.infer()
         try:
             return sig.bind_partial(*args, **kwargs)
         except TypeError as e:
@@ -159,6 +165,7 @@ class SensorMethodBinder(Generic[_PMeth, _RMeth]):
 
     def bind(self, *args: Any, **kwargs: Any) -> _BoundSensorMeth:
         # pylint: disable=line-too-long
+        # noinspection PyShadowingNames
         """Fully binds arguments to the method signature and returns a
         bound method.
 
@@ -183,6 +190,7 @@ class SensorMethodBinder(Generic[_PMeth, _RMeth]):
             >>> from collections import OrderedDict
             >>> from domprob.sensors.meth import SensorMethod
             >>> from domprob.sensors.meth_binder import SensorMethodBinder
+            >>> from domprob.sensors.meth_sig import SensorMethodSignature
             >>>
             >>> class Foo:
             ...     def bar(self, x: int, bool_: bool = True) -> None:
@@ -195,14 +203,16 @@ class SensorMethodBinder(Generic[_PMeth, _RMeth]):
             >>> bound_meth
             BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=5, bool_=True)>)
 
+            >>> sig = SensorMethodSignature.from_sensor(meth)
             >>> try:
-            ...     _ = binder._bind_partial(5, y=10)
+            ...     _ = binder._bind_partial(sig, 5, y=10)
             ... except PartialBindException:
             ...     print("Failed partial binding")
             ...
             Failed partial binding
         """
-        b_params = self._bind_partial(*args, **kwargs)
+        sig = self.sensor_meth.sig.infer()
+        b_params = self._bind_partial(sig, *args, **kwargs)
         b_params.apply_defaults()
         return BoundSensorMethod(self.sensor_meth, b_params)
 

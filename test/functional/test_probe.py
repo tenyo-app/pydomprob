@@ -28,10 +28,25 @@ def mock_observation_cls(mock_instrument_cls) -> type[_Obs]:
         def mock_sensor(self, mock_instrum: mock_instrument_cls) -> None:
             mock_instrum.store("Sensed!")
 
+        @staticmethod
+        @sensor(mock_instrument_cls)
+        def mock_static_sensor(mock_instrum: mock_instrument_cls) -> None:
+            mock_instrum.store("Sensed static!")
+
         @sensor(mock_instrument_cls)
         @sensor(mock_instrument_cls)
-        def mock_sensor_again(self, mock_instrum: mock_instrument_cls) -> None:
+        def mock_sensor_stacked(
+            self, mock_instrum: mock_instrument_cls
+        ) -> None:
             mock_instrum.store("Stacked sensed!")
+
+        @staticmethod
+        @sensor(mock_instrument_cls)
+        @sensor(mock_instrument_cls)
+        def mock_static_sensor_stacked(
+            mock_instrum: mock_instrument_cls,
+        ) -> None:
+            mock_instrum.store("Stacked static sensed!")
 
     return MockObservation
 
@@ -44,7 +59,9 @@ class TestProbe:
         # Act
         probe_.observe(mock_observation_cls())
         # Assert
-        assert len(instrum.msgs) == 3, "Mock instrument not called"
+        assert len(instrum.msgs) == 6, "Mock instrument not called correctly"
+        assert len(set(instrum.msgs)) == 4
         assert "Sensed!" in instrum.msgs
+        assert "Sensed static!" in instrum.msgs
         assert "Stacked sensed!" in instrum.msgs
-        assert "Stacked sensed!" in instrum.msgs
+        assert "Stacked static sensed!" in instrum.msgs

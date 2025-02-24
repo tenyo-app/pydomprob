@@ -59,22 +59,20 @@ class TestSensorsMethod:
         # Arrange
         sensor_method = SensorMethod(mock_method)
         mock_instrument = MockInstrument()
-        cls_ = mock_cls()
         # Act
-        bound_method = sensor_method.bind(cls_, mock_instrument)
+        bound_method = sensor_method.bind(mock_instrument)
         _ = bound_method.instrum
         # Assert
         assert isinstance(bound_method, BoundSensorMethod)
-        assert bound_method.params.args == (cls_, mock_instrument)
+        assert bound_method.params.args == (mock_instrument,)
         assert bound_method.params.kwargs == {}
 
     def test_bind_static(self, mock_cls, mock_static_method):
         # Arrange
         sensor_method = SensorMethod(mock_static_method)
         mock_instrument = MockInstrument()
-        cls_ = mock_cls()
         # Act
-        bound_method = sensor_method.bind(cls_, mock_instrument)
+        bound_method = sensor_method.bind(mock_instrument)
         _ = bound_method.instrum
         # Assert
         assert isinstance(bound_method, BoundSensorMethod)
