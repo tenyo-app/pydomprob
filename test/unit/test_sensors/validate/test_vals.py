@@ -29,7 +29,7 @@ class AnotherInstrument:
 
 def _create_b_meth(*args, **kwargs):
     class Cls:
-        def method(self, instrument: MockInstrument) -> None:
+        def method(self, instrum: MockInstrument) -> None:
             pass
 
     sensor_meth = SensorMethod(Cls.method)
@@ -59,7 +59,7 @@ class TestInstrumentParamExistsValidator:
         # Assert
         assert exc_info.value.method == b_mock_meth.meth
         assert str(exc_info.value) == (
-            "'instrument' param missing in Cls.method(...)"
+            "'instrum' param missing in Cls.method(...)"
         )
 
     def test_passes_validation_when_instrument_is_present(
@@ -100,9 +100,9 @@ class TestInstrumentTypeValidator:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Cls.method(...) expects 'instrument' param to be "
+            == f"Cls.method(...) expects 'instrum' param to be "
             f"one of: [AnotherInstrument], but got: "
-            f"{b_mock_meth.instrument!r}"
+            f"{b_mock_meth.instrum!r}"
         )
 
     def test_validate_raises_for_empty_supported_instruments(
@@ -116,8 +116,8 @@ class TestInstrumentTypeValidator:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Cls.method(...) expects 'instrument' param to be "
-            f"one of: [], but got: {b_mock_meth.instrument!r}"
+            == f"Cls.method(...) expects 'instrum' param to be one of: [], "
+            f"but got: {b_mock_meth.instrum!r}"
         )
 
     def test_validate_raises_for_none_instrument(self, type_validator):
@@ -130,10 +130,10 @@ class TestInstrumentTypeValidator:
             type_validator.validate(b_mock_meth)
         # Assert
         exc = exc_info.value
-        assert exc.instrument is None
-        assert (
-            str(exc) == f"Cls.method(...) expects 'instrument' param to be "
-            f"one of: [AnotherInstrument], but got: None"
+        assert exc.instrum is None
+        assert str(exc) == (
+            f"Cls.method(...) expects 'instrum' param to be one of: "
+            f"[AnotherInstrument], but got: None"
         )
 
     def test_validate_with_multiple_valid_instruments(self, type_validator):

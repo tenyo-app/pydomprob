@@ -30,7 +30,7 @@ class MockObservation(BaseObservation):
 
 class MockObservationWithRequired(BaseObservation):
     @sensor(MockInstrument, required=True)
-    def foo(self, instrument: MockInstrument):
+    def foo(self, instrum: MockInstrument):
         pass
 
 

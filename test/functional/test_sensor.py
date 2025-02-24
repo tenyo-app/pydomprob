@@ -167,7 +167,7 @@ class TestInstrumentTypes:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Cls.method(...) expects 'instrument' param to be one of: "
+            == f"Cls.method(...) expects 'instrum' param to be one of: "
             f"[YetAnotherMockInstrument, AnotherMockInstrument], but got: "
             f"{instru!r}"
         )
@@ -187,7 +187,7 @@ class TestInstrumentTypes:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Cls.method(...) expects 'instrument' param to be one of: "
+            == f"Cls.method(...) expects 'instrum' param to be one of: "
             f"[UnrelatedMockInstrument], but got: {instru!r}"
         )
 
@@ -206,7 +206,7 @@ class TestInstrumentTypes:
         # Assert
         assert (
             str(exc_info.value)
-            == f"Cls.method(...) expects 'instrument' param to be one of: "
+            == f"Cls.method(...) expects 'instrum' param to be one of: "
             f"[MockInstrument], but got: {instru!r}"
         )
 

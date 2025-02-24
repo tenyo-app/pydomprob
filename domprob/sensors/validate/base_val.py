@@ -48,7 +48,7 @@ class BaseValidator(ABC):
         >>>
         >>> class ExampleValidator(BaseValidator):
         ...     def validate(self, method: BoundSensorMethod) -> None:
-        ...         if not method.instrument:
+        ...         if not method.instrum:
         ...             raise ValueError("Instrument is required")
         ...         print("Validation successful")
         ...         super().validate(method)
@@ -58,7 +58,7 @@ class BaseValidator(ABC):
         ...     pass
         ...
         >>> class Cls:
-        ...     def method(self, instrument: SomeInstrument) -> None:
+        ...     def method(self, instrum: SomeInstrument) -> None:
         ...         pass
         ...
         >>> meth = SensorMethod(Cls.method)
@@ -80,6 +80,7 @@ class BaseValidator(ABC):
 
     @abstractmethod
     def validate(self, b_meth: BoundSensorMethod) -> None:
+        # noinspection PyShadowingNames
         """Validates a `BoundSensorMethod` instance.
 
         This method performs the validate logic for the current
@@ -101,7 +102,7 @@ class BaseValidator(ABC):
             >>>
             >>> class ExampleValidator(BaseValidator):
             ...     def validate(self, meth: BoundSensorMethod) -> None:
-            ...         if not meth.instrument:
+            ...         if not meth.instrum:
             ...             raise ValidatorException("Instrument is required")
             ...         print("Validation successful")
             ...         super().validate(meth)
@@ -111,7 +112,7 @@ class BaseValidator(ABC):
             ...     pass
             ...
             >>> class Cls:
-            ...     def method(self, instrument: SomeInstrument) -> None:
+            ...     def method(self, instrum: SomeInstrument) -> None:
             ...         pass
             ...
             >>> meth = SensorMethod(Cls.method)

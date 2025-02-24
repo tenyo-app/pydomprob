@@ -88,7 +88,7 @@ class TestSensor:
         # Assert
         assert (
             str(exc_info.value)
-            == "Cls.method(...) expects 'instrument' param to be one of: "
+            == "Cls.method(...) expects 'instrum' param to be one of: "
             "[MockInstrument], but got: 'invalid instrument'"
         )
 

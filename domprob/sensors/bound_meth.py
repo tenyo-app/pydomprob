@@ -91,7 +91,7 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>>
             >>> class Foo:
             ...     @sensor(SomeInstrument)
-            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...     def bar(self, instrum: SomeInstrument) -> None:
             ...         pass
             ...
             >>> # Create an BoundSensorMethod instance
@@ -109,13 +109,13 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>> b_args.arguments = bound.arguments
             >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
-            >>> bound_method.instrument
+            >>> bound_method.instrum
             <....SomeInstrument object at 0x...>
         """
         return self._params
 
     @property
-    def instrument(self) -> Any | None:
+    def instrum(self) -> Any | None:
         """Returns the runtime `instrument` instance argument bound
         to the method.
 
@@ -131,7 +131,7 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>>
             >>> class Foo:
             ...     @sensor(SomeInstrument)
-            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...     def bar(self, instrum: SomeInstrument) -> None:
             ...         pass
             ...
             >>> # Create an BoundSensorMethod instance
@@ -149,10 +149,10 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>> b_args.arguments = bound.arguments
             >>> bound_method = BoundSensorMethod(sensor_meth, b_args)
             >>>
-            >>> bound_method.instrument
+            >>> bound_method.instrum
             <....SomeInstrument object at 0x...>
         """
-        return self.params.arguments.get("instrument")
+        return self.params.arguments.get("instrum")
 
     def execute(self) -> _RMeth:
         """Executes the bound method.
@@ -214,7 +214,7 @@ class BoundSensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>>
             >>> class Foo:
             ...     @sensor(SomeInstrument)
-            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...     def bar(self, instrum: SomeInstrument) -> None:
             ...         pass
             ...
             >>> # Create an BoundSensorMethod instance

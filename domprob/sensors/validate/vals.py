@@ -36,7 +36,7 @@ class MissingInstrumException(ValidatorException):
         ... except MissingInstrumException as e:
         ...     print(f"Error: {e}")
         ...
-        Error: 'instrument' param missing in Example.method(...)
+        Error: 'instrum' param missing in Example.method(...)
     """
 
     def __init__(self, method: Callable[..., Any]) -> None:
@@ -58,10 +58,10 @@ class MissingInstrumException(ValidatorException):
             ...
             >>> exc = MissingInstrumException(Example().method)
             >>> exc.msg
-            "'instrument' param missing in Example.method(...)"
+            "'instrum' param missing in Example.method(...)"
         """
         m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
-        return f"'instrument' param missing in {m_name}"
+        return f"'instrum' param missing in {m_name}"
 
 
 # pylint: disable=too-few-public-methods
@@ -79,7 +79,7 @@ class InstrumentParamExistsValidator(BaseValidator):
         ...     pass
         ...
         >>> class Example:
-        ...     def method(self, instrument: SomeInstrument) -> None:
+        ...     def method(self, instrum: SomeInstrument) -> None:
         ...         pass
         ...
         >>> meth = SensorMethod(Example.method)
@@ -91,7 +91,7 @@ class InstrumentParamExistsValidator(BaseValidator):
         ... except MissingInstrumException as e:
         ...     print(f"Error: {e}")
         ...
-        Error: 'instrument' param missing in Example.method(...)
+        Error: 'instrum' param missing in Example.method(...)
     """
 
     def validate(self, b_meth: BoundSensorMethod) -> None:
@@ -106,7 +106,7 @@ class InstrumentParamExistsValidator(BaseValidator):
             MissingInstrumentException: If the `instrum` parameter is
                 `None`.
         """
-        if b_meth.instrument is None:
+        if b_meth.instrum is None:
             raise MissingInstrumException(b_meth.meth)
         return super().validate(b_meth)
 
@@ -123,7 +123,7 @@ class InstrumTypeException(ValidatorException):
 
     Attributes:
         method (Callable[..., Any]): The method that failed validate.
-        instrument (Any): The invalid `instrument` instance.
+        instrum (Any): The invalid `instrument` instance.
         supp_instrums (Instruments): The supported instrument types.
 
     Examples:
@@ -133,7 +133,7 @@ class InstrumTypeException(ValidatorException):
         ...     pass
         ...
         >>> class Example:
-        ...     def method(self, instrument: SomeInstrument) -> None:
+        ...     def method(self, instrum: SomeInstrument) -> None:
         ...         pass
         ...
         >>> meth = SensorMethod(Example.method)
@@ -146,12 +146,12 @@ class InstrumTypeException(ValidatorException):
         ... except InstrumTypeException as e:
         ...     print(f"Error: {e}")
         ...
-        Error: Example.method(...) expects 'instrument' param to be one of: [SomeInstrument], but got: 'InvalidInstrument'
+        Error: Example.method(...) expects 'instrum' param to be one of: [SomeInstrument], but got: 'InvalidInstrument'
     """
 
     def __init__(self, b_meth: BoundSensorMethod) -> None:
         self.method = b_meth.meth
-        self.instrument = b_meth.instrument
+        self.instrum = b_meth.instrum
         self.supp_instrums = b_meth.supp_instrums
         super().__init__(self.msg)
 
@@ -165,8 +165,8 @@ class InstrumTypeException(ValidatorException):
         instrum_names = (i.__name__ for i, _ in self.supp_instrums)
         m_name = f"{'.'.join(self.method.__qualname__.split('.')[-2:])}(...)"
         return (
-            f"{m_name} expects 'instrument' param to be one of: "
-            f"[{', '.join(instrum_names)}], but got: {self.instrument!r}"
+            f"{m_name} expects 'instrum' param to be one of: "
+            f"[{', '.join(instrum_names)}], but got: {self.instrum!r}"
         )
 
 
@@ -185,7 +185,7 @@ class InstrumentTypeValidator(BaseValidator):
         ...     pass
         ...
         >>> class Example:
-        ...     def method(self, instrument: MockInstrument) -> None:
+        ...     def method(self, instrum: MockInstrument) -> None:
         ...         pass
         ...
         >>> meth = SensorMethod(Example.method)
@@ -197,7 +197,7 @@ class InstrumentTypeValidator(BaseValidator):
         ... except InstrumTypeException as e:
         ...     print(f"Error: {e}")
         ...
-        Error: Example.method(...) expects 'instrument' param to be one of: [], but got: 'InvalidInstrument'
+        Error: Example.method(...) expects 'instrum' param to be one of: [], but got: 'InvalidInstrument'
     """
 
     def validate(self, b_meth: BoundSensorMethod) -> None:
@@ -214,7 +214,7 @@ class InstrumentTypeValidator(BaseValidator):
         """
         for supp_instrum, _ in b_meth.supp_instrums:
             # pylint: disable=unidiomatic-typecheck
-            if type(b_meth.instrument) is supp_instrum:
+            if type(b_meth.instrum) is supp_instrum:
                 return super().validate(b_meth)
         raise InstrumTypeException(b_meth)
 

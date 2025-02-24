@@ -16,7 +16,7 @@ def mock_cls():
     class Cls:
         # noinspection PyUnusedLocal
         # noinspection PyMethodMayBeStatic
-        def method(self, instrument: MockInstrument) -> str:
+        def method(self, instrum: MockInstrument) -> str:
             return "Executed!"
 
     return Cls
@@ -48,7 +48,7 @@ class TestBoundSensorMethod:
         assert b_meth.params.kwargs == {}
         assert b_meth.params.arguments == {
             "self": mock_instance,
-            "instrument": mock_instrum,
+            "instrum": mock_instrum,
         }
 
     def test_instrument_property(self, mock_cls):
@@ -59,7 +59,7 @@ class TestBoundSensorMethod:
             mock_cls.method, mock_instance, mock_instrum
         )
         # Act
-        instrument = b_meth.instrument
+        instrument = b_meth.instrum
         # Assert
         assert instrument is not None
         assert instrument == mock_instrum

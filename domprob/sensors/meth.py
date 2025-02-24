@@ -146,7 +146,7 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>>
             >>> class Foo:
             ...     @sensor(SomeInstrument)
-            ...     def bar(self, instrument: SomeInstrument) -> None:
+            ...     def bar(self, instrum: SomeInstrument) -> None:
             ...         pass
             ...
             >>> # Create an SensorMethod instance
@@ -160,7 +160,7 @@ class SensorMethod(BaseSensorMethod, Generic[_PMeth, _RMeth]):
             >>> args = (foo, instrument_instance)
             >>> bound_method = bar_method.bind(*args)
             >>> bound_method
-            BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrument=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
+            BoundSensorMethod(sensor_meth=SensorMethod(meth=<function Foo.bar at 0x...>), bound_params=<BoundArguments (self=<domprob.sensors.meth.Foo object at 0x...>, instrum=<domprob.sensors.meth.SomeInstrument object at 0x...>)>)
         """
         if self.is_static:
             return self._binder.bind(*args, **kwargs)

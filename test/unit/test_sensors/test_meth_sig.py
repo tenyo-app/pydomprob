@@ -13,6 +13,8 @@ from domprob.sensors.meth_sig import (
     SensorMethodSignature,
 )
 
+# TODO: Add tests for stacked sensor methods
+
 
 class TestInferSigInstrumBase:
 

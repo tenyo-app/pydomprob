@@ -53,7 +53,7 @@ class TestSensorsMethod:
         cls_ = mock_cls()
         # Act
         bound_method = sensor_method.bind(cls_, mock_instrument)
-        _ = bound_method.instrument
+        _ = bound_method.instrum
         # Assert
         assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_, mock_instrument)
