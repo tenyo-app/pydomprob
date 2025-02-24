@@ -12,7 +12,11 @@ class MockInstrument:
 @pytest.fixture
 def mock_cls():
     class Cls:
-        def method(self, instrument: MockInstrument) -> None:
+        def method(self, instrum: MockInstrument) -> None:
+            pass
+
+        @staticmethod
+        def static_method(instrum: MockInstrument) -> None:
             pass
 
     return Cls
@@ -21,6 +25,11 @@ def mock_cls():
 @pytest.fixture
 def mock_method(mock_cls):
     return mock_cls.method
+
+
+@pytest.fixture
+def mock_static_method(mock_cls):
+    return mock_cls.static_method
 
 
 @pytest.fixture
@@ -57,4 +66,17 @@ class TestSensorsMethod:
         # Assert
         assert isinstance(bound_method, BoundSensorMethod)
         assert bound_method.params.args == (cls_, mock_instrument)
+        assert bound_method.params.kwargs == {}
+
+    def test_bind_static(self, mock_cls, mock_static_method):
+        # Arrange
+        sensor_method = SensorMethod(mock_static_method)
+        mock_instrument = MockInstrument()
+        cls_ = mock_cls()
+        # Act
+        bound_method = sensor_method.bind(cls_, mock_instrument)
+        _ = bound_method.instrum
+        # Assert
+        assert isinstance(bound_method, BoundSensorMethod)
+        assert bound_method.params.args == (mock_instrument,)
         assert bound_method.params.kwargs == {}
